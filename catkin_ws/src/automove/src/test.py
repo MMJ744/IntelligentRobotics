@@ -25,7 +25,7 @@ def talker():
 
 		base_data = Twist()
 		#base_data.linear.x = 0.3
-		base_data.angular.z = 0.4
+		rotate(90, rospy, base_data)
 		
 		if front < 3:
 			base_data.linear.x = 0
@@ -38,3 +38,21 @@ if __name__ == '__main__':
 		talker()
 	except rospy.ROSInterruptException:
 		pass
+
+def rotate(rotation_in_degrees, rospy, base_data):
+	rotate_rate = math.pi/8
+	rate = rospy.Rate(1)
+
+	rotation_in_radians = math.radians(rotation_in_degrees)
+	wait_time = rotation_in_radians / rotate_rate
+
+	base_data.angular.z = rotate_rate
+	rate.sleep(int(wait_time))
+	base_data.angular.z = 0
+
+
+
+
+	
+
+
