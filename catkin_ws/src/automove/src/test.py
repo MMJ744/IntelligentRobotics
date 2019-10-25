@@ -3,11 +3,23 @@ from geometry_msgs.msg import Twist
 import rospy
 from std_msgs.msg import String
 from sensor_msgs.msg import LaserScan
+import math
 
 
 right = 999
 front = 999
 left = 999
+
+def rotate(rotation_in_degrees, rospy, base_data):
+	rotate_rate = math.pi/8
+	rate = rospy.Rate(1)
+
+	rotation_in_radians = math.radians(rotation_in_degrees)
+	wait_time = rotation_in_radians / rotate_rate
+
+	base_data.angular.z = rotate_rate
+	rate.sleep(int(wait_time))
+	base_data.angular.z = 0
 
 def callback(data):
 	ranges = data.ranges
@@ -39,16 +51,7 @@ if __name__ == '__main__':
 	except rospy.ROSInterruptException:
 		pass
 
-def rotate(rotation_in_degrees, rospy, base_data):
-	rotate_rate = math.pi/8
-	rate = rospy.Rate(1)
 
-	rotation_in_radians = math.radians(rotation_in_degrees)
-	wait_time = rotation_in_radians / rotate_rate
-
-	base_data.angular.z = rotate_rate
-	rate.sleep(int(wait_time))
-	base_data.angular.z = 0
 
 
 
