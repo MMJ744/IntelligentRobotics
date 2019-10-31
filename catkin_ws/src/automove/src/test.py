@@ -27,13 +27,21 @@ def callback(data):
     global right
     global left
     ranges = data.ranges
-
-    length = len(ranges) / 6
-    back_right = min(ranges[:length])
-    right = extract_min_range(ranges[length:length * 2], data)
-    front = extract_min_range(ranges[length * 2:length * 4], data)
-    left = extract_min_range(ranges[length * 4:length * 5], data)
-    left_back = min(ranges[length * 5:])
+    sim = True
+    if sim:
+        length = len(ranges) / 4
+        back_right = 999
+        right = extract_min_range(ranges[:length], data)
+        front = extract_min_range(ranges[length:length * 3], data)
+        left = extract_min_range(ranges[length * 3:], data)
+        left_back = 999
+    else:
+        length = len(ranges) / 6
+        back_right = min(ranges[:length])
+        right = extract_min_range(ranges[length:length * 2], data)
+        front = extract_min_range(ranges[length * 2:length * 4], data)
+        left = extract_min_range(ranges[length * 4:length * 5], data)
+        left_back = min(ranges[length * 5:])
 
 
 def talker():
@@ -41,29 +49,35 @@ def talker():
     pub = rospy.Publisher('cmd_vel', Twist, queue_size=100)
     rospy.init_node('Mover', anonymous=True)
     rate = rospy.Rate(10)  # 10hz
-    factor = 1.5
+    factor = 2
+    cutoff = 0.5
     while not rospy.is_shutdown():
-
+        frontblocked = front < cutoff
+        leftblocked = left < cutoff
+        rightblocked = right < cutoff
         base_data = Twist()
-        base_data.linear.x = 0.2 * factor
-        if front < 0.5:
-            print("FRONT " + str(front))
-            base_data.linear.x = 0.0
-            base_data.angular.z = -0.1 * factor
-        if left < 0.6:
-            print("LEFT " + str(left))
-            base_data.angular.z = -0.1 * factor
-        if right < 0.6:
-            print("RIGHT " + str(right))
-            base_data.angular.z = 0.1 * factor
-        pub.publish(base_data)
-        rate.sleep()
+        base_data.linear.x = 0.3 * factor
+        if not leftblocked:
+            print("can go left")
+            base_data.angular.z = 0.12 * factor
+            base_data.linear.x = 0.07 * factor
+        elif frontblocked and not rightblocked:
+            print("rotating right")
+            base_data.angular.z = -1.5 * factor
+        if frontblocked:
+            print("front blocked")
+            base_data.linear.x = 0
+        if frontblocked and leftblocked and rightblocked:
+            print("reversing")
+            base_data.linear.x = -0.8 * factor
+    	pub.publish(base_data)
+    	rate.sleep()
 
 
 def extract_min_range(values, data):
     values = filter(lambda val: data.range_min < val < data.range_max and not math.isnan(val), values)
     if not values:
-        return math.nan
+        return 1000
     return min(values)
 
 
