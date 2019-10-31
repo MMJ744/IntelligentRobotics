@@ -18,7 +18,7 @@ def rotate(rotation_in_degrees, rospy, base_data):
 	wait_time = rotation_in_radians / rotate_rate
 
 	base_data.angular.z = rotate_rate
-	rate.sleep(int(wait_time))
+	rate.sleep()
 	base_data.angular.z = 0
 
 def callback(data):
