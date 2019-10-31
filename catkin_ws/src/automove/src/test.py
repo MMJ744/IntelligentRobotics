@@ -11,6 +11,7 @@ right = 999
 front = 999
 left = 999
 
+
 def rotate(rotation_in_degrees, rospy, base_data):
 	rotate_rate = math.pi/8
 	rate = rospy.Rate(1)
@@ -22,6 +23,7 @@ def rotate(rotation_in_degrees, rospy, base_data):
 	rate.sleep()
 	base_data.angular.z = 0
 
+
 def callback(data):
 	global front
 	global right
@@ -29,8 +31,10 @@ def callback(data):
 	ranges = data.ranges
 	length = len(ranges) / 4
 	right = min(ranges[:length])
-	front = min(ranges[length:length*3])
+	front = min(exclude_outliers(ranges[length:length*3], data))
+	# front = min(ranges[length:length*3])
 	left = min(ranges[length*3:])
+
 
 def talker():
 	rospy.Subscriber("base_scan", LaserScan, callback)
@@ -51,6 +55,10 @@ def talker():
 			base_data.angular.z = 0.1 * factor
 		pub.publish( base_data )
 		rate.sleep()
+
+
+def exclude_outliers(values, data):
+	values = filter(lambda val: data.min < val < data.max and not math.isNan(val), values)
 
 
 if __name__ == '__main__':
