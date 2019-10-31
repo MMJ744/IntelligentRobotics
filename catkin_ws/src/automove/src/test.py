@@ -37,14 +37,18 @@ def talker():
 	pub = rospy.Publisher('cmd_vel', Twist, queue_size=100)
 	rospy.init_node('Mover', anonymous=True)
 	rate = rospy.Rate(10) # 10hz
+	factor = 2
 	while not rospy.is_shutdown():
 
 		base_data = Twist()
-		#base_data.linear.x = 0.3	
+		base_data.linear.x = 0.2 * factor	
 		if front < 0.5:
 			base_data.linear.x = 0.0
-		else:
-			base_data.linear.x = 0.5
+			base_data.angular.z = -0.1 * factor
+		if left < 1:
+			base_data.angular.z = -0.1 * factor
+		if right < 1:
+			base_data.angular.z = 0.1 * factor
 		pub.publish( base_data )
 		rate.sleep()
 
