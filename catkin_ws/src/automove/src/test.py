@@ -30,6 +30,9 @@ def callback(data):
 	global left
 	ranges = data.ranges
 
+	if not ranges:
+		return
+
 	length = len(ranges) / 6
 	back_right = min(ranges[:length])
 	right = min(ranges[length:length*2])
@@ -63,8 +66,10 @@ def talker():
 
 
 def exclude_outliers(values, data):
-	values = filter(lambda val: data.min < val < data.max and not math.isNan(val), values)
-
+	values = filter(lambda val: data.min < val < data.max and not math.isnan(val), values)
+	if not values:
+		values = [-1]
+	return values
 
 if __name__ == '__main__':
 	try:
