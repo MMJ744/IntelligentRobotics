@@ -7,6 +7,7 @@ import math
 
 
 right = 999
+
 front = 999
 left = 999
 
@@ -22,6 +23,9 @@ def rotate(rotation_in_degrees, rospy, base_data):
 	base_data.angular.z = 0
 
 def callback(data):
+	global front
+	global right
+	global left
 	ranges = data.ranges
 	length = len(ranges) / 4
 	right = min(ranges[:length])
@@ -36,11 +40,11 @@ def talker():
 	while not rospy.is_shutdown():
 
 		base_data = Twist()
-		#base_data.linear.x = 0.3
-		rotate(90, rospy, base_data)
-		
-		if front < 3:
-			base_data.linear.x = 0
+		#base_data.linear.x = 0.3	
+		if front < 0.5:
+			base_data.linear.x = 0.0
+		else:
+			base_data.linear.x = 0.5
 		pub.publish( base_data )
 		rate.sleep()
 
