@@ -29,11 +29,13 @@ def callback(data):
 	global right
 	global left
 	ranges = data.ranges
-	length = len(ranges) / 4
-	right = min(ranges[:length])
-	front = min(exclude_outliers(ranges[length:length*3], data))
-	# front = min(ranges[length:length*3])
-	left = min(ranges[length*3:])
+
+	length = len(ranges) / 6
+	back_right = min(ranges[:length])
+	right = min(ranges[length:length*2])
+	front = min(exclude_outliers(ranges[length*2:length*4], data))
+	left = min(ranges[length*4:length*5])
+	left_back = min(ranges[length*5:])
 
 
 def talker():
@@ -41,17 +43,20 @@ def talker():
 	pub = rospy.Publisher('cmd_vel', Twist, queue_size=100)
 	rospy.init_node('Mover', anonymous=True)
 	rate = rospy.Rate(10) # 10hz
-	factor = 2
+	factor = 1.5
 	while not rospy.is_shutdown():
 
 		base_data = Twist()
 		base_data.linear.x = 0.2 * factor	
 		if front < 0.5:
+			print("FRONT " + str(front))
 			base_data.linear.x = 0.0
 			base_data.angular.z = -0.1 * factor
-		if left < 1:
+		if left < 0.6:
+			print("LEFT " + str(left))
 			base_data.angular.z = -0.1 * factor
-		if right < 1:
+		if right < 0.6:
+			print("RIGHT " + str(right))
 			base_data.angular.z = 0.1 * factor
 		pub.publish( base_data )
 		rate.sleep()
