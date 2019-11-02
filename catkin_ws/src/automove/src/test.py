@@ -14,27 +14,18 @@ pub = 0
 
 def rotate(rotation):
     goal = theta + math.radians(-rotation)
-    print("b4 "+ str(goal))
     if goal > 3.1:
 	    goal = -3.1 + (goal-3.1)
     if goal < -3.1:
 	    goal = 3.1 + (goal +3.1)
-    print("a4 "+ str(goal))
     movement = Twist()
     print("theta " + str(theta) + " goal " + str(goal))
     rate = rospy.Rate(10)
-    if theta < goal:
-        while theta < goal:
-            print("theta " + str(theta) + " goal " + str(goal))
-            movement.angular.z =+ 0.3
-            pub.publish(movement)
-            rate.sleep()
-    else:
-        while theta > goal:
-            print("theta " + str(theta) + " goal " + str(goal))
-            movement.angular.z =- 0.3
-            pub.publish(movement)
-            rate.sleep()
+    while abs(goal-theta) > 0.15:
+        print("theta " + str(theta) + " goal " + str(goal))
+        movement.angular.z =- 0.5
+        pub.publish(movement)
+        rate.sleep()
 
 
 def odomCallback(data):
