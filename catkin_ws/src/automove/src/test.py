@@ -2,25 +2,45 @@
 from geometry_msgs.msg import Twist
 import rospy
 from std_msgs.msg import String
+from nav_msgs.msg import Odometry
 from sensor_msgs.msg import LaserScan
 import math
 
 right = 999
 front = 999
 left = 999
+theta = 0.0
+pub = 0
+
+def rotate(rotation):
+    goal = theta + math.radians(-rotation)
+    print("b4 "+ str(goal))
+    if goal > 3.1:
+	    goal = -3.1 + (goal-3.1)
+    if goal < -3.1:
+	    goal = 3.1 + (goal +3.1)
+    print("a4 "+ str(goal))
+    movement = Twist()
+    print("theta " + str(theta) + " goal " + str(goal))
+    rate = rospy.Rate(10)
+    if theta < goal:
+        while theta < goal:
+            print("theta " + str(theta) + " goal " + str(goal))
+            movement.angular.z =+ 0.3
+            pub.publish(movement)
+            rate.sleep()
+    else:
+        while theta > goal:
+            print("theta " + str(theta) + " goal " + str(goal))
+            movement.angular.z =- 0.3
+            pub.publish(movement)
+            rate.sleep()
 
 
-def rotate(rotation_in_degrees, rospy, base_data):
-    rotate_rate = math.pi / 8
-    rate = rospy.Rate(1)
-
-    rotation_in_radians = math.radians(rotation_in_degrees)
-    wait_time = rotation_in_radians / rotate_rate
-
-    base_data.angular.z = rotate_rate
-    rate.sleep()
-    base_data.angular.z = 0
-
+def odomCallback(data):
+    global theta
+    q = data.pose.pose.orientation
+    theta = math.atan2(2 * (q.x * q.y + q.w * q.z), q.w * q.w + q.x * q.x - q.z * q.z)
 
 def callback(data):
     global front
@@ -46,33 +66,44 @@ def callback(data):
 
 def talker():
     rospy.Subscriber("base_scan", LaserScan, callback)
-    pub = rospy.Publisher('cmd_vel', Twist, queue_size=100)
+    rospy.Subscriber("/odom", Odometry, odomCallback)
+    global pub
+    pub = rospy.Publisher('cmd_vel', Twist, queue_size=1)
     rospy.init_node('Mover', anonymous=True)
     rate = rospy.Rate(10)  # 10hz
     factor = 2
-    cutoff = 0.5
+    cutoff = 1
+    counter = 0
     while not rospy.is_shutdown():
         frontblocked = front < cutoff
         leftblocked = left < cutoff
         rightblocked = right < cutoff
         base_data = Twist()
         base_data.linear.x = 0.3 * factor
+        increase = False
         if not leftblocked:
+            increase = True
             print("can go left")
             base_data.angular.z = 0.12 * factor
             base_data.linear.x = 0.07 * factor
-        elif frontblocked and not rightblocked:
+        elif frontblocked:
+            increase = True
+            counter += 1
             print("rotating right")
-            base_data.angular.z = -1.5 * factor
+            rotate(10)
         if frontblocked:
+            increase = True
+            counter += 1
             print("front blocked")
             base_data.linear.x = 0
-        if frontblocked and leftblocked and rightblocked:
-            print("reversing")
-            base_data.linear.x = -0.8 * factor
+        if increase == False:
+            counter = 0
+        print(counter)
+        if counter > 50:
+            rotate(75)
+            counter = 0
     	pub.publish(base_data)
     	rate.sleep()
-
 
 def extract_min_range(values, data):
     values = filter(lambda val: data.range_min < val < data.range_max and not math.isnan(val), values)
