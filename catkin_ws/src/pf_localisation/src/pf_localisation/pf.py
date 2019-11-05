@@ -1,6 +1,7 @@
 from geometry_msgs.msg import Pose, PoseArray, Quaternion
 from pf_base import PFLocaliserBase
 from random import gauss
+from random import uniform
 from random import seed
 import copy
 import math
@@ -79,19 +80,20 @@ class PFLocaliser(PFLocaliserBase):
 
         cumulative = map(lambda x: x / previous, cumulative)
 
-        uniform = map(lambda x: x / self.PARTICLE_COUNT, range(self.PARTICLE_COUNT))
+        threshold = uniform(0, 1/self.PARTICLE_COUNT)
+
         i=0
         position_error = 0.5
         for j in range(self.PARTICLE_COUNT - 1):
-            while uniform[j] > cumulative[i]:
+            while threshold > cumulative[i]:
                 i = i+1
             if j % 5:
-                position_error = 20
+                position_error = 15
             else:
                 position_error = 0.5
             newpose = self.new_pose_with_error(self.particlecloud.poses[i], position_error, 0.5)
             particlecloud.poses.append(newpose)
-            uniform[j+1] = uniform[j] + 1/self.PARTICLE_COUNT
+            threshold =+ 1/self.PARTICLE_COUNT
 
         self.particlecloud = particlecloud
         return particlecloud
