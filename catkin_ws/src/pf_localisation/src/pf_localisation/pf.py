@@ -75,12 +75,10 @@ class PFLocaliser(PFLocaliserBase):
         cumulative = []
 
         for particle in self.particlecloud.poses:
-            print(self.sensor_model.get_weight(scan, particle))
             cumulative.append(previous + self.sensor_model.get_weight(scan, particle))
             previous = cumulative[-1]
 
         cumulative = map(lambda x: x / previous, cumulative)
-        print(cumulative)
 
         threshold = uniform(0, 1/self.PARTICLE_COUNT)
 
