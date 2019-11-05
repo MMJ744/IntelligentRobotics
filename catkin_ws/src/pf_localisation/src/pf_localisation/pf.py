@@ -13,7 +13,9 @@ from time import time
 
 
 class PFLocaliser(PFLocaliserBase):
-       
+
+    PARTICLE_COUNT = 250
+
     def __init__(self):
         # ----- Call the superclass constructor
         super(PFLocaliser, self).__init__()
@@ -41,19 +43,18 @@ class PFLocaliser(PFLocaliserBase):
         print(initialpose.pose.pose.position.x)
         noise = 1.52
         seed(100)
-        particlecount = 1024
         blank = Pose()
         print(blank)
         blank = copy.deepcopy(initialpose.pose.pose)
         avg = 0
-        for i in range(0, particlecount):
+        for i in range(0, self.PARTICLE_COUNT):
             newpose = copy.deepcopy(blank)
             newpose.position.x += gauss(0,1)*noise
             newpose.position.y += gauss(0,1)*noise
             newpose.orientation = rotateQuaternion(newpose.orientation,gauss(0,1))
             self.particlecloud.poses.append(copy.deepcopy(newpose))
             avg += newpose.position.x
-        print(avg / particlecount)
+        print(avg / self.PARTICLE_COUNT)
         return self.particlecloud
 
  
@@ -67,7 +68,56 @@ class PFLocaliser(PFLocaliserBase):
             | scan (sensor_msgs.msg.LaserScan): laser scan to use for update
 
          """
-        pass
+
+        particlecloud = PoseArray()
+        previous = 0
+        cumulative = []
+
+        for particle in self.particlecloud.poses:
+            cumulative.append(previous + self.sensor_model.get_weight(self, scan, particle))
+            previous = cumulative[-1]
+
+        cumulative = map(lambda x: x / previous, cumulative)
+
+        uniform = range(self.PARTICLE_COUNT) / self.PARTICLE_COUNT
+
+        i=0
+        for j in range(1,self.PARTICLE_COUNT):
+            while uniform[j] > cumulative[i]:
+                i = i+1
+            newpose = particlecloud[i]
+            particlecloud.poses.append(newpose)
+            uniform[j+1] = uniform[j] + 1/self.PARTICLE_COUNT
+
+        self.particlecloud = particlecloud
+        return particlecloud
+
+    def estimate_pose_impl_average(self):
+        # Just average everything
+        cumulative_pose = Pose()
+
+        for particle in self.particleCloud.poses:
+            cumulative_pose.position.x += particle.position.x
+            cumulative_pose.position.y += particle.position.y
+            cumulative_pose.position.z += particle.position.z
+
+            cumulative_pose.orientation.x += particle.orientation.x
+            cumulative_pose.orientation.y += particle.orientation.y
+            cumulative_pose.orientation.z += particle.orientation.z
+            cumulative_pose.orientation.w += particle.orientation.w
+
+        num_particles = len(self.particleCloud.poses)
+        cumulative_pose.position.x /= num_particles
+        cumulative_pose.position.y /= num_particles
+        cumulative_pose.position.z /= num_particles
+
+        cumulative_pose.orientation.x /= num_particles
+        cumulative_pose.orientation.y /= num_particles
+        cumulative_pose.orientation.z /= num_particles
+        cumulative_pose.orientation.w /= num_particles
+
+        return cumulative_pose
+
 
     def estimate_pose(self):
         """
@@ -85,4 +135,4 @@ class PFLocaliser(PFLocaliserBase):
         :Return:
             | (geometry_msgs.msg.Pose) robot's estimated pose.
          """
-        pass
+        return self.particlecloud[0] # quick solution - change
