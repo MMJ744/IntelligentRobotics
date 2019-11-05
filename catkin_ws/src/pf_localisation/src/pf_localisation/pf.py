@@ -51,12 +51,12 @@ class PFLocaliser(PFLocaliserBase):
         print(avg / self.PARTICLE_COUNT)
         return particlecloud
 
-    def new_pose_with_error(self, pose, noise):
+    def new_pose_with_error(self, pose, position_noise, turn_noise=1):
         newpose = Pose()
         newpose = copy.deepcopy(pose)
-        newpose.position.x += gauss(0, 1) * noise
-        newpose.position.y += gauss(0, 1) * noise
-        newpose.orientation = rotateQuaternion(newpose.orientation, gauss(0, 1))
+        newpose.position.x += gauss(0, 1) * position_noise
+        newpose.position.y += gauss(0, 1) * position_noise
+        newpose.orientation = rotateQuaternion(newpose.orientation, gauss(0, 1) * turn_noise)
         return newpose
 
     def update_particle_cloud(self, scan):
@@ -84,7 +84,7 @@ class PFLocaliser(PFLocaliserBase):
         for j in range(self.PARTICLE_COUNT - 1):
             while uniform[j] > cumulative[i]:
                 i = i+1
-            newpose = self.new_pose_with_error(self.particlecloud.poses[i], 1)
+            newpose = self.new_pose_with_error(self.particlecloud.poses[i], 0.5, 0.5)
             particlecloud.poses.append(newpose)
             uniform[j+1] = uniform[j] + 1/self.PARTICLE_COUNT
 
