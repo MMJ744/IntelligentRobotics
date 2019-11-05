@@ -12,7 +12,9 @@ from time import time
 
 
 class PFLocaliser(PFLocaliserBase):
-       
+
+    PARTICLE_COUNT = 250
+
     def __init__(self):
         # ----- Call the superclass constructor
         super(PFLocaliser, self).__init__()
@@ -21,6 +23,7 @@ class PFLocaliser(PFLocaliserBase):
  
         # ----- Sensor model parameters
         self.NUMBER_PREDICTED_READINGS = 20     # Number of readings to predict
+
         
        
     def initialise_particle_cloud(self, initialpose):
@@ -37,10 +40,11 @@ class PFLocaliser(PFLocaliserBase):
         :Return:
             | (geometry_msgs.msg.PoseArray) poses of the particles
         """
+        global PARTICLE_COUNT
         noise = 1
         seed(100)
-        particlecount = 250
-        for i in range(0, particlecount):
+
+        for i in range(0, PARTICLE_COUNT):
             newpose = initialpose
             newpose.pose.pose.position.x += gauss(0,3)*noise
             newpose.pose.pose.position.y += gauss(0,3)*noise
@@ -48,8 +52,7 @@ class PFLocaliser(PFLocaliserBase):
             self.particlecloud[i] = newpose
         pass
 
- 
-    
+
     def update_particle_cloud(self, scan):
         """
         This should use the supplied laser scan to update the current
@@ -59,6 +62,28 @@ class PFLocaliser(PFLocaliserBase):
             | scan (sensor_msgs.msg.LaserScan): laser scan to use for update
 
          """
+
+        global PARTICLE_COUNT
+        particlecloud = set()
+        previous = 0
+        cumulative = []
+
+        for particle in self.particlecloud:
+            cumulative.append(previous + self.sensor_model.get_weight(self, scan, particle))
+            previous = cumulative[-1]
+
+        cumulative = map(lambda x: x / previous, cumulative)
+
+        uniform = range(PARTICLE_COUNT) / PARTICLE_COUNT
+
+        i=0
+        for j in range(1,PARTICLE_COUNT):
+            while uniform[j] > cumulative[i]:
+                i = i+1
+            # particlecloud.add() //particle generate here
+            uniform[j+1] = uniform[j] + 1/PARTICLE_COUNT
+
+        self.particlecloud = particlecloud
         pass
 
     def estimate_pose(self):
