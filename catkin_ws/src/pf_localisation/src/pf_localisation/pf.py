@@ -45,19 +45,25 @@ class PFLocaliser(PFLocaliserBase):
         seed(100)
         avg = 0
         for i in range(0, self.PARTICLE_COUNT):
-            newpose = self.new_pose_with_error(initialpose.pose.pose, 1.5)
+            newpose = self.new_pose_with_error(initialpose.pose.pose, None, 1.5)
             particlecloud.poses.append(copy.deepcopy(newpose))
             avg += newpose.position.x
         print(particlecloud)
         print(avg / self.PARTICLE_COUNT)
         return particlecloud
 
-    def new_pose_with_error(self, pose, position_noise, turn_noise=1.0):
-        newpose = Pose()
-        newpose = copy.deepcopy(pose)
-        newpose.position.x += gauss(0, 1) * position_noise
-        newpose.position.y += gauss(0, 1) * position_noise
-        newpose.orientation = rotateQuaternion(newpose.orientation, gauss(0, 1) * turn_noise)
+    def new_pose_with_error(self, pose, scan, position_noise, turn_noise=1.0):
+        on_map = False
+        while not on_map:
+            newpose = Pose()
+            newpose = copy.deepcopy(pose)
+            newpose.position.x += gauss(0, 1) * position_noise
+            newpose.position.y += gauss(0, 1) * position_noise
+            newpose.orientation = rotateQuaternion(newpose.orientation, gauss(0, 1) * turn_noise)
+            if scan is None:
+                on_map = True #-- No way to check
+            else:
+                on_map = self.sensor_model.get_weight(scan,newpose) < 1.0001 #-- parameter for really unlikely
         return newpose
 
     def update_particle_cloud(self, scan):
@@ -90,8 +96,8 @@ class PFLocaliser(PFLocaliserBase):
             if j % 5:
                 position_error = 15
             else:
-                position_error = 0.5
-            newpose = self.new_pose_with_error(self.particlecloud.poses[i], position_error, 0.5)
+                position_error = 0.75
+            newpose = self.new_pose_with_error(self.particlecloud.poses[i], position_error, 0.25)
             particlecloud.poses.append(newpose)
             threshold =+ 1/self.PARTICLE_COUNT
 
