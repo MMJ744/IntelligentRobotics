@@ -38,7 +38,7 @@ def callback(data):
     global right
     global left
     ranges = data.ranges
-    sim = True
+    sim = False
     if sim:
         length = len(ranges) / 4
         back_right = 999
@@ -62,21 +62,21 @@ def talker():
     pub = rospy.Publisher('cmd_vel', Twist, queue_size=1)
     rospy.init_node('Mover', anonymous=True)
     rate = rospy.Rate(10)  # 10hz
-    factor = 2
-    cutoff = 1
+    factor = 1.6
+    cutoff = 0.8
     counter = 0
     while not rospy.is_shutdown():
         frontblocked = front < cutoff
         leftblocked = left < cutoff
         rightblocked = right < cutoff
         base_data = Twist()
-        base_data.linear.x = 0.3 * factor
+        base_data.linear.x = 0.5 * factor
         increase = False
         if not leftblocked:
             increase = True
             print("can go left")
-            base_data.angular.z = 0.12 * factor
-            base_data.linear.x = 0.07 * factor
+            base_data.angular.z = 0.2 * factor
+            base_data.linear.x = 0.2 * factor
         elif frontblocked:
             increase = True
             counter += 1
@@ -89,7 +89,6 @@ def talker():
             base_data.linear.x = 0
         if increase == False:
             counter = 0
-        print(counter)
         if counter > 50:
             rotate(75)
             counter = 0
