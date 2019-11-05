@@ -21,7 +21,7 @@ class PFLocaliser(PFLocaliserBase):
         
         # ----- Set motion model parameters
  
-        # ----- Sensor model parameters
+        # ----- Sensor model parameters	
         self.NUMBER_PREDICTED_READINGS = 20     # Number of readings to predict
 
         
@@ -49,7 +49,7 @@ class PFLocaliser(PFLocaliserBase):
             newpose.pose.pose.position.x += gauss(0,3)*noise
             newpose.pose.pose.position.y += gauss(0,3)*noise
             newpose.pose.pose.orientation = rotateQuaternion(newpose.pose.pose.orientation,gauss(0,1))
-            self.particlecloud[i] = newpose
+            self.particlecloud.poses.append(newpose)
         pass
 
 
