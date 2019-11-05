@@ -41,16 +41,20 @@ class PFLocaliser(PFLocaliserBase):
             | (geometry_msgs.msg.PoseArray) poses of the particles
         """
         global PARTICLE_COUNT
-        noise = 1
-        seed(100)
 
         for i in range(0, PARTICLE_COUNT):
-            newpose = initialpose
-            newpose.pose.pose.position.x += gauss(0,3)*noise
-            newpose.pose.pose.position.y += gauss(0,3)*noise
-            newpose.pose.pose.orientation = rotateQuaternion(newpose.pose.pose.orientation,gauss(0,1))
+            newpose = self.new_pose_with_noise(initialpose)
             self.particlecloud.poses.append(newpose)
         pass
+
+
+    def new_pose_with_noise(self, pose):
+        noise = 1
+        seed(100)
+        pose.pose.pose.position.x += gauss(0,3)*noise
+        pose.pose.pose.position.y += gauss(0,3)*noise
+        pose.pose.pose.orientation = rotateQuaternion(pose.pose.pose.orientation,gauss(0,1))
+        return pose
 
 
     def update_particle_cloud(self, scan):
@@ -64,7 +68,7 @@ class PFLocaliser(PFLocaliserBase):
          """
 
         global PARTICLE_COUNT
-        particlecloud = set()
+        particlecloud = PoseArray()
         previous = 0
         cumulative = []
 
@@ -80,11 +84,12 @@ class PFLocaliser(PFLocaliserBase):
         for j in range(1,PARTICLE_COUNT):
             while uniform[j] > cumulative[i]:
                 i = i+1
-            # particlecloud.add() //particle generate here
+            newpose = particlecloud[i]
+            particlecloud.poses.append(newpose)
             uniform[j+1] = uniform[j] + 1/PARTICLE_COUNT
 
         self.particlecloud = particlecloud
-        pass
+        return particlecloud
 
     def estimate_pose(self):
         """
