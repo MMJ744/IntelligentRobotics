@@ -91,6 +91,33 @@ class PFLocaliser(PFLocaliserBase):
         self.particlecloud = particlecloud
         return particlecloud
 
+    def estimate_pose_impl_average(self):
+        # Just average everything
+        cumulative_pose = Pose()
+
+        for particle in self.particleCloud:
+            cumulative_pose.position.x += particle.position.x
+            cumulative_pose.position.y += particle.position.y
+            cumulative_pose.position.z += particle.position.z
+
+            cumulative_pose.orientation.x += particle.orientation.x
+            cumulative_pose.orientation.y += particle.orientation.y
+            cumulative_pose.orientation.z += particle.orientation.z
+            cumulative_pose.orientation.w += particle.orientation.w
+
+        num_particles = len(self.particleCloud)
+        cumulative_pose.position.x /= num_particles
+        cumulative_pose.position.y /= num_particles
+        cumulative_pose.position.z /= num_particles
+
+        cumulative_pose.orientation.x /= num_particles
+        cumulative_pose.orientation.y /= num_particles
+        cumulative_pose.orientation.z /= num_particles
+        cumulative_pose.orientation.w /= num_particles
+
+        return cumulative_pose
+
+
     def estimate_pose(self):
         """
         This should calculate and return an updated robot pose estimate based
