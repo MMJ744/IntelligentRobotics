@@ -14,7 +14,7 @@ from time import time
 
 class PFLocaliser(PFLocaliserBase):
 
-    PARTICLE_COUNT = 250
+    PARTICLE_COUNT =
 
     def __init__(self):
         # ----- Call the superclass constructor
@@ -51,7 +51,7 @@ class PFLocaliser(PFLocaliserBase):
         print(avg / self.PARTICLE_COUNT)
         return particlecloud
 
-    def new_pose_with_error(self, pose, position_noise, turn_noise=1):
+    def new_pose_with_error(self, pose, position_noise, turn_noise=1.0):
         newpose = Pose()
         newpose = copy.deepcopy(pose)
         newpose.position.x += gauss(0, 1) * position_noise
@@ -81,10 +81,15 @@ class PFLocaliser(PFLocaliserBase):
 
         uniform = map(lambda x: x / self.PARTICLE_COUNT, range(self.PARTICLE_COUNT))
         i=0
+        position_error = 0.5
         for j in range(self.PARTICLE_COUNT - 1):
             while uniform[j] > cumulative[i]:
                 i = i+1
-            newpose = self.new_pose_with_error(self.particlecloud.poses[i], 0.5, 0.5)
+            if j % 5:
+                position_error = 20
+            else:
+                position_error = 0.5
+            newpose = self.new_pose_with_error(self.particlecloud.poses[i], position_error, 0.5)
             particlecloud.poses.append(newpose)
             uniform[j+1] = uniform[j] + 1/self.PARTICLE_COUNT
 
