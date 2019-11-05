@@ -44,15 +44,16 @@ class PFLocaliser(PFLocaliserBase):
         seed(100)
         avg = 0
         for i in range(0, self.PARTICLE_COUNT):
-            newpose = self.new_pose_with_error(initialpose, 1.5)
+            newpose = self.new_pose_with_error(initialpose.pose.pose, 1.5)
             particlecloud.poses.append(copy.deepcopy(newpose))
             avg += newpose.position.x
+        print(particlecloud)
         print(avg / self.PARTICLE_COUNT)
         return particlecloud
 
     def new_pose_with_error(self, pose, noise):
         newpose = Pose()
-        newpose = copy.deepcopy(pose.pose.pose)
+        newpose = copy.deepcopy(pose)
         newpose.position.x += gauss(0, 1) * noise
         newpose.position.y += gauss(0, 1) * noise
         newpose.orientation = rotateQuaternion(newpose.orientation, gauss(0, 1))
@@ -79,12 +80,11 @@ class PFLocaliser(PFLocaliserBase):
         cumulative = map(lambda x: x / previous, cumulative)
 
         uniform = map(lambda x: x / self.PARTICLE_COUNT, range(self.PARTICLE_COUNT))
-
         i=0
-        for j in range(1, self.PARTICLE_COUNT):
+        for j in range(self.PARTICLE_COUNT - 1):
             while uniform[j] > cumulative[i]:
                 i = i+1
-            newpose = self.new_pose_with_error(particlecloud[i], 1)
+            newpose = self.new_pose_with_error(self.particlecloud.poses[i], 1)
             particlecloud.poses.append(newpose)
             uniform[j+1] = uniform[j] + 1/self.PARTICLE_COUNT
 
@@ -95,7 +95,7 @@ class PFLocaliser(PFLocaliserBase):
         # Just average everything
         cumulative_pose = Pose()
 
-        for particle in self.particleCloud.poses:
+        for particle in self.particlecloud.poses:
             cumulative_pose.position.x += particle.position.x
             cumulative_pose.position.y += particle.position.y
             cumulative_pose.position.z += particle.position.z
@@ -105,7 +105,7 @@ class PFLocaliser(PFLocaliserBase):
             cumulative_pose.orientation.z += particle.orientation.z
             cumulative_pose.orientation.w += particle.orientation.w
 
-        num_particles = len(self.particleCloud.poses)
+        num_particles = len(self.particlecloud.poses)
         cumulative_pose.position.x /= num_particles
         cumulative_pose.position.y /= num_particles
         cumulative_pose.position.z /= num_particles
@@ -134,4 +134,4 @@ class PFLocaliser(PFLocaliserBase):
         :Return:
             | (geometry_msgs.msg.Pose) robot's estimated pose.
          """
-        return self.particlecloud[0] # quick solution - change
+        return self.estimate_pose_impl_average() # quick solution - change
