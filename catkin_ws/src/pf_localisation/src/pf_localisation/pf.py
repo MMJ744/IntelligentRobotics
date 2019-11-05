@@ -1,5 +1,7 @@
 from geometry_msgs.msg import Pose, PoseArray, Quaternion
 from pf_base import PFLocaliserBase
+from random import gauss
+from random import seed
 import math
 import rospy
 
@@ -35,6 +37,15 @@ class PFLocaliser(PFLocaliserBase):
         :Return:
             | (geometry_msgs.msg.PoseArray) poses of the particles
         """
+        noise = 1
+        seed(100)
+        particlecount = 250
+        for i in range(0, particlecount):
+            newpose = initialpose
+            newpose.pose.pose.position.x += gauss(0,3)*noise
+            newpose.pose.pose.position.y += gauss(0,3)*noise
+            newpose.pose.pose.orientation = rotateQuaternion(newpose.pose.pose.orientation,gauss(0,1))
+            self.particlecloud[i] = newpose
         pass
 
  
