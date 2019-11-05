@@ -78,7 +78,7 @@ class PFLocaliser(PFLocaliserBase):
 
         cumulative = map(lambda x: x / previous, cumulative)
 
-        uniform = map(lambda x: x / self.PARTICLE_COUNT, (self.PARTICLE_COUNT))
+        uniform = map(lambda x: x / self.PARTICLE_COUNT, range(self.PARTICLE_COUNT))
 
         i=0
         for j in range(1, self.PARTICLE_COUNT):
