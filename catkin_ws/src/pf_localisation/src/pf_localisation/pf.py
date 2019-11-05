@@ -46,16 +46,17 @@ class PFLocaliser(PFLocaliserBase):
         blank = Pose()
         print(blank)
         blank = copy.deepcopy(initialpose.pose.pose)
+        particlecloud = PoseArray()
         avg = 0
         for i in range(0, self.PARTICLE_COUNT):
             newpose = copy.deepcopy(blank)
             newpose.position.x += gauss(0,1)*noise
             newpose.position.y += gauss(0,1)*noise
             newpose.orientation = rotateQuaternion(newpose.orientation,gauss(0,1))
-            self.particlecloud.poses.append(copy.deepcopy(newpose))
+            particlecloud.poses.append(copy.deepcopy(newpose))
             avg += newpose.position.x
         print(avg / self.PARTICLE_COUNT)
-        return self.particlecloud
+        return particlecloud
 
  
     
