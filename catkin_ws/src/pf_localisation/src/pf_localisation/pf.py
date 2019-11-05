@@ -14,7 +14,7 @@ from time import time
 
 class PFLocaliser(PFLocaliserBase):
 
-    PARTICLE_COUNT = 250
+    PARTICLE_COUNT = 1024
 
     def __init__(self):
         # ----- Call the superclass constructor
