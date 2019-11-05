@@ -15,7 +15,7 @@ from time import time
 
 class PFLocaliser(PFLocaliserBase):
 
-    PARTICLE_COUNT =
+    PARTICLE_COUNT = 1024
 
     def __init__(self):
         # ----- Call the superclass constructor
@@ -89,7 +89,6 @@ class PFLocaliser(PFLocaliserBase):
         threshold = uniform(0, 1/self.PARTICLE_COUNT)
 
         i=0
-        position_error = 0.5
         for j in range(self.PARTICLE_COUNT - 1):
             while threshold > cumulative[i]:
                 i = i+1
