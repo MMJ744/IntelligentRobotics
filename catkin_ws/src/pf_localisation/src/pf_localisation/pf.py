@@ -40,26 +40,24 @@ class PFLocaliser(PFLocaliserBase):
         :Return:
             | (geometry_msgs.msg.PoseArray) poses of the particles
         """
-        print(initialpose.pose.pose.position.x)
-        noise = 1.52
-        seed(100)
-        blank = Pose()
-        print(blank)
-        blank = copy.deepcopy(initialpose.pose.pose)
         particlecloud = PoseArray()
+        seed(100)
         avg = 0
         for i in range(0, self.PARTICLE_COUNT):
-            newpose = copy.deepcopy(blank)
-            newpose.position.x += gauss(0,1)*noise
-            newpose.position.y += gauss(0,1)*noise
-            newpose.orientation = rotateQuaternion(newpose.orientation,gauss(0,1))
+            newpose = self.new_pose_with_error(initialpose, 1.5)
             particlecloud.poses.append(copy.deepcopy(newpose))
             avg += newpose.position.x
         print(avg / self.PARTICLE_COUNT)
         return particlecloud
 
- 
-    
+    def new_pose_with_error(self, pose, noise):
+        newpose = Pose()
+        newpose = copy.deepcopy(pose.pose.pose)
+        newpose.position.x += gauss(0, 1) * noise
+        newpose.position.y += gauss(0, 1) * noise
+        newpose.orientation = rotateQuaternion(newpose.orientation, gauss(0, 1))
+        return newpose
+
     def update_particle_cloud(self, scan):
         """
         This should use the supplied laser scan to update the current
@@ -75,7 +73,7 @@ class PFLocaliser(PFLocaliserBase):
         cumulative = []
 
         for particle in self.particlecloud.poses:
-            cumulative.append(previous + self.sensor_model.get_weight(self, scan, particle))
+            cumulative.append(previous + self.sensor_model.get_weight(scan, particle))
             previous = cumulative[-1]
 
         cumulative = map(lambda x: x / previous, cumulative)
@@ -83,10 +81,10 @@ class PFLocaliser(PFLocaliserBase):
         uniform = range(self.PARTICLE_COUNT) / self.PARTICLE_COUNT
 
         i=0
-        for j in range(1,self.PARTICLE_COUNT):
+        for j in range(1, self.PARTICLE_COUNT):
             while uniform[j] > cumulative[i]:
                 i = i+1
-            newpose = particlecloud[i]
+            newpose = self.new_pose_with_error(particlecloud[i], 1)
             particlecloud.poses.append(newpose)
             uniform[j+1] = uniform[j] + 1/self.PARTICLE_COUNT
 
