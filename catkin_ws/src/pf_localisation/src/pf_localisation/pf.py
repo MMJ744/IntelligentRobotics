@@ -102,7 +102,7 @@ class PFLocaliser(PFLocaliserBase):
                 position_error = 0.75
             newpose = self.new_pose_with_error(self.particlecloud.poses[i], scan, position_error)
             particlecloud.poses.append(newpose)
-            threshold =+ 1/self.PARTICLE_COUNT
+            threshold += 1/self.PARTICLE_COUNT
 
         self.particlecloud = particlecloud
         return particlecloud
