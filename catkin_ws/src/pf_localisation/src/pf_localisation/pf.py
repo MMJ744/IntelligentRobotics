@@ -7,6 +7,7 @@ import numpy as np
 import copy
 import math
 import rospy
+from itertools import repeat
 
 from util import rotateQuaternion, getHeading
 from random import random
@@ -80,31 +81,32 @@ class PFLocaliser(PFLocaliserBase):
 
          """
 
-        scan.ranges = map(lambda x: scan.range_max if math.isnan(x) else x, scan.ranges)
-
-        particlecloud = PoseArray()
         weights = []
+        scan.ranges = map(lambda x: scan.range_max if math.isnan(x) else x, scan.ranges)
         for particle in self.particlecloud.poses:
             weights.append(self.sensor_model.get_weight(scan,particle))
-        cum = np.cumsum(weights)
-        total = cum[-1]
-        cum = map(lambda x: x / total, cum)
 
-        threshold = uniform(0, 1/self.PARTICLE_COUNT)
+        weights = weights / np.sum(weights)
 
-        i=0
-        for j in range(self.PARTICLE_COUNT - 1):
-            while threshold > cum[i]:
-                i +=1
-            if j % 5:
-                position_error = 15
-            else:
-                position_error = 0.75
-            newpose = self.new_pose_with_error(self.particlecloud.poses[i], scan, position_error)
-            particlecloud.poses.append(newpose)
-            threshold += 1/self.PARTICLE_COUNT
+        weightsi = []
+        weightsj = []
+        score = np.zeros(len(self.particlecloud.poses))
+        cum_i = 0
+        cum_j = 0
 
-        self.particlecloud = particlecloud
+        for i in range(len(weights)):
+            weightsi.append(cum_i)
+            cum_i += weights[i]
+            cum_j += weights[i]
+            weightsj.append(cum_j)
+
+        for particle in range(0,self.PARTICLE_COUNT):
+            r = uniform(0,1)
+            for m in range(len(weights)):
+                if((r >= float(weightsi[m])) & (r < float(weightsj[m]))):
+                    score[m] += 1
+        particlecloud = PoseArray()
+        particlecloud = [x for index,item in enumerate(self.particlecloud.poses) for x in repeat(item, int(score[index]))]
         return particlecloud
 
     def estimate_pose_impl_average(self):
