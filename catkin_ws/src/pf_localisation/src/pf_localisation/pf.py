@@ -50,7 +50,7 @@ class PFLocaliser(PFLocaliserBase):
         seed(100)
         avg = 0
         for i in range(0, self.PARTICLE_COUNT):
-            newpose = self.new_pose_with_error(initialpose.pose.pose, None, 0.5)
+            newpose = self.new_pose_with_error(initialpose.pose.pose, None, 0.7)
             particlecloud.poses.append(copy.deepcopy(newpose))
             avg += newpose.position.x
         #print(particlecloud)
@@ -75,6 +75,7 @@ class PFLocaliser(PFLocaliserBase):
             | scan (sensor_msgs.msg.LaserScan): laser scan to use for update
 
          """
+
 
         weights = []
         scan.ranges = map(lambda x: scan.range_max if math.isnan(x) else x, scan.ranges)

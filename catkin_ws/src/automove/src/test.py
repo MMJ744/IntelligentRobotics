@@ -21,7 +21,7 @@ def rotate(rotation):
     movement = Twist()
     print("theta " + str(theta) + " goal " + str(goal))
     rate = rospy.Rate(10)
-    while abs(goal-theta) > 0.15:
+    while abs(goal-theta) > 0.10:
         print("theta " + str(theta) + " goal " + str(goal))
         movement.angular.z =- 0.5
         pub.publish(movement)
