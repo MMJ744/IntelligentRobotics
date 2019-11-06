@@ -112,7 +112,8 @@ class PFLocaliser(PFLocaliserBase):
         """
 
         #mattys test
-        weights = weights / min(weights) #smallest weight is now 1
+        weights = weights / np.min(weights) #smallest weight is now 1
+        print(weights)
         bigset = []
         for i in range(self.PARTICLE_COUNT):
             c = 0
@@ -120,8 +121,10 @@ class PFLocaliser(PFLocaliserBase):
                 bigset.append(self.particlecloud.poses[i])
                 c += 1
         particlecloud = PoseArray()
+        print(len(bigset))
         for i in range(self.PARTICLE_COUNT):
             particlecloud.poses.append(choice(bigset))
+        self.particlecloud = particlecloud
         return particlecloud
 
     def estimate_pose_impl_average(self):
