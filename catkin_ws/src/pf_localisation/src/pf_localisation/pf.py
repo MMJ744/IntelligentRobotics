@@ -79,9 +79,9 @@ class PFLocaliser(PFLocaliserBase):
 
         weights = []
         c = 0
-        while c < len(self.particlecloud.poses -1):
+        while c < (len(self.particlecloud.poses) -1):
             for i in range(3):
-                self.particlecloud.poses.append(self.new_pose_with_error(self.particlecloud.poses[c],scan,15))
+                self.particlecloud.poses.append(self.new_pose_with_error(self.particlecloud.poses[c],scan,7))
             c += 20
         scan.ranges = map(lambda x: scan.range_max if math.isnan(x) else x, scan.ranges)
         for particle in self.particlecloud.poses:
