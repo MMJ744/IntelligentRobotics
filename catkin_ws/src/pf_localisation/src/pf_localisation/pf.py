@@ -79,7 +79,7 @@ class PFLocaliser(PFLocaliserBase):
 
          """
 
-        scan.ranges = map(lambda x: self.scan_range_max if math.isnan(x) else x, scan.ranges)
+        scan.ranges = map(lambda x: scan.range_max if math.isnan(x) else x, scan.ranges)
         
         particlecloud = PoseArray()
         previous = 0
