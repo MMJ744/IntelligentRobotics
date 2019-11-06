@@ -107,6 +107,8 @@ class PFLocaliser(PFLocaliserBase):
                     score[m] += 1
         particlecloud = PoseArray()
         particlecloud = [x for index,item in enumerate(self.particlecloud.poses) for x in repeat(item, int(score[index]))]
+
+        print(particlecloud)
         return particlecloud
 
     def estimate_pose_impl_average(self):
