@@ -3,6 +3,7 @@ from pf_base import PFLocaliserBase
 from random import gauss
 from random import uniform
 from random import seed
+import numpy as np
 import copy
 import math
 import rospy
@@ -82,28 +83,26 @@ class PFLocaliser(PFLocaliserBase):
         scan.ranges = map(lambda x: scan.range_max if math.isnan(x) else x, scan.ranges)
         
         particlecloud = PoseArray()
-        previous = 0
-        cumulative = []
-
+        weights = []
         for particle in self.particlecloud.poses:
-            cumulative.append(previous + self.sensor_model.get_weight(scan, particle) - 0.5)
-            previous = cumulative[-1]
-
-        cumulative = map(lambda x: x / previous, cumulative)
+            weights.append(self.sensor_model.get_weight(scan,particle) - 0.5)
+        cum = np.cumsum(weights)
+        total = cum[-1]
+        cum = map(lambda x: x / total, cum)
 
         threshold = uniform(0, 1/self.PARTICLE_COUNT)
 
-        i=0
+        i = 0
         for j in range(self.PARTICLE_COUNT - 1):
-            while threshold > cumulative[i]:
-                i =+ 1
+            while threshold > cum[i]:
+                i += 1
             if j % 5:
                 position_error = 15
             else:
                 position_error = 0.75
             newpose = self.new_pose_with_error(self.particlecloud.poses[i], scan, position_error)
             particlecloud.poses.append(newpose)
-            threshold =+ 1/self.PARTICLE_COUNT
+            threshold += 1/self.PARTICLE_COUNT
 
         self.particlecloud = particlecloud
         return particlecloud
