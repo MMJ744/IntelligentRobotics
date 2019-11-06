@@ -85,31 +85,7 @@ class PFLocaliser(PFLocaliserBase):
                 particle = self.new_pose_with_error(particle,scan,15)
             weights.append(self.sensor_model.get_weight(scan,particle))
             i+=1
-        """
-        weights = weights / np.sum(weights)
 
-        weightsi = []
-        weightsj = []
-        score = np.zeros(len(self.particlecloud.poses))
-        cum_i = 0
-        cum_j = 0
-
-        for i in range(len(weights)):
-            weightsi.append(cum_i)
-            cum_i += weights[i]
-            cum_j += weights[i]
-            weightsj.append(cum_j)
-
-        for particle in range(0,self.PARTICLE_COUNT):
-            r = uniform(0,1)
-            for m in range(len(weights)):
-                if((r >= float(weightsi[m])) & (r < float(weightsj[m]))):
-                    score[m] += 1
-        particlecloud = PoseArray()
-        particlecloud = [x for index,item in enumerate(self.particlecloud.poses) for x in repeat(item, int(score[index]))]
-        """
-
-        #mattys test
         weights = weights / np.min(weights) #smallest weight is now 1
         print(weights)
         bigset = []
@@ -119,12 +95,9 @@ class PFLocaliser(PFLocaliserBase):
                 bigset.append(self.particlecloud.poses[i])
                 c += 1
         particlecloud = PoseArray()
-        print(len(bigset))
         for i in range(self.PARTICLE_COUNT):
             particlecloud.poses.append(self.new_pose_with_error(choice(bigset), scan, 0.01, turn_noise=0.01))
         self.particlecloud = particlecloud
-        print("done")
-        print(len(particlecloud.poses))
         return particlecloud
 
     def estimate_pose_impl_average(self):
