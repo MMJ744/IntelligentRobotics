@@ -78,13 +78,14 @@ class PFLocaliser(PFLocaliserBase):
 
 
         weights = []
+        c = 0
+        while c < len(self.particlecloud.poses -1):
+            for i in range(3):
+                self.particlecloud.poses.append(self.new_pose_with_error(self.particlecloud.poses[c],scan,15))
+            c += 20
         scan.ranges = map(lambda x: scan.range_max if math.isnan(x) else x, scan.ranges)
-        i = 0
         for particle in self.particlecloud.poses:
-            if i % 10 == 0:
-                particle = self.new_pose_with_error(particle,scan,15)
             weights.append(self.sensor_model.get_weight(scan,particle))
-            i+=1
 
         weights = weights / np.min(weights) #smallest weight is now 1
         print(weights)
