@@ -113,7 +113,7 @@ class PFLocaliser(PFLocaliserBase):
         weights = weights / np.min(weights) #smallest weight is now 1
         print(weights)
         bigset = []
-        for i in range(self.PARTICLE_COUNT):
+        for i in range(len(self.particlecloud.poses)):
             c = 0
             while(c < weights[i]):
                 bigset.append(self.particlecloud.poses[i])
