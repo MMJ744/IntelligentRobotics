@@ -23,15 +23,15 @@ class PFLocaliser(PFLocaliserBase):
     def __init__(self):
         # ----- Call the superclass constructor
         super(PFLocaliser, self).__init__()
-        
+
         # ----- Set motion model parameters
         self.ODOM_ROTATION_NOISE = 1  # Odometry model rotation noise
         self.ODOM_TRANSLATION_NOISE = 1  # Odometry x axis (forward) noise
         self.ODOM_DRIFT_NOISE = 1  # Odometry y axis (side-side) noise
         # ----- Sensor model parameters	
         self.NUMBER_PREDICTED_READINGS = 20     # Number of readings to predict
-        
-       
+
+
     def initialise_particle_cloud(self, initialpose):
         """
         Set particle cloud to initialpose plus noise
@@ -58,25 +58,19 @@ class PFLocaliser(PFLocaliserBase):
         return particlecloud
 
     def new_pose_with_error(self, pose, scan, position_noise, turn_noise=1.0):
-        on_map = False
-        while not on_map:
-            newpose = Pose()
-            newpose = copy.deepcopy(pose)
-            newpose.position.x += gauss(0, 1) * position_noise
-            newpose.position.y += gauss(0, 1) * position_noise
-            newpose.orientation = rotateQuaternion(newpose.orientation, gauss(0, 1) * turn_noise)
-            if scan is None:
-                on_map = True #-- No way to check
-            else:
-                #print(self.sensor_model.get_weight(scan,newpose))
-                on_map = self.sensor_model.get_weight(scan,newpose) > 1.0005 #-- parameter for really unlikely
+        on_map = True
+        newpose = Pose()
+        newpose = copy.deepcopy(pose)
+        newpose.position.x += gauss(0, 1) * position_noise
+        newpose.position.y += gauss(0, 1) * position_noise
+        newpose.orientation = rotateQuaternion(newpose.orientation, gauss(0, 1) * turn_noise)
         return newpose
 
     def update_particle_cloud(self, scan):
         """
         This should use the supplied laser scan to update the current
         particle cloud. i.e. self.particlecloud should be updated.
-        
+
         :Args:
             | scan (sensor_msgs.msg.LaserScan): laser scan to use for update
 
@@ -123,8 +117,10 @@ class PFLocaliser(PFLocaliserBase):
         particlecloud = PoseArray()
         print(len(bigset))
         for i in range(self.PARTICLE_COUNT):
-            particlecloud.poses.append(choice(bigset))
+            particlecloud.poses.append(self.new_pose_with_error(choice(bigset), scan, 0.5))
         self.particlecloud = particlecloud
+        print("done")
+        print(len(particlecloud.poses))
         return particlecloud
 
     def estimate_pose_impl_average(self):
@@ -158,13 +154,13 @@ class PFLocaliser(PFLocaliserBase):
         """
         This should calculate and return an updated robot pose estimate based
         on the particle cloud (self.particlecloud).
-        
+
         Create new estimated pose, given particle cloud
         E.g. just average the location and orientation values of each of
         the particles and return this.
-        
+
         Better approximations could be made by doing some simple clustering,
-        e.g. taking the average location of half the particles after 
+        e.g. taking the average location of half the particles after
         throwing away any which are outliers
 
         :Return:
