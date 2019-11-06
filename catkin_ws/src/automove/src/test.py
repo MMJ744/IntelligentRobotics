@@ -4,7 +4,7 @@ import rospy
 from std_msgs.msg import String
 from nav_msgs.msg import Odometry
 from sensor_msgs.msg import LaserScan
-from p2os_msg.msg import SonarArray
+from p2os_msgs.msg import SonarArray
 import math
 
 right = 999
@@ -80,9 +80,9 @@ def talker():
     cutoff = 0.8
     counter = 0
     while not rospy.is_shutdown():
-        frontblocked = front < cutoff or sonar_front < 0.3
-        leftblocked = left < cutoff or sonar_left < 0.3
-        rightblocked = right < cutoff or sonar_right < 0.3
+        frontblocked = front < cutoff or sonar_front < 0.2
+        leftblocked = left < cutoff or sonar_left < 0.2
+        rightblocked = right < cutoff or sonar_right < 0.2
         base_data = Twist()
         base_data.linear.x = 0.5 * factor
         increase = False
