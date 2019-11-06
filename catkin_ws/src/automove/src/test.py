@@ -4,6 +4,7 @@ import rospy
 from std_msgs.msg import String
 from nav_msgs.msg import Odometry
 from sensor_msgs.msg import LaserScan
+from p2os_msg.msg import SonarArray
 import math
 
 right = 999
@@ -11,6 +12,9 @@ front = 999
 left = 999
 theta = 0.0
 pub = 0
+sonar_right = 5.0
+sonar_left = 5.0
+sonar_front = 5.0
 
 def rotate(rotation):
     goal = theta + math.radians(-rotation)
@@ -32,6 +36,15 @@ def odomCallback(data):
     global theta
     q = data.pose.pose.orientation
     theta = math.atan2(2 * (q.x * q.y + q.w * q.z), q.w * q.w + q.x * q.x - q.z * q.z)
+
+def sonarCallback(data):
+    global sonar_right
+    global sonar_front
+    global sonar_left
+    sonar = data.ranges
+    sonar_left = min(sonar[:1])
+    sonar_front = min(sonar[2:7])
+    sonar_right = min(sonar[7:])
 
 def callback(data):
     global front
@@ -58,6 +71,7 @@ def callback(data):
 def talker():
     rospy.Subscriber("base_scan", LaserScan, callback)
     rospy.Subscriber("/odom", Odometry, odomCallback)
+    rospy.Subscriber("sonar", SonarArray, sonarCallback)
     global pub
     pub = rospy.Publisher('cmd_vel', Twist, queue_size=1)
     rospy.init_node('Mover', anonymous=True)
@@ -66,9 +80,9 @@ def talker():
     cutoff = 0.8
     counter = 0
     while not rospy.is_shutdown():
-        frontblocked = front < cutoff
-        leftblocked = left < cutoff
-        rightblocked = right < cutoff
+        frontblocked = front < cutoff or sonar_front < 0.3
+        leftblocked = left < cutoff or sonar_left < 0.3
+        rightblocked = right < cutoff or sonar_right < 0.3
         base_data = Twist()
         base_data.linear.x = 0.5 * factor
         increase = False
