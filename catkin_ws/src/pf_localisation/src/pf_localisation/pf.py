@@ -22,7 +22,9 @@ class PFLocaliser(PFLocaliserBase):
         super(PFLocaliser, self).__init__()
         
         # ----- Set motion model parameters
- 
+        self.ODOM_ROTATION_NOISE = 1  # Odometry model rotation noise
+        self.ODOM_TRANSLATION_NOISE = 1  # Odometry x axis (forward) noise
+        self.ODOM_DRIFT_NOISE = 1  # Odometry y axis (side-side) noise
         # ----- Sensor model parameters	
         self.NUMBER_PREDICTED_READINGS = 20     # Number of readings to predict
         
@@ -75,8 +77,6 @@ class PFLocaliser(PFLocaliserBase):
             | scan (sensor_msgs.msg.LaserScan): laser scan to use for update
 
          """
-
-        scan.ranges = map(lambda x: self.scan_range_max if math.isnan(x) else x, scan.ranges)
 
         particlecloud = PoseArray()
         previous = 0
