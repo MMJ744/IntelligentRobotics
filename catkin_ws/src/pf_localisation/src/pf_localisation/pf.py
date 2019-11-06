@@ -50,7 +50,7 @@ class PFLocaliser(PFLocaliserBase):
         seed(100)
         avg = 0
         for i in range(0, self.PARTICLE_COUNT):
-            newpose = self.new_pose_with_error(initialpose.pose.pose, None, 5)
+            newpose = self.new_pose_with_error(initialpose.pose.pose, None, 0.5)
             particlecloud.poses.append(copy.deepcopy(newpose))
             avg += newpose.position.x
         #print(particlecloud)
@@ -76,11 +76,14 @@ class PFLocaliser(PFLocaliserBase):
 
          """
 
-
         weights = []
         scan.ranges = map(lambda x: scan.range_max if math.isnan(x) else x, scan.ranges)
+        i = 0
         for particle in self.particlecloud.poses:
+            if i % 10 == 0:
+                particle = self.new_pose_with_error(particle,scan,15)
             weights.append(self.sensor_model.get_weight(scan,particle))
+            i+=1
         """
         weights = weights / np.sum(weights)
 
@@ -117,7 +120,7 @@ class PFLocaliser(PFLocaliserBase):
         particlecloud = PoseArray()
         print(len(bigset))
         for i in range(self.PARTICLE_COUNT):
-            particlecloud.poses.append(self.new_pose_with_error(choice(bigset), scan, 0.5))
+            particlecloud.poses.append(self.new_pose_with_error(choice(bigset), scan, 0.01, turn_noise=0.01))
         self.particlecloud = particlecloud
         print("done")
         print(len(particlecloud.poses))
