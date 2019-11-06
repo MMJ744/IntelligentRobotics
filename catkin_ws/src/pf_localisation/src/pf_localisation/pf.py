@@ -86,7 +86,7 @@ class PFLocaliser(PFLocaliserBase):
         cumulative = []
 
         for particle in self.particlecloud.poses:
-            cumulative.append(previous + self.sensor_model.get_weight(scan, particle))
+            cumulative.append(previous + self.sensor_model.get_weight(scan, particle) - 0.5)
             previous = cumulative[-1]
 
         cumulative = map(lambda x: x / previous, cumulative)
