@@ -2,6 +2,7 @@ from geometry_msgs.msg import Pose, PoseArray, Quaternion
 from pf_base import PFLocaliserBase
 from random import gauss
 from random import uniform
+from random import choice
 from random import seed
 import numpy as np
 import copy
@@ -81,11 +82,12 @@ class PFLocaliser(PFLocaliserBase):
 
          """
 
+
         weights = []
         scan.ranges = map(lambda x: scan.range_max if math.isnan(x) else x, scan.ranges)
         for particle in self.particlecloud.poses:
             weights.append(self.sensor_model.get_weight(scan,particle))
-
+        """
         weights = weights / np.sum(weights)
 
         weightsi = []
@@ -107,6 +109,19 @@ class PFLocaliser(PFLocaliserBase):
                     score[m] += 1
         particlecloud = PoseArray()
         particlecloud = [x for index,item in enumerate(self.particlecloud.poses) for x in repeat(item, int(score[index]))]
+        """
+
+        #mattys test
+        weights = weights / min(weights) #smallest weight is now 1
+        bigset = []
+        for i in range(self.PARTICLE_COUNT):
+            c = 0
+            while(c < weights[i]):
+                bigset.append(self.particlecloud.poses[i])
+                c += 1
+        particlecloud = PoseArray()
+        for i in range(self.PARTICLE_COUNT):
+            particlecloud.poses.append(choice(bigset))
         return particlecloud
 
     def estimate_pose_impl_average(self):
