@@ -79,6 +79,18 @@ def talker():
     factor = 1.6
     cutoff = 0.8
     counter = 0
+    base_data = Twist()
+    if left > cutoff and right < cutoff:
+        rotate(180)
+    elif left > cutoff and right > cutoff and front > cutoff:
+        while front > cutoff and left > cutoff and right > cutoff:
+            base_data.linear.x = 0.2 * factor
+            pub.publish(base_data)
+            rate.sleep()
+        if right < cutoff:
+            rotate(180)
+        elif front < cutoff:
+            rotate(90)
     while not rospy.is_shutdown():
         frontblocked = front < cutoff or sonar_front < 0.2
         leftblocked = left < cutoff or sonar_left < 0.2
