@@ -104,3 +104,6 @@ venv.bak/
 .mypy_cache/
 
 .idea/
+
+catkin_ws/devel/
+catkin_ws/build/
