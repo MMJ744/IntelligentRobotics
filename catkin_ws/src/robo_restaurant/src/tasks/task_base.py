@@ -5,7 +5,7 @@ from enum import Enum
 Priorities = ["BaseTask"]
 
 
-class Priorities(Enum):
+class PriorityLevels(Enum):
     IMMEDIATE = 0
     HIGH = 1
     MID = 2
@@ -19,11 +19,12 @@ class Task(threading.Thread):
         """
         Superconstructor, handles timestamp and TODO
         """
-        timeDateCreated = dt.now()
-        self.priority = Priorities
-        self.initPriority()
+        super().__init__()
+        self.timeCreated = dt.now()
+        self.priority = PriorityLevels
+        self.init_priority_level()
 
-    def initPriority(self):
+    def init_priority_level(self):
         """
         Should set priority for task based on initial time, priority level and other parameters as expanded
         """
@@ -35,7 +36,7 @@ class Task(threading.Thread):
 
         end with super(Task, self).start()
         """
-        super(Task, self).start()
+        super().start()
         raise NotImplementedError()
 
     def interrupt(self):
