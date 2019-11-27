@@ -6,7 +6,7 @@ def talker():
 	pub = rospy.Publisher('navInput', Target, queue_size=10)
 	rospy.init_node('talker', anonymous=True)
 	rate = rospy.Rate(1) # 10hz
-	c = 0;
+	c = 0
 	while not rospy.is_shutdown():
 		c+=1
 		if c%3 == 0:
