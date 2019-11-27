@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 import rospy
 from navigation.msg import Target
-from geometry_msgs.msg import Pose
+from geometry_msgs.msg import PoseStamped
 def talker():
 	pub = rospy.Publisher('navInput', Target, queue_size=10)
 	rospy.init_node('talker', anonymous=True)
@@ -10,8 +10,8 @@ def talker():
 	while not rospy.is_shutdown():
 		c+=1
 		if c%3 == 0:
-			pose = Pose()
-			pose.position.x = c
+			pose = PoseStamped()
+			pose.pose.position.x = c
 			target = Target()
 			target.id = c
 			target.pose = pose
