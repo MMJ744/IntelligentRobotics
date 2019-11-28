@@ -13,7 +13,7 @@ class PriorityLevels(Enum):
     BASE = 4
 
 
-class Task(threading.Thread):
+class TaskBase(threading.Thread):
 
     def __init__(self):
         """

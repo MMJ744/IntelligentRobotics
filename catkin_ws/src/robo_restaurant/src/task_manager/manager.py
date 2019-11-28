@@ -1,13 +1,23 @@
+from wander import Wander
+
 from queue import PriorityQueue
 from typing import Type
 
 import datetime.datetime as dt
 
 
-class Manager():
-
+class TaskManager():
+    """
+    Listens for new tasks and broadcasts highest priority job to executer
+    """
     def __init__(self):
         self.current_tasks = PriorityQueue
+
+        self.addTask(Wander())
+
+        self.broadcast_next_task()
+
+        self.listen()
 
     def addTask(self, task):
         priority = self.get_priority(task)
@@ -25,3 +35,9 @@ class Manager():
             updated_priorities_queue.put(priority, task)
 
         self.current_tasks = updated_priorities_queue
+
+    def broadcast_next_task(self):
+        """matty help plz TODO"""
+
+    def listen(self):
+        """ no seriously matty what do i do TODO"""
