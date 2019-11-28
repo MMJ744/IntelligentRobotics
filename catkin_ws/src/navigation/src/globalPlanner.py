@@ -27,11 +27,13 @@ pub = 0
 go = False
 goalLocation = (0,0)
 currentLocation = (0,0)
+cutoff = 100
 
 def valid(x,y):
     global costmap
     global width
-    return costmap[y*width + x] == 0
+    global cutoff
+    return costmap[y*width + x] < cutoff
 
 
 def getNeighbours(n):
@@ -125,9 +127,9 @@ def mapToPose(p):
 
 def test():
     global costmap
-    costmap = [0, 0, 0, 0, 1, 0, 0, 0, 0, 0,0, 0, 0, 0, 1, 0, 0, 0, 0, 0,0, 0, 0, 0, 1, 0, 0, 0, 0, 0,0, 0, 0, 0, 1, 0, 0, 0, 0, 0,
-            0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,0, 0, 0, 0, 1, 0, 0, 0, 0, 0,0, 0, 0, 0, 1, 0, 0, 0, 0, 0,
-            0, 0, 0, 0, 1, 0, 0, 0, 0, 0,0, 0, 0, 0, 1, 0, 0, 0, 0, 0]
+    costmap = [0, 0, 0, 0, 250, 0, 0, 0, 0, 0,0, 0, 0, 0, 250, 0, 0, 0, 0, 0,0, 0, 0, 0, 250, 0, 0, 0, 0, 0,0, 0, 0, 0, 250, 0, 0, 0, 0, 0,
+            0, 0, 0, 0, 250, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,0, 0, 0, 0, 250, 0, 0, 0, 0, 0,0, 0, 0, 0, 250, 0, 0, 0, 0, 0,
+            0, 0, 0, 0, 250, 0, 0, 0, 0, 0,0, 0, 0, 0, 250, 0, 0, 0, 0, 0]
     print(findPath(3,0,5,0))
     print(valid(4,0))
     print(valid(4,1))
@@ -164,7 +166,7 @@ def goalCallback(data):
 
 def main():
     global go
-    rospy.init_node('Global Planner', anonymous=True)
+    rospy.init_node('Global_Planner', anonymous=True)
     rospy.Subscriber("move_base_node/global_costmap/costmap", OccupancyGrid, mapcallback)
     rospy.Subscriber('/map_metadata', MapMetaData, metaCallback)
     rospy.Subscriber("amcl_pose", PoseWithCovarianceStamped, poseCallback)
