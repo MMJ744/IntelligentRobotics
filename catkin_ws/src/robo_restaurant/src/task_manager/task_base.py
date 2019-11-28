@@ -1,5 +1,4 @@
 import datetime.datetime as dt
-import threading
 from enum import Enum
 
 class PriorityLevels(Enum):
@@ -32,6 +31,7 @@ class Wander():
         Interrupts the current task cleanly so it can resume
         """
         raise NotImplementedError()
+
 
 class GreetCustomer():
 

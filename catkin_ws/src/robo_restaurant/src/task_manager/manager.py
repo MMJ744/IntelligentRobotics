@@ -13,13 +13,13 @@ class TaskManager():
     def __init__(self):
         self.current_tasks = PriorityQueue
 
-        self.addTask(Wander())
+        self.add_task(Wander())
 
-        self.broadcast_next_task()
+        self.publish_next_task()
 
         self.listen()
 
-    def addTask(self, task):
+    def add_task(self, task):
         priority = self.get_priority(task)
 
         self.current_tasks.put(priority, task)
@@ -36,7 +36,7 @@ class TaskManager():
 
         self.current_tasks = updated_priorities_queue
 
-    def broadcast_next_task(self):
+    def publish_next_task(self):
         """matty help plz TODO"""
 
     def listen(self):
