@@ -1,6 +1,7 @@
 import datetime.datetime as dt
 from enum import Enum
 
+
 class PriorityLevels(Enum):
     IMMEDIATE = 0
     HIGH = 1
@@ -9,13 +10,17 @@ class PriorityLevels(Enum):
     BASE = 4
 
 
-class Wander():
+class Wander(time=None):
 
-    def __init__(self):
+    def __init__(self, time):
         """
         timestamp and priority level
         """
-        self.timeCreated = dt.now()
+        self.type = "Wander"
+        if time is None:
+            self.timeCreated = dt.now()
+        else:
+            self.timeCreated = time
         self.priority = PriorityLevels.BASE
 
     def run(self):
@@ -33,13 +38,17 @@ class Wander():
         raise NotImplementedError()
 
 
-class GreetCustomer():
+class GreetCustomer(time=None):
 
-    def __init__(self):
+    def __init__(self,time):
         """
         timestamp and priority level
         """
-        self.timeCreated = dt.now()
+        self.type = "GreetCustomer"
+        if time is None:
+            self.timeCreated = dt.now()
+        else:
+            self.timeCreated = time
         self.priority = PriorityLevels.LOW
 
     def run(self):
