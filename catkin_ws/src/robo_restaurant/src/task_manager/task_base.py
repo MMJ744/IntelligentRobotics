@@ -2,9 +2,6 @@ import datetime.datetime as dt
 import threading
 from enum import Enum
 
-Priorities = ["BaseTask"]
-
-
 class PriorityLevels(Enum):
     IMMEDIATE = 0
     HIGH = 1
