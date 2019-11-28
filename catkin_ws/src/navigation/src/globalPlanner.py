@@ -115,7 +115,7 @@ def test():
 
 def mapcallback(data):
     pass
-    
+
 
 def main():
     rospy.Subscriber("/map", OccupancyGrid, mapcallback)
