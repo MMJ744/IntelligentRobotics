@@ -22,7 +22,7 @@ costmap = OccupancyGrid()
 width = 10
 origin = (0,0)
 height = 10
-resolution = 0.05
+resolution = 1.0
 pub = 0
 go = False
 goalLocation = (0,0)
@@ -171,7 +171,7 @@ def main():
     rospy.Subscriber('/map_metadata', MapMetaData, metaCallback)
     rospy.Subscriber("amcl_pose", PoseWithCovarianceStamped, poseCallback)
     rospy.Subscriber("move_base_simple/goal",PoseStamped, goalCallback)
-    pathPub = rospy.Publisher("/path", Path, queue_size=10)
+    pathPub = rospy.Publisher("/move_base/GlobalPlanner/plan", Path, queue_size=10)
     rate = rospy.Rate(100)
     while not rospy.is_shutdown():
         while not go:
@@ -179,6 +179,7 @@ def main():
         go = False
         path = findPath(currentLocation[0],currentLocation[1],goalLocation[0],goalLocation[1])
         pathPub.publish(path)
+
 
 if __name__ == '__main__':
     try:
