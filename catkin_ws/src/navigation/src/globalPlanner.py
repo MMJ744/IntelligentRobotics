@@ -149,12 +149,12 @@ def metaCallback(data):
     height = data.height
     width = data.width
     resolution = data.resolution
-    origin = (origin.position.x,origin.position.y)
+    origin = (data.origin.position.x,data.origin.position.y)
 
 
 def poseCallback(data):
     global currentLocation
-    currentLocation = poseToMap((data.pose.pose.pose.position.x,data.pose.pose.pose.position.y))
+    currentLocation = poseToMap((data.pose.pose.position.x,data.pose.pose.position.y))
 
 
 def goalCallback(data):
