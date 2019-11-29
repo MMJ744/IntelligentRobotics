@@ -171,17 +171,17 @@ def main():
     rospy.Subscriber('/map_metadata', MapMetaData, metaCallback)
     rospy.Subscriber("amcl_pose", PoseWithCovarianceStamped, poseCallback)
     rospy.Subscriber("move_base_simple/goal",PoseStamped, goalCallback)
-    rospy.Publisher("/path", Path, queue_size=10)
+    pathPub = rospy.Publisher("/path", Path, queue_size=10)
     rate = rospy.Rate(100)
-    while not rospy.is_shutdown:
+    while not rospy.is_shutdown():
         while not go:
             rate.sleep()
         go = False
         path = findPath(currentLocation[0],currentLocation[1],goalLocation[0],goalLocation[1])
-
+        pathPub.publish(path)
 
 if __name__ == '__main__':
     try:
 		main()
     except rospy.ROSInterruptException:
-        pass
+        print("err global planner")

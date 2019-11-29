@@ -3,6 +3,8 @@ import rospy
 from navigation.msg import Target
 from geometry_msgs.msg import PoseStamped
 from std_msgs.msg import Int8
+import tf
+
 
 target = None
 locations = {}
@@ -33,6 +35,7 @@ def navigateTo(destination):
 def main():
     global locations
     goalPub = rospy.Publisher("move_base_simple/goal",PoseStamped,queue_size=10)
+    rospy.Subscriber("navReturn",Int8,navDoneCallback)
     tbl1 = PoseStamped()
     tbl1.pose.position.x = 10
     tbl1.pose.position.y = 20
