@@ -48,4 +48,5 @@ def listen():
 
 def speech(text):
     tts = gTTS(text='Hello, do you have a booking', lang='en')
-    tts.save("good.mp3")
+    tts.save("text.mp3")
+    os.system("mpg321 text.mp3") 
