@@ -2,42 +2,23 @@
 import rospy
 from navigation.msg import Target
 from geometry_msgs.msg import PoseStamped
-from std_msgs.msg import Int8
+from std_msgs.msg import Int8, String
 import tf
 
 
 target = None
 locations = {}
-completion = -1
 goalPub = 0
-def inCallBack(data):
-    global target
-    target = data
-
-
-def navDoneCallback(data):
-    global completion
-    completion = data
-
 
 def navigateTo(destination):
     global goalPub
-    global completion
-    rate = rospy.Rate(10)
-    completion = -1
     if destination in locations:
         goalPub.publish(locations[destination])
-        while completion == -1:
-            rate.sleep()
-        return completion #returns the code so you know what happened
-    else:
-        return -1
 
 
 def main():
     goalPub = rospy.Publisher("move_base_simple/goal",PoseStamped,queue_size=10)
-    rospy.Subscriber("navReturn",Int8,navDoneCallback)
-    rospy.Subscriber("navInput", Target, inCallBack)
+    rospy.Subscriber("navInput", String, navigateTo)
     rospy.init_node('navController', anonymous=True)
     initLocations():
     rate = rospy.Rate(10)
