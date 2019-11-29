@@ -27,26 +27,19 @@ def navigateTo(destination):
     completion = -1
     if destination in locations:
         goalPub.publish(locations[destination])
-    while completion == -1:
-        rate.sleep()
-    return completion #returns the code so you know what happened
+        while completion == -1:
+            rate.sleep()
+        return completion #returns the code so you know what happened
+    else:
+        return -1
 
 
 def main():
-    global locations
     goalPub = rospy.Publisher("move_base_simple/goal",PoseStamped,queue_size=10)
     rospy.Subscriber("navReturn",Int8,navDoneCallback)
-    tbl1 = PoseStamped()
-    tbl1.pose.position.x = 10
-    tbl1.pose.position.y = 20
-    quaternion = tf.transformations.quaternion_from_euler(0, 0, 0)
-    tbl1.pose.orientation.x = quaternion[0]
-    tbl1.pose.orientation.y = quaternion[1]
-    tbl1.pose.orientation.z = quaternion[2]
-    tbl1.pose.orientation.w = quaternion[3]
-    locations['table1'] = tbl1
     rospy.Subscriber("navInput", Target, inCallBack)
     rospy.init_node('navController', anonymous=True)
+    initLocations():
     rate = rospy.Rate(10)
     while not rospy.is_shutdown():
         if target is None:
@@ -54,6 +47,32 @@ def main():
             continue
         #Do stuff in here
         print(target.id)
+
+
+def initLocations():
+    global locations
+    boothY = 13.5
+    boothZ = -0.7
+    boothW = 0.7
+    tbl = PoseStamped()
+    tbl.pose.position.x = 22
+    tbl.pose.position.y = boothY
+    tbl.pose.orientation.z = boothY
+    tbl.pose.orientation.w = boothW
+    locations['table1'] = tbl
+    tbl = PoseStamped()
+    tbl.pose.position.x = 15.89
+    tbl.pose.position.y = boothY
+    tbl.pose.orientation.z = boothZ
+    tbl.pose.orientation.w = boothW
+    locations['table2'] = tbl
+    tbl = PoseStamped()
+    tbl.pose.position.x = 9.87
+    tbl.pose.position.y = boothY
+    tbl.pose.orientation.z = boothZ
+    tbl.pose.orientation.w = boothW
+    locations['table3'] = tbl
+
 
 if __name__ == '__main__':
     try:
