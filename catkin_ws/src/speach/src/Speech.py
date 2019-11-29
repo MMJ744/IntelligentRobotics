@@ -6,7 +6,11 @@ from gtts import gTTS
 import os
 
 
-def recognize_speech_from_mic(recognizer, microphone):
+def listen():
+    # create recognizer and mic instances
+    recognizer = sr.Recognizer()
+    microphone = sr.Microphone()
+
     # check that recognizer and microphone arguments are appropriate type
     if not isinstance(recognizer, sr.Recognizer):
         raise TypeError("`recognizer` must be `Recognizer` instance")
@@ -42,27 +46,6 @@ def recognize_speech_from_mic(recognizer, microphone):
 
     return response
 
-
-if __name__ == "__main__":
-    # create recognizer and mic instances
-    recognizer = sr.Recognizer()
-    microphone = sr.Microphone()
-
-    tts = gTTS(text='Good morning', lang='en')
+def speech(text):
+    tts = gTTS(text='Hello, do you have a booking', lang='en')
     tts.save("good.mp3")
-
-    for j in range(2):
-        guess = recognize_speech_from_mic(recognizer, microphone)
-        if guess["transcription"]:
-            break
-        if not guess["success"]:
-            break
-        print("I didn't catch that. What did you say?\n")
-
-        # if there was an error, stop the game
-        if guess["error"]:
-            print("ERROR: {}".format(guess["error"]))
-            break
-
-        # show the user the transcription
-        print("You said: {}".format(guess["transcription"]))

@@ -1,51 +1,39 @@
 from State import State
 from StateMachine import StateMachine
+from Speech import listen, speech
 
-global groupSize = 9999
-global groupTable = -1
-
-global tables = {
-    1 : {
-        places: 6,
-        avaliable: False,
-        id: 1
-    },
-    2 : {
-        places: 3,
-        avaliable: True,
-        id: 2
-    }
-}
 
 class AskBooking(State):
     def run(self):
         speech("Do you have a booking")
         response = listen()
         self.next(response)
+
     def next(self, input):
         if ('yes','okay') in input:
-            return WaitingTask.bd
+            return WaitingTask.bookingDetails
         if ('no') in input:
-            return WaitingTask.ags
-        return WaitingTask.ua
+            return WaitingTask.askGroupSize
+        return WaitingTask.unknowAnswer
 
 class AskGroupSize(State):
     def run(self):
         speech("How many people are their in your group")
         response = listen()
         self.next(response)
+
     def next(self, input):
         amount = filter(lambda x: x.isdigit(), input)
-        if amount = '':
-            return WaitingTask.ua
+        if amount == '':
+            return WaitingTask.unknowAnswer
         else:
-            groupSize = int(amount)
-            return WaitingTask.cg
+            WaitingTask().groupSize = int(amount)
+            return WaitingTask.checkGroup
 
 class GuideToTable(State):
     def run(self):
         speech("Please follow me to your table")
-        navigate("table"+groupTable)
+        navigate("table"+WaitingTask().groupTable)
         speech("Please take a seat someone will be with you in a few minutes")
 
 class GiveWaitingTime(State):
@@ -53,42 +41,65 @@ class GiveWaitingTime(State):
         speech("Your wait time is 60 minutes, is this okay")
         response = listen()
         self.next(response)
+
     def next(self, input):
         if ('yes', 'okay') in input:
-            return WaitingTask.g
+            return WaitingTask.guideToTable
         else:
             print("Done")
 
 class BookingDetails(State):
     def run(self):
+        print("done")
 
-    def next(self, input):
 
 class CheckGroup(State):
     def run(self):
-        for table in tables:
-            if table.avaliable and table.places >= groupSize:
+        for table in WaitingTask().tables:
+            if table.avaliable and table.places >= WaitingTask().groupSize:
                 table.avaliable = False
-                groupTable = table.id
+                WaitingTask().groupTable = table.id
                 continue
         self.next('')
+
     def next(self, input):
-        if (groupTable != -1):
-            return WaitingTask.g
+        if (WaitingTask().groupTable != -1):
+            return WaitingTask.guideToTable
         else:
-            return WaitingTask.wt
+            return WaitingTask.giveWaitingTime
 
 class UnknownAnswer(State):
     def run(self):
         speech("Sorry I didn't understand your answer, please can you repeat it")
+        
+    def next(self, inputs):
+        return WaitingTask().previousState
 
 class WaitingTask(StateMachine):
     def __init__(self):
-        StateMachine.__init__(self, WaitingTask.askbooking)
+        StateMachine.__init__(self, WaitingTask.askBooking)
+        self.groupTable = -1
+        self.groupSize = 99999
+        self.tables = {
+            1 : {
+                "places": 6,
+                "avaliable": False,
+                id: 1
+            },
+            2 : {
+                "places": 3,
+                "avaliable": True,
+                id: 2
+            }
+}
 
-WaitingTask.ab = AskBooking()
-WaitingTask.ags = AskGroupSize()
-WaitingTask.g = GuideToTable()
-WaitingTask.wt = GiveWaitingTime()
-WaitingTask.bd = BookingDetails()
-WaitingTask.ua = UnknownAnswer()
+WaitingTask.askBooking = AskBooking()
+WaitingTask.askGroupSize = AskGroupSize()
+WaitingTask.guideToTable = GuideToTable()
+WaitingTask.giveWaitingTime = GiveWaitingTime()
+WaitingTask.bookingDetails = BookingDetails()
+WaitingTask.unknowAnswer = UnknownAnswer()
+WaitingTask.checkGroup = CheckGroup()
+
+def navigate(where):
+    print('Going to ' + where)
