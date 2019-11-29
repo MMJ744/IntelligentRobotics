@@ -1,8 +1,8 @@
+#!/usr/bin/env python
 from flask import Flask
 from flask import request
+import navcall
 
-import rospy
-from std_msgs.msg import String
 app = Flask(__name__)
 
 locs = {
@@ -22,10 +22,9 @@ def hello():
 
 @app.route('/goto')
 def goto():
-    rospy.init_node('web', anonymous=True)
-    pub = rospy.Publisher('navIn',String,queue_size=10)
-    pub.publish(request.args.get('location', ''))
+    navcall.call(request.args.get('location',''))
     return 'going to ' + request.args.get('location', '') + str(locs[request.args.get('location', '')])
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0:5000')
+    navcall.main()
+    app.run(host='0.0.0.0')
