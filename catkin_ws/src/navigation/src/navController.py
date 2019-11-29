@@ -17,10 +17,11 @@ def navigateTo(destination):
 
 
 def main():
+    global goalPub
     goalPub = rospy.Publisher("move_base_simple/goal",PoseStamped,queue_size=10)
-    rospy.Subscriber("navInput", String, navigateTo)
+    rospy.Subscriber("navIn", String, navigateTo)
     rospy.init_node('navController', anonymous=True)
-    initLocations():
+    initLocations()
     rate = rospy.Rate(10)
     while not rospy.is_shutdown():
         if target is None:

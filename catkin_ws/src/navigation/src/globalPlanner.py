@@ -3,7 +3,7 @@ import rospy
 from geometry_msgs.msg import PoseStamped, Twist, PoseWithCovarianceStamped
 from move_base_msgs.msg import MoveBaseGoal, MoveBaseAction, MoveBaseActionGoal
 from sensor_msgs.msg import LaserScan,PointCloud2
-from nav_msgs.msg import Odometry, OccupancyGrid, Path, MapMetaData#, GetPlan
+from nav_msgs.msg import Odometry, OccupancyGrid, Path, MapMetaData
 import tf
 
 class Node():
@@ -23,11 +23,11 @@ width = 10
 origin = (0,0)
 height = 10
 resolution = 1.0
+cutoff = 100
 pub = 0
 go = False
 goalLocation = (0,0)
 currentLocation = (0,0)
-cutoff = 100
 
 def valid(x,y):
     global costmap
