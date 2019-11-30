@@ -2,3 +2,4 @@
 string task_type
 time created_at
 bool finished
+uint8 table_number
