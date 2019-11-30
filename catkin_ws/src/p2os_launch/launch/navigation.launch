@@ -2,7 +2,7 @@
 	<master auto="start"/>
 	
 	<!-- Run the map server (you can run it here or in another terminal) -->
-	<node name="map_server" pkg="map_server" type="map_server" args="/home/brett/IntelligentRobotics/Maps/lgfloor.yaml"/>
+	<node name="map_server" pkg="map_server" type="map_server" args="/home/matty/IntelligentRobotics/Maps/lgfloor.yaml"/>
 	<node pkg="p2os_driver" type="p2os_driver" name="p2os">
 	        <param name="port" value="/dev/ttyUSB0" />
 	        <param name="use_sonar" value="true" /> 
