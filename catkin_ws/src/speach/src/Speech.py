@@ -4,12 +4,19 @@ import time
 import speech_recognition as sr
 from gtts import gTTS
 import os
-
+import pyaudio
 
 def listen():
     # create recognizer and mic instances
+    pyaudio.PyAudio().open(format=pyaudio.paInt16,
+                        rate=44100,
+                        channels=1, #change this to what your sound card supports
+                        input_device_index=6, #change this your input sound card index
+                        input=True,
+                        output=False,
+                        frames_per_buffer=1024)
     recognizer = sr.Recognizer()
-    microphone = sr.Microphone()
+    microphone = sr.Microphone(device_index=6)
 
     # check that recognizer and microphone arguments are appropriate type
     if not isinstance(recognizer, sr.Recognizer):
@@ -43,10 +50,10 @@ def listen():
     except sr.UnknownValueError:
         # speech was unintelligible
         response["error"] = "Unable to recognize speech"
-
+    print(response)
     return response
 
 def speech(text):
-    tts = gTTS(text='Hello, do you have a booking', lang='en')
-    tts.save("text.mp3")
-    os.system("mpg321 text.mp3") 
+    print(text)
+    #tts = gTTS(text='Hello, do you have a booking', lang='en')
+    #tts.save("text.mp3")

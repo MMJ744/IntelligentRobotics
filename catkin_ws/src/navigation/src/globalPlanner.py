@@ -174,15 +174,15 @@ def main():
     pathPub = rospy.Publisher("/move_base/GlobalPlanner/plan", Path, queue_size=10)
     rate = rospy.Rate(100)
     while not rospy.is_shutdown():
-        while not go:
-            rate.sleep()
-        go = False
-        path = findPath(currentLocation[0],currentLocation[1],goalLocation[0],goalLocation[1])
-        pathPub.publish(path)
+        if go:
+            go = False
+            path = findPath(currentLocation[0],currentLocation[1],goalLocation[0],goalLocation[1])
+            pathPub.publish(path)
+        rate.sleep()
 
 
 if __name__ == '__main__':
     try:
-		main()
+        main()
     except rospy.ROSInterruptException:
-        print("err global planner")
+        pass

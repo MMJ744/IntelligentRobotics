@@ -7,12 +7,13 @@ class AskBooking(State):
     def run(self):
         speech("Do you have a booking")
         response = listen()
-        self.next(response)
+        WaitingTask().addInput(response['transcription'])
 
     def next(self, input):
-        if ('yes','okay') in input:
+        print(input)
+        if 'yes' in input:
             return WaitingTask.bookingDetails
-        if ('no') in input:
+        if 'no' in input:
             return WaitingTask.askGroupSize
         return WaitingTask.unknowAnswer
 
@@ -20,7 +21,7 @@ class AskGroupSize(State):
     def run(self):
         speech("How many people are their in your group")
         response = listen()
-        self.next(response)
+        self.next(response['transcription'])
 
     def next(self, input):
         amount = filter(lambda x: x.isdigit(), input)
@@ -40,7 +41,7 @@ class GiveWaitingTime(State):
     def run(self):
         speech("Your wait time is 60 minutes, is this okay")
         response = listen()
-        self.next(response)
+        self.next(response['transcription'])
 
     def next(self, input):
         if ('yes', 'okay') in input:
@@ -101,7 +102,7 @@ WaitingTask.bookingDetails = BookingDetails()
 WaitingTask.unknowAnswer = UnknownAnswer()
 WaitingTask.checkGroup = CheckGroup()
 
-WaitingTask()
+WaitingTask().runAll()
 
 def navigate(where):
     print('Going to ' + where)

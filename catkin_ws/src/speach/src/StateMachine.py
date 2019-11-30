@@ -4,12 +4,14 @@ class StateMachine:
         self.previousState = initalState
         self.inputs = []
         self.currentState.run()
+        self.running = True
         
     def runAll(self):
-        for i in self.inputs:
-            print(i)
+        while self.running:
             self.previousState = self.currentState
-            self.currentState = self.currentState.next(i)
+            print('dfgidifg')
+            self.currentState = self.currentState.next(self.inputs.pop())
+            print(self.currentState)
             self.currentState.run()
     
     def addInput(self, input):
