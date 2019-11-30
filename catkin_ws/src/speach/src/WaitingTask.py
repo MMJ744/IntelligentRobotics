@@ -101,5 +101,7 @@ WaitingTask.bookingDetails = BookingDetails()
 WaitingTask.unknowAnswer = UnknownAnswer()
 WaitingTask.checkGroup = CheckGroup()
 
+WaitingTask()
+
 def navigate(where):
     print('Going to ' + where)
