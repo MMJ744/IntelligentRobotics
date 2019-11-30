@@ -18,9 +18,9 @@ class TaskExecuter():
         creates and runs task, broadcasting when done
         :param task:
         """
-        if (task.task_type == "Wander"):
+        if task.task_type == "Wander":
             t = Wander(time=task.created_at)
-        elif (task.task_type == "GreetCustomer"):
+        elif task.task_type == "GreetCustomer":
             t = GreetCustomer(time=task.created_at)
         else:
             raise NotImplementedError

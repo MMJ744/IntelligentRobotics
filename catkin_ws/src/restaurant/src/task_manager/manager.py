@@ -42,6 +42,10 @@ class TaskManager():
         self.current_tasks = updated_priorities_queue
 
     def publish_next_task(self):
+        #if self.current_tasks.empty():
+            # next =  wandering tasks
+        #else:
+
         next = self.current_tasks.get()
         t = Task()
         t.task_type = next.type
