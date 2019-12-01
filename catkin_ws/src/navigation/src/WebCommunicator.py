@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 from flask import Flask
 from flask import request
-import navcall
+import navTo
 
 app = Flask(__name__)
 
@@ -22,9 +22,9 @@ def hello():
 
 @app.route('/goto')
 def goto():
-    navcall.call(request.args.get('location',''))
+    navTo.navigate(request.args.get('location',''))
     return 'going to ' + request.args.get('location', '') + str(locs[request.args.get('location', '')])
 
 if __name__ == '__main__':
-    navcall.main()
+    navTo.main()
     app.run(host='0.0.0.0')

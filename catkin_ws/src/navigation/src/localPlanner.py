@@ -19,7 +19,7 @@ resolution = 1.0
 cutoff = 100
 x = 0
 y = 0
-theta = 0
+theta = 0.0
 
 def mapcallback(data):
     global costmap
@@ -30,12 +30,19 @@ def metaCallback(data):
     global resolution
     resolution = data.resolution
 
+def poseCallback(data):
+    global x
+    global y
+    x = data.pose.pose.position.x
+    y = data.pose.pose.position.y
+
+
 def odomCallback(data):
     global x
     global y
     global theta
-    x = data.pose.pose.position.x
-    y = data.pose.pose.position.y
+    #x = data.pose.pose.position.x
+    #y = data.pose.pose.position.y
     q = data.pose.pose.orientation
     theta = math.atan2(2 * (q.x * q.y + q.w * q.z), q.w * q.w + q.x * q.x - q.z * q.z)
 
@@ -76,6 +83,7 @@ def main():
     rospy.Subscriber("move_base/local_costmap/costmap", OccupancyGrid, mapcallback)
     rospy.Subscriber('/map_metadata', MapMetaData, metaCallback)
     rospy.Subscriber("odom", Odometry, odomCallback)
+    rospy.Subscriber("amcl_pose", PoseWithCovarianceStamped, poseCallback)
     rospy.Subscriber("/move_base/GlobalPlanner/plan", Path, pathCallback)
     rate = rospy.Rate(10)
     blockage = False
@@ -84,25 +92,43 @@ def main():
     twist = Twist()
     while not rospy.is_shutdown():
         rospy.wait_for_message('/move_base/GlobalPlanner/plan', Path)
-        print('path recieved')
+        print('path recieved',len(path))
+        if len(path) > 0: #First turn to face correct way
+            currentPoint = path.pop(0)
+            q = currentPoint.pose.orientation
+            gtheta = math.atan2(2 * (q.x * q.y + q.w * q.z), q.w * q.w + q.x * q.x - q.z * q.z)
+            while abs(gtheta - theta) > 0.05:
+                twist.angular.z = angluarFactor * (gtheta - theta)
+                print(twist)
+                movePub.publish(twist)
+                rate.sleep()
         while len(path) > 0:
-            print('point')
+            print('nextPoint')
             nextPoint = path.pop(0)
             if checkOpen(nextPoint):
                 if blockage: #point inbetween was blocked must find new root
                     path = findNewRoute(nextPoint).extend(path)
                     nextPoint = path.pop(0)
+                twist = Twist()
                 blockage = False
                 #Go faster or slower depending on how far you are from goal
+                print("going forward")
                 distance = math.sqrt(((nextPoint.pose.position.x-x)**2) + ((nextPoint.pose.position.y-y)**2))
-                while distance > 0.01: #keep going till u close enough
+                twist = Twist()
+                while distance > 0.1: #keep going till u close enough
+                    print(distance)
                     twist.linear.x = linearFactor * distance
-                    q = nextPoint.pose.orientation
-                    gtheta = math.atan2(2 * (q.x * q.y + q.w * q.z), q.w * q.w + q.x * q.x - q.z * q.z)
-                    twist.angular.z = angluarFactor * (gtheta - theta)
+                    print(twist)
                     movePub.publish(twist)
                     rate.sleep()
                     distance = math.sqrt(((nextPoint.pose.position.x-x)**2) + ((nextPoint.pose.position.y-y)**2))
+                q = nextPoint.pose.orientation
+                gtheta = math.atan2(2 * (q.x * q.y + q.w * q.z), q.w * q.w + q.x * q.x - q.z * q.z)
+                while abs(gtheta - theta) > 0.05:
+                    twist.angular.z = angluarFactor * (gtheta - theta)
+                    print(twist)
+                    movePub.publish(twist)
+                    rate.sleep()
             else:
                 blockage = True
         if blockage:

@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 import random
 import time
 
@@ -8,7 +9,7 @@ import playsound
 
 def listen():
     recognizer = sr.Recognizer()
-    microphone = sr.Microphone()
+    microphone = sr.Microphone(device_index=0)
 
     # check that recognizer and microphone arguments are appropriate type
     if not isinstance(recognizer, sr.Recognizer):

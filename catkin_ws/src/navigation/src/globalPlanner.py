@@ -221,6 +221,7 @@ def main():
                 path[i] = p1
             plan = Path()
             plan.poses = path
+            print(path)
             header = Header()
             header.frame_id = "map"
             plan.header = header

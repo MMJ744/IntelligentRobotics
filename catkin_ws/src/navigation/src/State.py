@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 class State:
     def run(self):
         assert 0, "run not implemented"
