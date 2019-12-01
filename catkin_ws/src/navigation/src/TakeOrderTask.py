@@ -8,15 +8,58 @@ class NavigateToTable(State):
         navigateTo("table" + str(instance.table.id))
 
     def next(self):
-        return TakeOrderItem()
+        return CheckReady()
+
+
+class CheckReady(State):
+    def run(self):
+        speech("Hello again. Are we ready to order?")
+        instance.addInput(listen())
+
+    def next(self):
+        if input[2:] == "no":
+            return ComeBackLater()
+        elif input[3:] == "yes":
+            return TakeFirstOrderItem()
+        else:
+            return UnknownAnswer()
+
+
+class ComeBackLater(State):
+    def run(self):
+        speech("Okay, I will come back later")
+
+    def next(self):
+        instance.running = False
+
+
+class TakeFirstOrderItem(State):
+    def run(self):
+        speech("What is the first order?")
+        instance.addInput(listen())
+
+    def next(self, input):
+        print("Send order \'" + input + "\' for table " + str(instance.table.id) + " to the kitchen")
+        return CheckMoreOrders()
+
+
+class CheckMoreOrders(State):
+    def run(self):
+        speech("Would anyone else like to order")
+        instance.addInput(listen())
+
+    def next(self, input):
+        if input[3:] == "yes":
+            return TakeOrderItem()
+        elif input[2:] == "no":
+            return Finished()
+        else:
+            return UnknownAnswer()
 
 
 class TakeOrderItem(State):
     def run(self):
-        if instance.order_items_taken > 0:
-            speech("Can I take the first order from this table?")
-        else:
-            speech("Can I take another order?")
+        speech("Please tell me the order")
 
         instance.addInput(listen())
 
@@ -25,11 +68,15 @@ class TakeOrderItem(State):
             return UnknownAnswer()
         else:
             print("Send order \'" + input + "\' for table " + str(instance.table.id) + " to the kitchen")
-            instance.order_items_taken += 1
-            if instance.order_items_taken >= instance.group_size:
-                instance.running = False
-            else:
-                return TakeOrderItem()
+            return CheckMoreOrders()
+
+
+class Finished(State):
+    def run(self):
+        speech("Thank you. Your food will be with you soon")
+
+    def next(self):
+        instance.running = False
 
 
 class UnknownAnswer(State):
