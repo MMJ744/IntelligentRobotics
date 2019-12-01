@@ -90,7 +90,7 @@ def findPath(startx, starty, goalx, goaly):
         current = openList[0]
         index = 0
         for i,node in enumerate(openList): #Get smallest f value
-            if node.f > current.f:
+            if node.f < current.f:
                 current = node
                 index = i
         openList.pop(index)
@@ -118,12 +118,15 @@ def findPath(startx, starty, goalx, goaly):
             neighbour.h = h(neighbour, goalNode)
             neighbour.f = neighbour.g + neighbour.h
             neighbour.parent = current
-            best = True
-            for n in openList:
-                if n == neighbour and n.f <= neighbour.f:
-                    best = False
-                    break
-            if(best):
+            add = True
+            for i,n in enumerate(openList):
+                if n == neighbour:
+                    add = False
+                    if n.f <= neighbour.f:
+                        break
+                    else:
+                        openList[i] = neighbour
+            if(add):
                 openList.append(neighbour)
     print("couldnt make path")
     return [startNode]
