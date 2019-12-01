@@ -7,6 +7,7 @@ from navController import main, navigateTo
 
 instance = 0
 
+
 class AskBooking(State):
     global instance
     def run(self):
@@ -20,19 +21,19 @@ class AskBooking(State):
             return WaitingTask.bookingDetails
         if 'no' in input:
             return WaitingTask.askGroupSize
-        return WaitingTask.unknowAnswer
+        return WaitingTask.unknownAnswer
 
 class AskGroupSize(State):
     global instance
     def run(self):
-        speech("How many people are their in your group")
+        speech("How many people are there in your group")
         #response = listen()
         response = 9
         instance.addInput(response)
 
     def next(self, input):
         if input == '':
-            return WaitingTask.unknowAnswer
+            return WaitingTask.unknownAnswer
         else:
             instance.groupSize = int(input)
             return WaitingTask.checkGroup
@@ -69,10 +70,9 @@ class BookingDetails(State):
 class CheckGroup(State):
     global instance
     def run(self):
-        for key in instance.tables:
-            table = instance.tables[key]
-            if table['avaliable'] and table['places'] >= instance.groupSize:
-                table['avaliable'] = False
+        for table in self.model.tables:
+            if table['available'] and table['places'] >= instance.groupSize:
+                table['available'] = False
                 instance.groupTable = table['id']
                 break
         instance.addInput('')
@@ -93,30 +93,18 @@ class UnknownAnswer(State):
         return instance.previousState
 
 class WaitingTask(StateMachine):
-    def __init__(self):
-        StateMachine.__init__(self, WaitingTask.askBooking)
-        self.groupTable = 3
+    def __init__(self, model):
+        super(WaitingTask, self).__init__(WaitingTask.askBooking, model)
+        self.groupTable = -1
         self.groupSize = 99999
-        main()
-        self.tables = {
-            1 : {
-                "places": 6,
-                "avaliable": False,
-                'id': 1
-            },
-            2 : {
-                "places": 4,
-                "avaliable": True,
-                'id': 2
-            }
-}
+
 
 WaitingTask.askBooking = AskBooking()
 WaitingTask.askGroupSize = AskGroupSize()
 WaitingTask.guideToTable = GuideToTable()
 WaitingTask.giveWaitingTime = GiveWaitingTime()
 WaitingTask.bookingDetails = BookingDetails()
-WaitingTask.unknowAnswer = UnknownAnswer()
+WaitingTask.unknownAnswer = UnknownAnswer()
 WaitingTask.checkGroup = CheckGroup()
 
 instance = WaitingTask()
