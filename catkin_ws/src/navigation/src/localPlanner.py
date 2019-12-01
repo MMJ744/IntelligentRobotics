@@ -96,13 +96,10 @@ def main():
                 #Go faster or slower depending on how far you are from goal
                 distance = math.sqrt(((nextPoint.pose.position.x-x)**2) + ((nextPoint.pose.position.y-y)**2))
                 while distance > 0.01: #keep going till u close enough
-                    print('---' + str(distance))
                     twist.linear.x = linearFactor * distance
-                    print(linearFactor * distance)
                     q = nextPoint.pose.orientation
                     gtheta = math.atan2(2 * (q.x * q.y + q.w * q.z), q.w * q.w + q.x * q.x - q.z * q.z)
                     twist.angular.z = angluarFactor * (gtheta - theta)
-                    print(angluarFactor * (gtheta - theta))
                     movePub.publish(twist)
                     rate.sleep()
                     distance = math.sqrt(((nextPoint.pose.position.x-x)**2) + ((nextPoint.pose.position.y-y)**2))
