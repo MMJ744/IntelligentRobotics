@@ -27,11 +27,10 @@ class AskGroupSize(State):
         instance.addInput(response)
 
     def next(self, input):
-        amount = filter(lambda x: x.isdigit(), str(input))
-        if amount == '':
+        if input == '':
             return WaitingTask.unknowAnswer
         else:
-            instance.groupSize = int(amount)
+            instance.groupSize = int(input)
             return WaitingTask.checkGroup
 
 class GuideToTable(State):
