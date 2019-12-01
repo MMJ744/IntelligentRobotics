@@ -24,7 +24,7 @@ costmap = []
 width = 10
 origin = (0,0)
 height = 10
-resolution = 1.0
+resolution = 0.05
 cutoff = 10
 pub = 0
 go = False
@@ -112,7 +112,12 @@ def findPath(startx, starty, goalx, goaly):
             print("got path")
             return path[::-1]
         for neighbour in getNeighbours(current):
-            if neighbour in closedList:
+            inclosed = False
+            for n in closedList:
+                if neighbour == n:
+                    inclosed = True
+                    break
+            if(inclosed):
                 continue
             neighbour.g = current.g + neighbour.cost
             neighbour.h = h(neighbour, goalNode)
