@@ -57,3 +57,6 @@ def speech(text):
     print(text)
     #tts = gTTS(text='Hello, do you have a booking', lang='en')
     #tts.save("text.mp3")
+
+def navigate(where):
+    print('Going to ' + where)
