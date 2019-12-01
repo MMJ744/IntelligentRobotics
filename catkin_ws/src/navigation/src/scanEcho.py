@@ -20,7 +20,7 @@ def talker():
 
 
 if __name__ == '__main__':
-	try:
-		talker()
-      	except rospy.ROSInterruptException:
-        	pass
+    try:
+        talker()
+    except rospy.ROSInterruptException:
+        print("err global planner")

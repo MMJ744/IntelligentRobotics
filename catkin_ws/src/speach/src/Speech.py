@@ -4,10 +4,9 @@ import time
 import speech_recognition as sr
 from gtts import gTTS
 import os
-
+import playsound
 
 def listen():
-    # create recognizer and mic instances
     recognizer = sr.Recognizer()
     microphone = sr.Microphone()
 
@@ -43,10 +42,17 @@ def listen():
     except sr.UnknownValueError:
         # speech was unintelligible
         response["error"] = "Unable to recognize speech"
-
-    return response
+    print(response["transcription"])
+    return response["transcription"]
 
 def speech(text):
-    tts = gTTS(text='Hello, do you have a booking', lang='en')
-    tts.save("text.mp3")
-    os.system("mpg321 text.mp3") 
+    print(text)
+    filename = str(text) + '.mp3'
+    filename = filename.replace(' ','')
+    if not os.path.exists(filename):
+        tts = gTTS(text=text, lang='en')
+        tts.save(filename)
+    playsound.playsound(filename)
+
+def navigate(where):
+    print('Going to ' + where)

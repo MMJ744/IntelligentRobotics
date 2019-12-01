@@ -9,14 +9,27 @@ import tf
 target = None
 locations = {}
 goalPub = 0
+navResult = -1
+
+def navOutCallback(x):
+    global navResult
+    navResult = x
+
 
 def navigateTo(destination):
     global goalPub
     global locations
+    global navResult
     print("trying to go to " + destination.data)
+    rate = rospy.Rate(10)
     if destination.data in locations:
         print("found destination " + destination.data)
         goalPub.publish(locations[destination.data])
+        navResult = -1
+        while not rospy.is_shutdown():
+            while navResult == -1:
+                rate.sleep()
+            return navResult
 
 
 def main():
@@ -25,14 +38,10 @@ def main():
     rospy.init_node('navController', anonymous=True)
     goalPub = rospy.Publisher("move_base_simple/goal",PoseStamped,queue_size=10)
     rospy.Subscriber("navIn", String, navigateTo)
+    rospy.Subscriber("navOut", Int8, navOutCallback)
     rate = rospy.Rate(10)
     while not rospy.is_shutdown():
-        if target is None:
-            rate.sleep()
-            continue
-        #Do stuff in here
-        print(target.id)
-    print("main exited")
+        rate.sleep()
 
 
 def initLocations():

@@ -3,14 +3,15 @@ class StateMachine:
         self.currentState = initalState
         self.previousState = initalState
         self.inputs = []
-        self.currentState.run()
+        self.running = True
         
     def runAll(self):
-        for i in self.inputs:
-            print(i)
+        self.currentState.run()
+        while self.running:
             self.previousState = self.currentState
-            self.currentState = self.currentState.next(i)
+            self.currentState = self.currentState.next(self.inputs.pop())
             self.currentState.run()
-    
+
     def addInput(self, input):
         self.inputs.append(input)
+
