@@ -1,5 +1,5 @@
 from queue import PriorityQueue
-from typing import Type
+import TaskType as tt
 
 import datetime.datetime as dt
 
@@ -7,8 +7,6 @@ import rospy
 from restaurant.msg import Task
 
 
-def get_priority(task):
-    return (task.timeCreated - dt.now()) * task.priority
 
 
 class TaskManager:
@@ -17,50 +15,47 @@ class TaskManager:
     """
     def __init__(self):
 
-        # self.add_task(Wander())
-
         rospy.Subscriber("/task", Task, self.subscriber)
         self.pub = rospy.Publisher('/task', Task, queue_size=1)
         rospy.init_node('Manager', anonymous=True)
 
         self.current_tasks = PriorityQueue
 
+        self.add_task(tt.Wander)
+
         self.publish_next_task()
 
     def add_task(self, task):
-        priority = get_priority(task)
-
-        self.current_tasks.put(priority, task)
+        self.current_tasks.put(task.priority, task)
 
     def update_priorities(self, remove=None):
         updated_priorities_queue = PriorityQueue
 
         for task in self.current_tasks.queue:
             if not task == remove:                              # dubious, logic error?
-                priority = get_priority(task)
-                updated_priorities_queue.put(priority, task)
+                task.update_priority()
+                updated_priorities_queue.put(task.priority, task)
         self.current_tasks = updated_priorities_queue
 
     def publish_next_task(self):
-        #if self.current_tasks.empty():
-            # next =  wandering tasks
-        #else:
-
-        next = self.current_tasks.get()
+        if self.current_tasks.empty():
+            next_task = tt.Wander
+        else:
+            next_task = self.current_tasks.get()
         t = Task()
-        t.task_type = next.type
-        t.created_at = next.timeCreated
+        t.task_type = next_task.type
+        t.created_at = next_task.time_created
+        t.table_number = next_task.table_number
         t.finished = False
         self.pub.publish(t)
 
     def subscriber(self, task):
         if task.finished:
             if task.task_type == "Wander":
-                t = Wander(task.created_at)
-            elif task.task_type == "GreetCustomer":
-                t = GreetCustomer(task.created_at)
+                t = tt.Wander(task.created_at)
+            elif task.task_type == "Waiting":
+                t = tt.Waiting(task.created_at)
             else:
                 raise NotImplementedError
-
-        self.update_priorities(remove=t)
-        self.publish_next_task()
+            self.update_priorities(remove=t)
+            self.publish_next_task()

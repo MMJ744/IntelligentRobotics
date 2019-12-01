@@ -1,17 +1,13 @@
-from task_base import Wander, GreetCustomer
+import TaskType as tt
+from WanderTask import WanderTask
+from WaitingTask import WaitingTask
+
 import rospy
 from restaurant.msg import Task
 
 
 class Model:
     def __init__(self):
-        self.priorityLevels = {
-            "IMMEDIATE": 0,
-            "HIGH": 1,
-            "MID": 2,
-            "LOW": 3,
-            "BASE": 4
-        }
 
         self.locations = ["Kitchen", "Table1", "Table2", "FrontDesk"]
 
@@ -44,21 +40,21 @@ class TaskExecuter:
         creates and runs task, broadcasting when done
         :param task:
         """
-        if task.task_type == "Wander":
-            t = Wander(time=task.created_at)
-        elif task.task_type == "GreetCustomer":
-            t = GreetCustomer(time=task.created_at)
-        else:
+        self.current_task = task
+
+        t = None
+
+        if self.current_task.type == "Wander":
+            t = WanderTask
+        elif self.current_task.type == "Waiting":
+            t = WaitingTask
+
+        if t is None:
             raise NotImplementedError
 
-        self.current_task = t
+        t.run_all()
 
-        # rate = rospy.Rate(10)  # 10hz
-        t.run()
-        # while self.run:
-        #   rate.sleep()
-
-        self.publish_done(t)
+        self.publish_done(self.current_task)
 
     def publish_done(self, task):
         t = Task()
@@ -69,5 +65,10 @@ class TaskExecuter:
 
     def subscriber(self, task):
         if not task.finished:
-            self.run_task(task)
-        """help TODO"""
+            if task.task_type == "Wander":
+                priority_task = tt.Wander(task.created_at)
+            elif task.task_type == "Waiting":
+                priority_task = tt.Waiting(task.created_at)
+            else:
+                raise NotImplementedError
+            self.run_task(priority_task)
