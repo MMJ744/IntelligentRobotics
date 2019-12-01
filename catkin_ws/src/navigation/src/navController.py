@@ -24,10 +24,13 @@ def navIn(destination):
         print("found destination " + destination.data)
         goalPub.publish(locations[destination.data])
 
-def navigateTo(destination=PoseStamped()):
+def navigateTo(destination):
     global goalPub
     global navResult
-    goalPub.publish(destination)
+    print("trying to go to " + destination)
+    if destination in locations:
+        print("found destination " + destination)
+        goalPub.publish(locations[destination])
     navResult = -1
     rate = rospy.Rate(10)
     while not rospy.is_shutdown():
@@ -44,7 +47,8 @@ def main():
     rospy.Subscriber("navOut", Int8, navOutCallback)
     rate = rospy.Rate(10)
     while not rospy.is_shutdown():
-        rate.sleep()
+        while True:
+            rate.sleep()
 
 
 def initLocations():

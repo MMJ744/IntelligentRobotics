@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 class StateMachine:
     def __init__(self, initalState):
         self.currentState = initalState

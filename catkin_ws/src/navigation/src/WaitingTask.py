@@ -1,6 +1,8 @@
+#!/usr/bin/env python
 from State import State
 from StateMachine import StateMachine
 from Speech import speech, navigate, listen
+from navController import main, navigateTo
 
 
 instance = 0
@@ -9,7 +11,8 @@ class AskBooking(State):
     global instance
     def run(self):
         speech("Do you have a booking")
-        response = listen()
+        #response = listen()
+        response = 'no'
         instance.addInput(response)
 
     def next(self, input):
@@ -23,7 +26,8 @@ class AskGroupSize(State):
     global instance
     def run(self):
         speech("How many people are their in your group")
-        response = listen()
+        #response = listen()
+        response = 9
         instance.addInput(response)
 
     def next(self, input):
@@ -37,7 +41,7 @@ class GuideToTable(State):
     global instance
     def run(self):
         speech("Please follow me to your table")
-        navigate("table"+str(instance.groupTable))
+        navigateTo("table"+str(instance.groupTable))
         speech("Please take a seat someone will be with you in a few minutes")
         instance.addInput('')
         instance.running = False
@@ -91,8 +95,9 @@ class UnknownAnswer(State):
 class WaitingTask(StateMachine):
     def __init__(self):
         StateMachine.__init__(self, WaitingTask.askBooking)
-        self.groupTable = -1
+        self.groupTable = 3
         self.groupSize = 99999
+        main()
         self.tables = {
             1 : {
                 "places": 6,
