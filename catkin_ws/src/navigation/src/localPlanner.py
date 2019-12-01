@@ -7,12 +7,14 @@ from nav_msgs.msg import Odometry, OccupancyGrid, Path, MapMetaData
 from std_msgs.msg import Int8
 import tf
 import math
+from tf.transformations import euler_from_quaternion, quaternion_from_euler
+
 
 path = []
-costmap = OccupancyGrid()
-width = 10
+costmap = []
+width = 5
 origin = (0,0)
-height = 10
+height = 5
 resolution = 1.0
 cutoff = 100
 x = 0
@@ -25,15 +27,8 @@ def mapcallback(data):
 
 
 def metaCallback(data):
-    global height
-    global width
     global resolution
-    global origin
-    height = data.height
-    width = data.width
     resolution = data.resolution
-    origin = (data.origin.position.x,data.origin.position.y)
-
 
 def odomCallback(data):
     global x
@@ -54,10 +49,16 @@ def checkOpen(p):
     global resolution
     global origin
     global width
+    global height
     global cutoff
-    x = int((p.pose.position.x - origin[0]) / resolution)
-    y = int((p.pose.position.y - origin[1]) / resolution)
-    return costmap[y*width + x] < cutoff
+    global x
+    global y
+    origin = (x-(width/2*resolution),y-(height/2*resolution))
+    localx = int((p.pose.position.x - origin[0]) / resolution)
+    localy = int((p.pose.position.y - origin[1]) / resolution)
+    print(localx)
+    print(localy)
+    return costmap[localy*width + localx] < cutoff
 
 
 def findNewRoute(goal):
@@ -72,19 +73,20 @@ def main():
     navOutPub = rospy.Publisher('navOut', Int8, queue_size=10)
     movePub = rospy.Publisher('/cmd_vel', Twist, queue_size=10)
     rospy.init_node('Local_Planner', anonymous=True)
-    rospy.Subscriber("move_base_node/local_costmap/costmap", OccupancyGrid, mapcallback)
+    rospy.Subscriber("move_base/local_costmap/costmap", OccupancyGrid, mapcallback)
     rospy.Subscriber('/map_metadata', MapMetaData, metaCallback)
     rospy.Subscriber("odom", Odometry, odomCallback)
     rospy.Subscriber("/move_base/GlobalPlanner/plan", Path, pathCallback)
-    rate = rospy.Rate(100)
+    rate = rospy.Rate(10)
     blockage = False
     linearFactor = 1
     angluarFactor = 1
     twist = Twist()
     while not rospy.is_shutdown():
-        rospy.wait_for_message('/path', Path)
+        rospy.wait_for_message('/move_base/GlobalPlanner/plan', Path)
         print('path recieved')
         while len(path) > 0:
+            print('point')
             nextPoint = path.pop(0)
             if checkOpen(nextPoint):
                 if blockage: #point inbetween was blocked must find new root
@@ -94,10 +96,13 @@ def main():
                 #Go faster or slower depending on how far you are from goal
                 distance = math.sqrt(((nextPoint.pose.position.x-x)**2) + ((nextPoint.pose.position.y-y)**2))
                 while distance > 0.01: #keep going till u close enough
+                    print('---' + str(distance))
                     twist.linear.x = linearFactor * distance
+                    print(linearFactor * distance)
                     q = nextPoint.pose.orientation
                     gtheta = math.atan2(2 * (q.x * q.y + q.w * q.z), q.w * q.w + q.x * q.x - q.z * q.z)
-                    twist.angular.z = angluarFactor * abs(theta - gtheta)
+                    twist.angular.z = angluarFactor * (gtheta - theta)
+                    print(angluarFactor * (gtheta - theta))
                     movePub.publish(twist)
                     rate.sleep()
                     distance = math.sqrt(((nextPoint.pose.position.x-x)**2) + ((nextPoint.pose.position.y-y)**2))
@@ -109,6 +114,7 @@ def main():
 
 
 if __name__ == '__main__':
+
     try:
         main()
     except rospy.ROSInterruptException:

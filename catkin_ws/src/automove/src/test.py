@@ -6,6 +6,7 @@ from nav_msgs.msg import Odometry
 from sensor_msgs.msg import LaserScan
 from p2os_msgs.msg import SonarArray
 import math
+from tf.transformations import euler_from_quaternion, quaternion_from_euler
 
 right = 999
 front = 999
@@ -36,6 +37,7 @@ def odomCallback(data):
     global theta
     q = data.pose.pose.orientation
     theta = math.atan2(2 * (q.x * q.y + q.w * q.z), q.w * q.w + q.x * q.x - q.z * q.z)
+
 
 def sonarCallback(data):
     global sonar_right
@@ -118,8 +120,8 @@ def talker():
         if counter > 50:
             rotate(75)
             counter = 0
-    	pub.publish(base_data)
-    	rate.sleep()
+        pub.publish(base_data)
+        rate.sleep()
 
 def extract_min_range(values, data):
     values = filter(lambda val: data.range_min < val < data.range_max and not math.isnan(val), values)
