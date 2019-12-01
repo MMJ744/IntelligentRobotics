@@ -9,7 +9,7 @@ import tf
 from tf.transformations import euler_from_quaternion, quaternion_from_euler
 import math
 class Node():
-    def __init__(self, x=0, y=0, parent=None, cost=1):
+    def __init__(self, x=0, y=0, parent=None, cost=1.0):
         self.parent = parent
         self.x = x
         self.y = y
@@ -25,7 +25,7 @@ width = 10
 origin = (0,0)
 height = 10
 resolution = 1.0
-cutoff = 100
+cutoff = 10
 pub = 0
 go = False
 goalLocation = (0,0)
@@ -44,7 +44,7 @@ def getNeighbours(n):
     global height
     global width
     neighbours = []
-    diagcost = 1.5
+    diagcost = 1.9
     x = n.x
     y = n.y
     if x > 0:
@@ -55,6 +55,7 @@ def getNeighbours(n):
                 neighbours.append(Node(x-1,y-1, cost=diagcost))
         if y < height-1 and valid(x-1,y+1):
             neighbours.append(Node(x-1,y+1, cost=diagcost))
+           
     if x < width-1:
         if y > 0 and valid(x+1,y-1):
             neighbours.append(Node(x+1,y-1, cost=diagcost))
@@ -74,6 +75,8 @@ def h(current, goal):
 
 
 def findPath(startx, starty, goalx, goaly):
+    global costmap
+    #print(costmap)
     print("finding path")
     if not (valid(startx,starty) and valid(goalx,goaly)):
         print("start or goal not in map")
@@ -87,7 +90,7 @@ def findPath(startx, starty, goalx, goaly):
         current = openList[0]
         index = 0
         for i,node in enumerate(openList): #Get smallest f value
-            if node.f < current.f:
+            if node.f > current.f:
                 current = node
                 index = i
         openList.pop(index)
@@ -100,8 +103,9 @@ def findPath(startx, starty, goalx, goaly):
                 pose = PoseStamped()
                 header = Header()
                 header.frame_id = "map"
-                pose.pose.position.x = current.x
-                pose.pose.position.y = current.y
+                coord = mapToPose((current.x,current.y))
+                pose.pose.position.x = coord[0]
+                pose.pose.position.y = coord[1]
                 pose.header = header
                 path.append(pose)
                 current = current.parent
@@ -114,10 +118,13 @@ def findPath(startx, starty, goalx, goaly):
             neighbour.h = h(neighbour, goalNode)
             neighbour.f = neighbour.g + neighbour.h
             neighbour.parent = current
+            best = True
             for n in openList:
-                if n == neighbour and n.g <= neighbour.g:
-                    continue
-            openList.append(neighbour)
+                if n == neighbour and n.f <= neighbour.f:
+                    best = False
+                    break
+            if(best):
+                openList.append(neighbour)
     print("couldnt make path")
     return [startNode]
 
@@ -131,24 +138,30 @@ def poseToMap(p):
 
 
 def mapToPose(p):
-    x = int((p[0]*resolution) + origin[0])
-    y = int((p[1]*resolution) + origin[1])
+    global origin
+    x = float(p[0]*resolution + origin[0])
+    y = float(p[1]*resolution + origin[1])
     return (x,y)
 
 
 def test():
     global costmap
-    costmap = [0, 0, 0, 0, 250, 0, 0, 0, 0, 0,0, 0, 0, 0, 250, 0, 0, 0, 0, 0,0, 0, 0, 0, 250, 0, 0, 0, 0, 0,0, 0, 0, 0, 250, 0, 0, 0, 0, 0,
-            0, 0, 0, 0, 250, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,0, 0, 0, 0, 250, 0, 0, 0, 0, 0,0, 0, 0, 0, 250, 0, 0, 0, 0, 0,
-            0, 0, 0, 0, 250, 0, 0, 0, 0, 0,0, 0, 0, 0, 250, 0, 0, 0, 0, 0]
-    path = findPath(3,0,5,0)
+    costmap = [ 0, 0, 0, 0, 250, 0, 0, 0, 0, 0,
+                0, 0, 0, 0, 250, 0, 0, 0, 0, 0,
+                0, 0, 0, 0, 250, 0, 0, 0, 0, 0,
+                0, 0, 0, 0, 250, 0, 0, 0, 0, 0,
+                0, 0, 0, 0, 250, 0, 0, 0, 0, 0, 
+                0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 
+                0, 0, 0, 0, 250, 0, 0, 0, 0, 0,
+                0, 0, 0, 0, 250, 0, 0, 0, 0, 0,
+                0, 0, 0, 0, 250, 0, 0, 0, 0, 0,
+                0, 0, 0, 0, 250, 0, 0, 0, 0, 0]
+    path = findPath(3,9,5,9)
     for i in range(len(path)-1):
         p1 = path[i]
         p2 = path[i+1]
-        theta = calculateAngle(p1.position,p2.position)
-        print(theta)
+        theta = calculateAngle(p1.pose.position,p2.pose.position)
         q = quaternion_from_euler(0,0,theta)
-        print(q)
         p1.pose.orientation = q
         path[i] = p1
     print(path)
@@ -159,7 +172,7 @@ def test():
 
 def mapcallback(data):
     global costmap
-    print('map call ' + str(len(data.data)))
+    #print('map call ' + str(len(data.data)))
     costmap = data.data
 
 
@@ -170,7 +183,7 @@ def metaCallback(data):
     global origin
     height = data.height
     width = data.width
-    resolution = data.resolution
+    resolution = 0.050000
     origin = (data.origin.position.x,data.origin.position.y)
 
 
@@ -206,7 +219,7 @@ def main():
     rospy.Subscriber("amcl_pose", PoseWithCovarianceStamped, poseCallback)
     rospy.Subscriber("move_base_simple/goal",PoseStamped, goalCallback)
     #pathPub = rospy.Publisher("/move_base/GlobalPlanner/plan", Path, queue_size=10)
-    pathPub = rospy.Publisher("/path1", Path, queue_size=10)
+    pathPub = rospy.Publisher("/path", Path, queue_size=1)
     rate = rospy.Rate(100)
     while not rospy.is_shutdown():
         if go:
@@ -217,7 +230,12 @@ def main():
                 p2 = path[i+1]
                 theta = calculateAngle(p1.pose.position,p2.pose.position)
                 q = quaternion_from_euler(0,0,theta)
-                p1.pose.orientation = q
+                quat = Quaternion()
+                quat.x = q[0]
+                quat.y = q[1]
+                quat.z = q[2]
+                quat.w = q[3]
+                p1.pose.orientation = quat
                 path[i] = p1
             plan = Path()
             plan.poses = path
@@ -225,12 +243,15 @@ def main():
             header = Header()
             header.frame_id = "map"
             plan.header = header
+            #print(plan)
             pathPub.publish(plan)
+            print("published path")
         rate.sleep()
 
 
 if __name__ == '__main__':
     try:
+        #test()
         main()
     except rospy.ROSInterruptException:
         pass
