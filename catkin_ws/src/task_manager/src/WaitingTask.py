@@ -5,8 +5,10 @@ from Speech import speech, navigate, listen
 
 instance = 0
 
+
 class AskBooking(State):
     global instance
+
     def run(self):
         speech("Do you have a booking")
         response = listen()
@@ -19,8 +21,10 @@ class AskBooking(State):
             return WaitingTask.askGroupSize
         return WaitingTask.unknowAnswer
 
+
 class AskGroupSize(State):
     global instance
+
     def run(self):
         speech("How many people are their in your group")
         response = listen()
@@ -34,8 +38,10 @@ class AskGroupSize(State):
             instance.groupSize = int(amount)
             return WaitingTask.checkGroup
 
+
 class GuideToTable(State):
     global instance
+
     def run(self):
         speech("Please follow me to your table")
         navigate("table"+str(instance.groupTable))
@@ -43,8 +49,10 @@ class GuideToTable(State):
         instance.addInput('')
         instance.running = False
 
+
 class GiveWaitingTime(State):
     global instance
+
     def run(self):
         speech("Your wait time is 60 minutes, is this okay")
         response = listen()
@@ -56,8 +64,10 @@ class GiveWaitingTime(State):
         else:
             instance.running = False
 
+
 class BookingDetails(State):
     global instance
+
     def run(self):
         instance.addInput('')
         instance.running = False
@@ -65,6 +75,7 @@ class BookingDetails(State):
 
 class CheckGroup(State):
     global instance
+
     def run(self):
         for table in self.model.tables:
             if table['avaliable'] and table['places'] >= instance.groupSize:
@@ -74,13 +85,15 @@ class CheckGroup(State):
         instance.addInput('')
 
     def next(self, input):
-        if (instance.groupTable != -1):
+        if instance.groupTable != -1:
             return WaitingTask.guideToTable
         else:
             return WaitingTask.giveWaitingTime
 
+
 class UnknownAnswer(State):
     global instance
+
     def run(self):
         speech("Sorry I didn't understand your answer, please can you repeat that")
         instance.addInput('')
@@ -88,11 +101,13 @@ class UnknownAnswer(State):
     def next(self, inputs):
         return instance.previousState
 
+
 class WaitingTask(StateMachine):
     def __init__(self, model):
         super(WaitingTask, self).__init__(WaitingTask.askBooking, model)
         self.groupTable = -1
         self.groupSize = 99999
+
 
 WaitingTask.askBooking = AskBooking()
 WaitingTask.askGroupSize = AskGroupSize()

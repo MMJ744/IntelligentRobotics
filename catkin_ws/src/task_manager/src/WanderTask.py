@@ -1,6 +1,6 @@
 from State import State
 from StateMachine import StateMachine
-from Speech import speech, navTo, listen
+from Speech import navigate #, speech,  listen
 
 
 instance = 0
@@ -10,7 +10,7 @@ class CheckEntry(State):
     global instance
 
     def run(self):
-        navTo(self.model.locations["FrontDesk"])
+        navigate(self.model.locations["FrontDesk"])
 
     def next(self):
         self.reverse = False
@@ -21,10 +21,10 @@ class CheckTables(State):
     global instance
 
     def run(self):
-        tbls = [filter(lambda x: not x["available"], self.model.tables)]
+        tbls = [filter(lambda tbl: not tbl["available"], self.model.tables)]
         tbls.sort(reverse=self.reverse)
         for table in tbls:
-            navTo("table " + table["id"])
+            navigate("table" + table["id"])
 
     def next(self):
         if self.reverse:
@@ -37,7 +37,7 @@ class CheckKitchen(State):
     global instance
 
     def run(self):
-        navTo(self.model.locations["Kitchen"])
+        navigate(self.model.locations["Kitchen"])
 
     def next(self):
         self.reverse = True
