@@ -1,7 +1,8 @@
 class StateMachine:
-    def __init__(self, initalState):
-        self.currentState = initalState
-        self.previousState = initalState
+    def __init__(self, initial_state, model):
+        self.model = model
+        self.currentState = initial_state
+        self.previousState = initial_state
         self.inputs = []
         self.running = True
         

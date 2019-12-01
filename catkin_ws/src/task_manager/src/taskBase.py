@@ -1,14 +1,4 @@
 import datetime.datetime as dt
-from enum import Enum
-
-
-class PriorityLevels(Enum):
-    IMMEDIATE = 0
-    HIGH = 1
-    MID = 2
-    LOW = 3
-    BASE = 4
-
 
 class Wander(time=None):
 

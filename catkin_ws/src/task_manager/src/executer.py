@@ -3,7 +3,33 @@ import rospy
 from restaurant.msg import Task
 
 
-class TaskExecuter():
+class Model:
+    def __init__(self):
+        self.priorityLevels = {
+            "IMMEDIATE": 0,
+            "HIGH": 1,
+            "MID": 2,
+            "LOW": 3,
+            "BASE": 4
+        }
+
+        self.locations = ["Kitchen", "Table1", "Table2", "FrontDesk"]
+
+        self.tables = [
+            {
+                "places": 6,
+                "available": False,
+                'id': 1
+            },
+            {
+                "places": 4,
+                "available": True,
+                'id': 2
+            }
+        ]
+
+
+class TaskExecuter:
     """
     Listens to TaskManager, executes jobs, and broadcasts once done
     """

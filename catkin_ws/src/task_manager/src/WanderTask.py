@@ -10,7 +10,7 @@ class CheckEntry(State):
     global instance
 
     def run(self):
-        navTo(self.door)
+        navTo(self.model.locations["FrontDesk"])
 
     def next(self):
         self.reverse = False
@@ -21,7 +21,7 @@ class CheckTables(State):
     global instance
 
     def run(self):
-        tbls = [filter(lambda x: not x["available"], self.tables)]
+        tbls = [filter(lambda x: not x["available"], self.model.tables)]
         tbls.sort(reverse=self.reverse)
         for table in tbls:
             navTo("table " + table["id"])
@@ -37,7 +37,7 @@ class CheckKitchen(State):
     global instance
 
     def run(self):
-        navTo(self.kitchen)
+        navTo(self.model.locations["Kitchen"])
 
     def next(self):
         self.reverse = True
@@ -45,20 +45,8 @@ class CheckKitchen(State):
 
 
 class WanderTask(StateMachine):
-    def __init__(self):
-        StateMachine.__init__(self, WanderTask.checkEntry)
-        self.tables = [
-            {
-                "places": 6,
-                "available": False,
-                'id': 1
-            },
-            {
-                "places": 4,
-                "available": True,
-                'id': 2
-            }
-        ]
+    def __init__(self, model):
+        super(WanderTask, self).__init__(WanderTask.checkEntry, model)
         self.reverse = False
 
 

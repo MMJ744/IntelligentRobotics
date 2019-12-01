@@ -66,8 +66,7 @@ class BookingDetails(State):
 class CheckGroup(State):
     global instance
     def run(self):
-        for key in instance.tables:
-            table = instance.tables[key]
+        for table in self.model.tables:
             if table['avaliable'] and table['places'] >= instance.groupSize:
                 table['avaliable'] = False
                 instance.groupTable = table['id']
@@ -90,22 +89,10 @@ class UnknownAnswer(State):
         return instance.previousState
 
 class WaitingTask(StateMachine):
-    def __init__(self):
-        StateMachine.__init__(self, WaitingTask.askBooking)
+    def __init__(self, model):
+        super(WaitingTask, self).__init__(WaitingTask.askBooking, model)
         self.groupTable = -1
         self.groupSize = 99999
-        self.tables = {
-            1 : {
-                "places": 6,
-                "avaliable": False,
-                'id': 1
-            },
-            2 : {
-                "places": 4,
-                "avaliable": True,
-                'id': 2
-            }
-}
 
 WaitingTask.askBooking = AskBooking()
 WaitingTask.askGroupSize = AskGroupSize()
