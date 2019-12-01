@@ -1,5 +1,3 @@
-from task_base import Wander, GreetCustomer
-
 from queue import PriorityQueue
 from typing import Type
 
@@ -12,18 +10,20 @@ from restaurant.msg import Task
 def get_priority(task):
     return (task.timeCreated - dt.now()) * task.priority
 
-class TaskManager():
+
+class TaskManager:
     """
     Listens for new tasks and broadcasts highest priority job to executer
     """
     def __init__(self):
-        self.current_tasks = PriorityQueue
 
-        self.add_task(Wander())
+        # self.add_task(Wander())
 
         rospy.Subscriber("/task", Task, self.subscriber)
         self.pub = rospy.Publisher('/task', Task, queue_size=1)
         rospy.init_node('Manager', anonymous=True)
+
+        self.current_tasks = PriorityQueue
 
         self.publish_next_task()
 

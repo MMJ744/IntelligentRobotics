@@ -91,21 +91,9 @@ class UnknownAnswer(State):
 
 class WaitingTask(StateMachine):
     def __init__(self):
-        StateMachine.__init__(self, WaitingTask.askBooking)
+        super.__init__(self, WaitingTask.askBooking)
         self.groupTable = -1
         self.groupSize = 99999
-        self.tables = {
-            1 : {
-                "places": 6,
-                "avaliable": False,
-                'id': 1
-            },
-            2 : {
-                "places": 4,
-                "avaliable": True,
-                'id': 2
-            }
-}
 
 WaitingTask.askBooking = AskBooking()
 WaitingTask.askGroupSize = AskGroupSize()
