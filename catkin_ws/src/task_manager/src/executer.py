@@ -5,13 +5,6 @@ from restaurant.msg import Task
 
 class Model:
     def __init__(self):
-        self.priorityLevels = {
-            "IMMEDIATE": 0,
-            "HIGH": 1,
-            "MID": 2,
-            "LOW": 3,
-            "BASE": 4
-        }
 
         self.locations = ["Kitchen", "Table1", "Table2", "FrontDesk"]
 
