@@ -6,8 +6,9 @@ from Speech import speech, navTo, listen
 instance = 0
 
 
-class checkEntry(State):
+class CheckEntry(State):
     global instance
+
     def run(self):
         navTo(self.door)
 
@@ -16,8 +17,9 @@ class checkEntry(State):
         return WanderTask.checkTables
 
 
-class checkTables(State):
+class CheckTables(State):
     global instance
+
     def run(self):
         tbls = [filter(lambda x: not x["available"], self.tables)]
         tbls.sort(reverse=self.reverse)
@@ -31,8 +33,9 @@ class checkTables(State):
             return WanderTask.checkTables
 
 
-class checkKitchen(State):
+class CheckKitchen(State):
     global instance
+
     def run(self):
         navTo(self.kitchen)
 
@@ -44,21 +47,20 @@ class checkKitchen(State):
 class WanderTask(StateMachine):
     def __init__(self):
         StateMachine.__init__(self, WanderTask.checkEntry)
-        self.groupTable = -1
-        self.groupSize = 99999
         self.tables = [
             {
                 "places": 6,
-                "avaliable": False,
+                "available": False,
                 'id': 1
             },
             {
                 "places": 4,
-                "avaliable": True,
+                "available": True,
                 'id': 2
             }
         ]
         self.reverse = False
+
 
 WanderTask.checkEntry = CheckEntry()
 WanderTask.checkTables = CheckTables()
