@@ -3,9 +3,6 @@ from StateMachine import StateMachine
 from Speech import navigate #, speech,  listen
 
 
-instance = 0
-
-
 class CheckEntry(State):
     global instance
 

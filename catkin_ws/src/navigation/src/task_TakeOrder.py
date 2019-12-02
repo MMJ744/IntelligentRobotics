@@ -89,11 +89,21 @@ class UnknownAnswer(State):
 
 
 class TakeOrderTask(StateMachine):
-    def __init__(self, table, group_size):
-        super(TakeOrderTask, self).__init__(NavigateToTable())
+    def __init__(self, model, table):
+        super(TakeOrderTask, self).__init__(TakeOrderTask.navigateToTable, model)
         self.table = table
-        self.group_size = group_size
+        self.group_size = model.tables[table]
         self.order_items_taken = 0
 
 
+TakeOrderTask.navigateToTable = NavigateToTable()
+TakeOrderTask.checkReady = CheckReady()
+TakeOrderTask.comeBackLater = ComeBackLater()
+TakeOrderTask.takeFirstOrderItem = TakeFirstOrderItem()
+TakeOrderTask.checkMoreOrders = CheckMoreOrders()
+TakeOrderTask.takeOrderItem = TakeOrderItem()
+TakeOrderTask.finished = Finished()
+TakeOrderTask.unknownAnswer = UnknownAnswer()
+
 instance = TakeOrderTask()
+instance.run_all()

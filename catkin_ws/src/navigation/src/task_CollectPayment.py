@@ -81,10 +81,20 @@ class UnknownAnswer(State):
 
 
 class CollectPaymentTask(StateMachine):
-    def __init__(self, table):
-        super(CollectPaymentTask, self).__init__(NavigateToTable())
+    def __init__(self, model, table):
+        super(CollectPaymentTask, self).__init__(CollectPaymentTask.navigateToTable, model)
         self.table = table
         self.payment_taken = False
 
 
+CollectPaymentTask.navigateToTable = NavigateToTable()
+CollectPaymentTask.askIfFinished = AskIfFinished()
+CollectPaymentTask.postpone = Postpone()
+CollectPaymentTask.takePayment = TakePayment()
+CollectPaymentTask.takePaymentRetry = TakePaymentRetry()
+CollectPaymentTask.dispatchHuman = DispatchHuman()
+CollectPaymentTask.dismissCustomers = DismissCustomers()
+CollectPaymentTask.unknownAnswer = UnknownAnswer()
+
 instance = CollectPaymentTask()
+instance.runAll()

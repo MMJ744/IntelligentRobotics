@@ -43,8 +43,8 @@ class Base:
         timestamp and priority level
         """
         self.type = task_type
-        if not table_number is None:
-            self.table_number = table_number
+        self.table_number = table_number
+
         if time is None:
             self.time_created = dt.now()
         else:

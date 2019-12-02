@@ -44,9 +44,15 @@ class UnknownAnswer(State):
 
 
 class CheckupTask(StateMachine):
-    def __init__(self, table):
-        super(CheckupTask, self).__init__(NavigateToTable())
+    def __init__(self, model, table):
+        super(CheckupTask, self).__init__(CheckupTask.navigateToTable, model)
         self.table = table
 
 
+CheckupTask.navigateToTable = NavigateToTable()
+CheckupTask.performCheckup = PerformCheckup()
+CheckupTask.confirmComments = ConfirmComments()
+CheckupTask.unknownAnswer = UnknownAnswer()
+
 instance = CheckupTask()
+instance.runAll()

@@ -67,8 +67,8 @@ class GiveWaitingTime(State):
         else:
             instance.running = False
 
-class BookingDetails(State):
 
+class BookingDetails(State):
     global instance
 
     def run(self):
@@ -100,7 +100,7 @@ class UnknownAnswer(State):
     def run(self):
         speech("Sorry I didn't understand your answer, please can you repeat that")
         instance.addInput('')
-        
+
     def next(self, inputs):
         return instance.previousState
 
@@ -122,4 +122,3 @@ NewCustomerTask.checkGroup = CheckGroup()
 
 instance = NewCustomerTask()
 instance.runAll()
-

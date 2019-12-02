@@ -34,6 +34,8 @@ class TaskExecuter:
     """
 
     def __init__(self):
+        self.model = Model()
+
         rospy.Subscriber("/task", Task, self.subscriber)
         self.pub = rospy.Publisher('/task', Task, queue_size=1)
         rospy.init_node('Executer', anonymous=True)
@@ -48,15 +50,15 @@ class TaskExecuter:
         task_executable = None
 
         if self.current_task.type == "CheckUp":
-            task_executable = CheckUpTask()
+            task_executable = CheckUpTask(self.model)
         elif self.current_task.type == "CollectPayment":
-            task_executable = CollectPaymentTask()
+            task_executable = CollectPaymentTask(self.model, task_info.table_number)
         elif self.current_task.type == "NewCustomer":
-            task_executable = NewCustomerTask()
+            task_executable = NewCustomerTask(self.model)
         elif self.current_task.type == "TakeOrder":
-            task_executable = TakeOrderTask()
+            task_executable = TakeOrderTask(self.model, task_info.table_number)
         elif self.current_task.type == "Wander":
-            task_executable = WanderTask()
+            task_executable = WanderTask(self.model)
 
         if task_executable is None:
             raise NotImplementedError
