@@ -44,7 +44,7 @@ class TakePayment(State):
         if instance.payment_taken:
             return DismissCustomers()
         else:
-            TakePaymentRetry()
+            return TakePaymentRetry()
 
 
 class TakePaymentRetry(State):
