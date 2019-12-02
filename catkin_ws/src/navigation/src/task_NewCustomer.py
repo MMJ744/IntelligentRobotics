@@ -5,6 +5,15 @@ from Speech import speech, navigate, listen
 from navController import main, navigateTo
 
 
+class NavigateToFront(State):
+
+    def run(self, instance):
+        navigateTo("front")
+
+    def next(self, instance, input):
+        return AskBooking()
+
+
 class AskBooking(State):
 
     def run(self, instance):
