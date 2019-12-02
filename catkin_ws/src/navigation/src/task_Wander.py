@@ -4,18 +4,16 @@ from Speech import navigate #, speech,  listen
 
 
 class CheckEntry(State):
-    global instance
 
     def run(self):
         navigate(self.model.locations["FrontDesk"])
 
-    def next(self):
+    def next(self, instance, input):
         self.reverse = False
-        return WanderTask.checkTables
+        return CheckTables()
 
 
 class CheckTables(State):
-    global instance
 
     def run(self):
         tbls = [filter(lambda tbl: not tbl["available"], self.model.tables)]
@@ -23,22 +21,21 @@ class CheckTables(State):
         for table in tbls:
             navigate("table" + table["id"])
 
-    def next(self):
+    def next(self, instance, input):
         if self.reverse:
-            return WanderTask.checkEntry
+            return CheckEntry()
         else:
-            return WanderTask.checkTables
+            return CheckTables()
 
 
 class CheckKitchen(State):
-    global instance
 
     def run(self):
         navigate(self.model.locations["Kitchen"])
 
-    def next(self):
+    def next(self, instance, input):
         self.reverse = True
-        return WanderTask.checkTables
+        return CheckTables()
 
 
 class WanderTask(StateMachine):

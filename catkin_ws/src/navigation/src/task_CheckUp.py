@@ -4,42 +4,41 @@ from Speech import navigateTo, speech, listen
 
 
 class NavigateToTable(State):
-    def run(self):
-        navigateTo("table" + str(instance.table.id))
 
-    def next(self):
+    def run(self, instance):
+        navigateTo("table" + str(instance.table))
+
+    def next(self, instance, input):
         return PerformCheckup()
 
 
 class PerformCheckup(State):
-    def run(self):
+
+    def run(self, instance):
         speech("Is everything okay with your food?")
         instance.addInput(listen())
 
-    def next(self, input):
+    def next(self, instance, input):
         if input == "":
             return UnknownAnswer()
-        elif input[:2] == "no":
-            instance.running = False
         else:
             print("Log checkup comment: \'" + input + "\' on table " + str(instance.table.id))
             return ConfirmComments()
 
 
 class ConfirmComments(State):
-    def run(self):
-        speech("Okay, thank you for your comments. They have been submitted to my organic comrades for review")
 
-    def next(self, input):
+    def run(self, instance):
+        speech("Okay, thank you for your comments. They have been submitted to my organic comrades for review")
         instance.running = False
 
 
 class UnknownAnswer(State):
-    def run(self):
+    def run(self, instance):
         speech("Sorry I didn't understand your answer, please can you repeat that")
         instance.addInput('')
 
-    def next(self, inputs):
+    def next(self, instance, input):
         return instance.previousState
 
 
@@ -48,11 +47,10 @@ class CheckupTask(StateMachine):
         super(CheckupTask, self).__init__(CheckupTask.navigateToTable, model)
         self.table = table
 
-
-CheckupTask.navigateToTable = NavigateToTable()
-CheckupTask.performCheckup = PerformCheckup()
-CheckupTask.confirmComments = ConfirmComments()
-CheckupTask.unknownAnswer = UnknownAnswer()
-
-instance = CheckupTask()
-instance.runAll()
+# CheckupTask.navigateToTable = NavigateToTable()
+# CheckupTask.performCheckup = PerformCheckup()
+# CheckupTask.confirmComments = ConfirmComments()
+# CheckupTask.unknownAnswer = UnknownAnswer()
+#
+# instance = CheckupTask()
+# instance.runAll()

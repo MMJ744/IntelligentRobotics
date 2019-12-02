@@ -11,8 +11,8 @@ class StateMachine:
         self.currentState.run()
         while self.running:
             self.previousState = self.currentState
-            self.currentState = self.currentState.next(self.inputs.pop())
-            self.currentState.run()
+            self.currentState = self.currentState.next(self, self.inputs.pop())
+            self.currentState.run(self)
 
     def addInput(self, input):
         self.inputs.append(input)

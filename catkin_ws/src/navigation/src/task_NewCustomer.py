@@ -5,120 +5,109 @@ from Speech import speech, navigate, listen
 from navController import main, navigateTo
 
 
-instance = 0
-
-
 class AskBooking(State):
-    global instance
 
-    def run(self):
+    def run(self, instance):
         speech("Do you have a booking")
         # response = listen()
         response = 'no'
         instance.addInput(response)
 
-    def next(self, input):
+    def next(self, instance, input):
         if 'yes' in input:
-            return NewCustomerTask.bookingDetails
+            return BookingDetails()
         if 'no' in input:
-            return NewCustomerTask.askGroupSize
-        return NewCustomerTask.unknownAnswer
+            return AskGroupSize()
+        return UnknownAnswer()
 
 
 class AskGroupSize(State):
-    global instance
 
-    def run(self):
+    def run(self, instance):
         speech("How many people are there in your group")
         # response = listen()
         response = 9
         instance.addInput(response)
 
-    def next(self, input):
+    def next(self, instance, input):
         if input == '':
-            return NewCustomerTask.unknownAnswer
+            return UnknownAnswer()
         else:
-            instance.groupSize = int(input)
-            return NewCustomerTask.checkGroup
+            instance.group_size = int(input)
+            return CheckGroup
 
 
 class GuideToTable(State):
-    global instance
 
-    def run(self):
+    def run(self, instance):
         speech("Please follow me to your table")
-        navigateTo("table"+str(instance.groupTable))
+        navigateTo("table" + str(instance.group_table))
         speech("Please take a seat someone will be with you in a few minutes")
         instance.addInput('')
         instance.running = False
 
 
 class GiveWaitingTime(State):
-    global instance
 
-    def run(self):
+    def run(self, instance):
         speech("Your wait time is 60 minutes, is this okay")
         response = listen()
         instance.addInput(response)
 
-    def next(self, input):
+    def next(self, instance, input):
         if 'yes' in input:
-            return NewCustomerTask.guideToTable
+            return GuideToTable
         else:
-            instance.running = False
+            return BookingDetails()
 
 
 class BookingDetails(State):
-    global instance
 
-    def run(self):
+    def run(self, instance):
         instance.addInput('')
         instance.running = False
 
 
 class CheckGroup(State):
-    global instance
 
-    def run(self):
-        for table in self.model.tables:
-            if table['available'] and table['places'] >= instance.groupSize:
+    def run(self, instance):
+        for table in instance.tables:
+            if table['available'] and table['places'] >= instance.group_size:
                 table['available'] = False
-                instance.groupTable = table['id']
+                instance.group_table = table['id']
                 break
         instance.addInput('')
 
-    def next(self, input):
-        if instance.groupTable != -1:
-            return NewCustomerTask.guideToTable
+    def next(self, instance, input):
+        if instance.group_table != -1:
+            return GuideToTable()
         else:
-            return NewCustomerTask.giveWaitingTime
+            return GiveWaitingTime()
 
 
 class UnknownAnswer(State):
-    global instance
 
-    def run(self):
+    def run(self, instance):
         speech("Sorry I didn't understand your answer, please can you repeat that")
         instance.addInput('')
 
-    def next(self, inputs):
+    def run(self, instance, inputs):
         return instance.previousState
 
 
 class NewCustomerTask(StateMachine):
     def __init__(self, model):
-        super(NewCustomerTask, self).__init__(NewCustomerTask.askBooking, model)
-        self.groupTable = -1
-        self.groupSize = 99999
+        super(NewCustomerTask, self).__init__(AskBooking(), model)
+        self.group_table = -1
+        self.group_size = 99999
 
-
-NewCustomerTask.askBooking = AskBooking()
-NewCustomerTask.askGroupSize = AskGroupSize()
-NewCustomerTask.guideToTable = GuideToTable()
-NewCustomerTask.giveWaitingTime = GiveWaitingTime()
-NewCustomerTask.bookingDetails = BookingDetails()
-NewCustomerTask.unknownAnswer = UnknownAnswer()
-NewCustomerTask.checkGroup = CheckGroup()
-
-instance = NewCustomerTask()
-instance.runAll()
+# NewCustomerTask.askBooking = AskBooking()
+# NewCustomerTask.askGroupSize = AskGroupSize()
+# NewCustomerTask.guideToTable = GuideToTable()
+# NewCustomerTask.giveWaitingTime = GiveWaitingTime()
+# NewCustomerTask.bookingDetails = BookingDetails()
+# NewCustomerTask.unknownAnswer = UnknownAnswer()
+# NewCustomerTask.checkGroup = CheckGroup()
+#
+# instance = NewCustomerTask()
+# instance.runAll()

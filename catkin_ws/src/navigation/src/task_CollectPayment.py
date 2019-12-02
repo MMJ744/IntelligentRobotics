@@ -4,19 +4,21 @@ from Speech import navigateTo, speech, listen
 
 
 class NavigateToTable(State):
-    def run(self):
-        navigateTo("table" + str(instance.table.id))
 
-    def next(self):
+    def run(self, instance):
+        navigateTo("table" + str(instance.table_number))
+
+    def next(self, instance, input):
         return AskIfFinished()
 
 
 class AskIfFinished(State):
-    def run(self):
+
+    def run(self, instance):
         speech("Has everyone here finished their meal?")
         instance.addInput(listen())
 
-    def next(self, input):
+    def next(self, instance, input):
         if input[:2] == "no":
             return Postpone()
         elif input[:3] == "yes":
@@ -26,28 +28,31 @@ class AskIfFinished(State):
 
 
 class Postpone(State):
-    def run(self):
-        speech("My apologies, I shall return later")
 
-    def next(self):
+    def run(self, instance):
+        speech("My apologies, I shall return later")
         instance.running = False
 
 
 class TakePayment(State):
-    def run(self):
+
+    def run(self, instance):
         speech("Please present your card to make your payment")
         instance.payment_taken = True  # Le bodge
 
-    def next(self):
+    def next(self, instance, input):
         if instance.payment_taken:
             return DismissCustomers()
+        else:
+            TakePaymentRetry()
 
 
 class TakePaymentRetry(State):
-    def run(self):
+
+    def run(self, instance):
         speech("I'm sorry, that payment wasn't successful. Please try again.")
 
-    def next(self):
+    def next(self, instance, input):
         if instance.payment_taken:
             return DismissCustomers()
         else:
@@ -55,46 +60,44 @@ class TakePaymentRetry(State):
 
 
 class DispatchHuman(State):
-    def run(self):
+
+    def run(self, instance):
         speech("I'm sorry, I haven't been able to take a payment from you. Please await further assistance")
         print("Table " + str(instance.table.id) + " unprofitable. Please assist")
-
-    def next(self):
         instance.running = False
 
 
 class DismissCustomers(State):
-    def run(self):
-        speech("Thank you, your payment has been processed. You may now leave.")
 
-    def next(self):
+    def run(self, instance):
+        speech("Thank you, your payment has been processed. You may now leave.")
         instance.running = False
 
 
 class UnknownAnswer(State):
-    def run(self):
+
+    def run(self, instance):
         speech("Sorry I didn't understand your answer, please can you repeat that")
         instance.addInput('')
 
-    def next(self, inputs):
+    def next(self, instance, input):
         return instance.previousState
 
 
 class CollectPaymentTask(StateMachine):
     def __init__(self, model, table):
         super(CollectPaymentTask, self).__init__(CollectPaymentTask.navigateToTable, model)
-        self.table = table
+        self.table_number = table
         self.payment_taken = False
 
-
-CollectPaymentTask.navigateToTable = NavigateToTable()
-CollectPaymentTask.askIfFinished = AskIfFinished()
-CollectPaymentTask.postpone = Postpone()
-CollectPaymentTask.takePayment = TakePayment()
-CollectPaymentTask.takePaymentRetry = TakePaymentRetry()
-CollectPaymentTask.dispatchHuman = DispatchHuman()
-CollectPaymentTask.dismissCustomers = DismissCustomers()
-CollectPaymentTask.unknownAnswer = UnknownAnswer()
-
-instance = CollectPaymentTask()
-instance.runAll()
+# CollectPaymentTask.navigateToTable = NavigateToTable()
+# CollectPaymentTask.askIfFinished = AskIfFinished()
+# CollectPaymentTask.postpone = Postpone()
+# CollectPaymentTask.takePayment = TakePayment()
+# CollectPaymentTask.takePaymentRetry = TakePaymentRetry()
+# CollectPaymentTask.dispatchHuman = DispatchHuman()
+# CollectPaymentTask.dismissCustomers = DismissCustomers()
+# CollectPaymentTask.unknownAnswer = UnknownAnswer()
+#
+# instance = CollectPaymentTask()
+# instance.runAll()
