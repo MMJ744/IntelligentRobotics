@@ -53,7 +53,9 @@ def get_neighbours(pos):
             if x2 < 0 or x2 > width or y2 < 0 or y2 > height:
                 continue
             n.append((x2, y2))
+            print(staticObstacles)
             if (x2, y2) in staticObstacles:
+                print(hi)
                 cost.append(1000)
             else:
                 cost.append(1)
