@@ -52,6 +52,7 @@ find_package(catkin REQUIRED COMPONENTS
 add_message_files(
 	FILES
 	Target.msg
+	Task.msg
 )
 
 ## Generate services in the 'srv' folder
