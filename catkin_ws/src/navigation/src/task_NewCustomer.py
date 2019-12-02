@@ -56,7 +56,7 @@ class GiveWaitingTime(State):
 
     def next(self, instance, input):
         if 'yes' in input:
-            return GuideToTable
+            return GuideToTable()
         else:
             return BookingDetails()
 
