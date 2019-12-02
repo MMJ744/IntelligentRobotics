@@ -24,8 +24,8 @@ costmap = []
 width = 10
 origin = (0,0)
 height = 10
-resolution = 0.05
-cutoff = 10
+resolution = 1.0
+cutoff = 5
 pub = 0
 go = False
 goalLocation = (0,0)
@@ -44,7 +44,7 @@ def getNeighbours(n):
     global height
     global width
     neighbours = []
-    diagcost = 1.9
+    diagcost = 1.4142135
     x = n.x
     y = n.y
     if x > 0:
@@ -71,7 +71,9 @@ def getNeighbours(n):
 
 
 def h(current, goal):
-    return (current.x-goal.x)**2 + (current.y-goal.y)**2
+    return (abs(goal.x - current.x) + abs(goal.y - current.y))
+    #return (current.x-goal.x)**2 + (current.y-goal.y)**2
+    
 
 
 def findPath(startx, starty, goalx, goaly):
@@ -85,6 +87,8 @@ def findPath(startx, starty, goalx, goaly):
     closedList = []
     startNode = Node(startx, starty)
     goalNode = Node(goalx, goaly)
+    startNode.h = h(startNode,goalNode)
+    startNode.f = startNode.g + startNode.h
     openList.append(startNode)
     while(len(openList)>0):
         current = openList[0]
@@ -93,7 +97,7 @@ def findPath(startx, starty, goalx, goaly):
             if node.f < current.f:
                 current = node
                 index = i
-        openList.pop(index)
+        current = openList.pop(index)
         closedList.append(current)
         if current==goalNode:
             path = []
@@ -111,28 +115,24 @@ def findPath(startx, starty, goalx, goaly):
                 current = current.parent
             print("got path")
             return path[::-1]
-        for neighbour in getNeighbours(current):
-            inclosed = False
-            for n in closedList:
-                if neighbour == n:
-                    inclosed = True
-                    break
-            if(inclosed):
+        neighbours =getNeighbours(current)
+        for neighbour in neighbours:
+            if neighbour in closedList:
                 continue
+            #neighbour.g = current.g + neighbour.cost
             neighbour.g = current.g + neighbour.cost
             neighbour.h = h(neighbour, goalNode)
             neighbour.f = neighbour.g + neighbour.h
             neighbour.parent = current
-            add = True
-            for i,n in enumerate(openList):
-                if n == neighbour:
-                    add = False
-                    if n.f <= neighbour.f:
-                        break
-                    else:
-                        openList[i] = neighbour
-            if(add):
+            if neighbour not in openList:
                 openList.append(neighbour)
+            else:
+                i = openList.index(neighbour)
+                if neighbour.g < openList[i].g:
+                    openList[i].g = neighbour.g
+                    openList[i].f = neighbour.f
+                    openList[i].h = neighbour.h
+                    openList[i].parent = current
     print("couldnt make path")
     return [startNode]
 
@@ -154,17 +154,17 @@ def mapToPose(p):
 
 def test():
     global costmap
-    costmap = [ 0, 0, 0, 0, 250, 0, 0, 0, 0, 0,
-                0, 0, 0, 0, 250, 0, 0, 0, 0, 0,
-                0, 0, 0, 0, 250, 0, 0, 0, 0, 0,
-                0, 0, 0, 0, 250, 0, 0, 0, 0, 0,
-                0, 0, 0, 0, 250, 0, 0, 0, 0, 0, 
+    costmap = [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
                 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 
-                0, 0, 0, 0, 250, 0, 0, 0, 0, 0,
-                0, 0, 0, 0, 250, 0, 0, 0, 0, 0,
-                0, 0, 0, 0, 250, 0, 0, 0, 0, 0,
-                0, 0, 0, 0, 250, 0, 0, 0, 0, 0]
-    path = findPath(3,9,5,9)
+                0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 
+                0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+    path = findPath(0,0,9,7)
     for i in range(len(path)-1):
         p1 = path[i]
         p2 = path[i+1]
@@ -221,6 +221,8 @@ def calculateAngle(p1,p2):
 
 def main():
     global go
+    global currentLocation
+    global goalLocation
     rospy.init_node('Global_Planner', anonymous=True)
     rospy.Subscriber("/move_base/global_costmap/costmap", OccupancyGrid, mapcallback)
     rospy.Subscriber('/map_metadata', MapMetaData, metaCallback)
