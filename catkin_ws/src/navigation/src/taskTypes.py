@@ -1,6 +1,23 @@
 import datetime.datetime as dt
 
 
+def create(task_msg):
+    if task_msg.type == "CheckUp":
+        task_info = CheckUp(task_msg.created_at, task_msg.table_number)
+    elif task_msg.type == "CollectPayment":
+        task_info = CollectPayment(task_msg.created_at, task_msg.table_number)
+    elif task_msg.type == "NewCustomer":
+        task_info = NewCustomer(task_msg.created_at)
+    elif task_msg.type == "TakeOrder":
+        task_info = TakeOrder(task_msg.created_at, task_msg.table_number)
+    elif task_msg.type == "Wander":
+        task_info = Wander(task_msg.created_at)
+    else:
+        raise NotImplementedError
+
+    return task_info
+
+
 def get_priority_level(task_type):
     priority_multipliers = {
         "IMMEDIATE": 4,
@@ -11,10 +28,11 @@ def get_priority_level(task_type):
     }
     priority_levels = {
         "Wander": "BASE",
-        "Waiting": "MID",
+        "NewCustomer": "MID",
+        "CollectPayment": "MID",
         "CheckUp": "LOW",
-        "Order": "HIGH",
-        "Deliver": "IMMEDIATE",
+        "TakeOrder": "HIGH",
+        "Deliver": "IMMEDIATE"
     }
     return priority_multipliers[priority_levels[task_type]]
 
@@ -40,14 +58,15 @@ class Base:
     def update_priority(self):
         self.priority = self.get_priority()
 
+
 class Wander(Base):
     def __init__(self, time=None):
         super().__init__("Wander", time)
 
 
-class Waiting(Base):
+class NewCustomer(Base):
     def __init__(self, time=None):
-        super().__init__("Waiting", time)
+        super().__init__("NewCustomer", time)
 
 
 class CheckUp(Base):
@@ -55,11 +74,16 @@ class CheckUp(Base):
         super().__init__("CheckUp", time, table_number=table_number)
 
 
-class Order(Base):
+class TakeOrder(Base):
     def __init__(self, table_number, time=None):
-        super().__init__("Order", time, table_number=table_number)
+        super().__init__("TakeOrder", time, table_number=table_number)
 
 
 class Deliver(Base):
     def __init__(self, table_number, time=None):
         super().__init__("Deliver", time, table_number=table_number)
+
+
+class CollectPayment(Base):
+    def __init__(self, table_number, time=None):
+        super().__init__("CollectPayment", time, table_number=table_number)

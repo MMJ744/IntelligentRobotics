@@ -18,10 +18,10 @@ class AskBooking(State):
 
     def next(self, input):
         if 'yes' in input:
-            return WaitingTask.bookingDetails
+            return NewCustomerTask.bookingDetails
         if 'no' in input:
-            return WaitingTask.askGroupSize
-        return WaitingTask.unknownAnswer
+            return NewCustomerTask.askGroupSize
+        return NewCustomerTask.unknownAnswer
 
 class AskGroupSize(State):
     global instance
@@ -33,10 +33,10 @@ class AskGroupSize(State):
 
     def next(self, input):
         if input == '':
-            return WaitingTask.unknownAnswer
+            return NewCustomerTask.unknownAnswer
         else:
             instance.groupSize = int(input)
-            return WaitingTask.checkGroup
+            return NewCustomerTask.checkGroup
 
 class GuideToTable(State):
     global instance
@@ -56,7 +56,7 @@ class GiveWaitingTime(State):
 
     def next(self, input):
         if 'yes' in input:
-            return WaitingTask.guideToTable
+            return NewCustomerTask.guideToTable
         else:
             instance.running = False
 
@@ -79,9 +79,9 @@ class CheckGroup(State):
 
     def next(self, input):
         if (instance.groupTable != -1):
-            return WaitingTask.guideToTable
+            return NewCustomerTask.guideToTable
         else:
-            return WaitingTask.giveWaitingTime
+            return NewCustomerTask.giveWaitingTime
 
 class UnknownAnswer(State):
     global instance
@@ -92,21 +92,21 @@ class UnknownAnswer(State):
     def next(self, inputs):
         return instance.previousState
 
-class WaitingTask(StateMachine):
+class NewCustomerTask(StateMachine):
     def __init__(self, model):
-        super(WaitingTask, self).__init__(WaitingTask.askBooking, model)
+        super(NewCustomerTask, self).__init__(NewCustomerTask.askBooking, model)
         self.groupTable = -1
         self.groupSize = 99999
 
 
-WaitingTask.askBooking = AskBooking()
-WaitingTask.askGroupSize = AskGroupSize()
-WaitingTask.guideToTable = GuideToTable()
-WaitingTask.giveWaitingTime = GiveWaitingTime()
-WaitingTask.bookingDetails = BookingDetails()
-WaitingTask.unknownAnswer = UnknownAnswer()
-WaitingTask.checkGroup = CheckGroup()
+NewCustomerTask.askBooking = AskBooking()
+NewCustomerTask.askGroupSize = AskGroupSize()
+NewCustomerTask.guideToTable = GuideToTable()
+NewCustomerTask.giveWaitingTime = GiveWaitingTime()
+NewCustomerTask.bookingDetails = BookingDetails()
+NewCustomerTask.unknownAnswer = UnknownAnswer()
+NewCustomerTask.checkGroup = CheckGroup()
 
-instance = WaitingTask()
+instance = NewCustomerTask()
 instance.runAll()
 

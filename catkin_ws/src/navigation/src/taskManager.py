@@ -1,10 +1,9 @@
 from queue import PriorityQueue
-import TaskType as tt
 
-import datetime.datetime as dt
+import taskTypes as tt
 
 import rospy
-from restaurant.msg import Task
+from navigation.msg import Task
 
 
 
@@ -51,11 +50,6 @@ class TaskManager:
 
     def subscriber(self, task):
         if task.finished:
-            if task.task_type == "Wander":
-                t = tt.Wander(task.created_at)
-            elif task.task_type == "Waiting":
-                t = tt.Waiting(task.created_at)
-            else:
-                raise NotImplementedError
-            self.update_priorities(remove=t)
+            finished_task = tt.create(task)
+            self.update_priorities(remove=finished_task)
             self.publish_next_task()
