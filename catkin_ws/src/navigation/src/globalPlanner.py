@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 import rospy
-from geometry_msgs.msg import PoseStamped, Twist, PoseWithCovarianceStamped, Quaternion
+from geometry_msgs.msg import PoseStamped, Twist, PoseWithCovarianceStamped, Quaternion, PoseArray, Pose
 from move_base_msgs.msg import MoveBaseGoal, MoveBaseAction, MoveBaseActionGoal
 from sensor_msgs.msg import LaserScan,PointCloud2
 from nav_msgs.msg import Odometry, OccupancyGrid, Path, MapMetaData
@@ -24,6 +24,7 @@ costmap = []
 width = 10
 origin = (0,0)
 height = 10
+arpub = 0
 resolution = 1.0
 cutoff = 5
 pub = 0
@@ -71,9 +72,11 @@ def getNeighbours(n):
 
 
 def h(current, goal):
-    return (abs(goal.x - current.x) + abs(goal.y - current.y))
-    #return (current.x-goal.x)**2 + (current.y-goal.y)**2
-    
+    #return (abs(goal.x - current.x) + abs(goal.y - current.y))
+    #return math.sqrt((current.x-goal.x)**2 + (current.y-goal.y)**2)
+    dx = abs(goal.x - current.x)
+    dy = abs(goal.y - current.y)
+    return 1*(dx+dy) + (2-2*1)
 
 
 def findPath(startx, starty, goalx, goaly):
@@ -114,6 +117,20 @@ def findPath(startx, starty, goalx, goaly):
                 path.append(pose)
                 current = current.parent
             print("got path")
+            posarr = PoseArray()
+            header = Header()
+            header.frame_id = "map"
+            l = []
+            for c in closedList:
+                pose = Pose()
+                p = mapToPose((c.x,c.y))
+                pose.position.x = p[0]
+                pose.position.y = p[1]
+                l.append(pose)
+            posarr.poses = l
+            posarr.header = header
+            print(posarr)
+            arpub.publish(posarr)
             return path[::-1]
         neighbours =getNeighbours(current)
         for neighbour in neighbours:
@@ -223,13 +240,15 @@ def main():
     global go
     global currentLocation
     global goalLocation
+    global arpub
     rospy.init_node('Global_Planner', anonymous=True)
     rospy.Subscriber("/move_base/global_costmap/costmap", OccupancyGrid, mapcallback)
     rospy.Subscriber('/map_metadata', MapMetaData, metaCallback)
     rospy.Subscriber("amcl_pose", PoseWithCovarianceStamped, poseCallback)
     rospy.Subscriber("move_base_simple/goal",PoseStamped, goalCallback)
-    #pathPub = rospy.Publisher("/move_base/GlobalPlanner/plan", Path, queue_size=10)
-    pathPub = rospy.Publisher("/path", Path, queue_size=1)
+    pathPub = rospy.Publisher("/move_base/GlobalPlanner/plan", Path, queue_size=10)
+    arpub = rospy.Publisher("killme", PoseArray, queue_size=1)
+    #pathPub = rospy.Publisher("/path", Path, queue_size=1)
     rate = rospy.Rate(100)
     while not rospy.is_shutdown():
         if go:
@@ -249,7 +268,6 @@ def main():
                 path[i] = p1
             plan = Path()
             plan.poses = path
-            print(path)
             header = Header()
             header.frame_id = "map"
             plan.header = header

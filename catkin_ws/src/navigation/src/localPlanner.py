@@ -53,6 +53,7 @@ def pathCallback(data):
 
 
 def checkOpen(p):
+    return True
     global resolution
     global origin
     global width
@@ -87,8 +88,9 @@ def main():
     rospy.Subscriber("/move_base/GlobalPlanner/plan", Path, pathCallback)
     rate = rospy.Rate(10)
     blockage = False
-    linearFactor = 1
-    angluarFactor = 1
+    linearFactor = 0.5
+    angluarFactor = 0.7
+    gtheta = 0.00
     twist = Twist()
     while not rospy.is_shutdown():
         rospy.wait_for_message('/move_base/GlobalPlanner/plan', Path)
@@ -97,9 +99,9 @@ def main():
             currentPoint = path.pop(0)
             q = currentPoint.pose.orientation
             gtheta = math.atan2(2 * (q.x * q.y + q.w * q.z), q.w * q.w + q.x * q.x - q.z * q.z)
+            twist = Twist()
             while abs(gtheta - theta) > 0.05:
                 twist.angular.z = angluarFactor * (gtheta - theta)
-                print(twist)
                 movePub.publish(twist)
                 rate.sleep()
         while len(path) > 0:
@@ -115,24 +117,34 @@ def main():
                 print("going forward")
                 distance = math.sqrt(((nextPoint.pose.position.x-x)**2) + ((nextPoint.pose.position.y-y)**2))
                 twist = Twist()
-                while distance > 0.1: #keep going till u close enough
+                missed = False
+                old = 0
+                while distance > 0.4: #keep going till u close enough
                     print(distance)
-                    twist.linear.x = linearFactor * distance
-                    print(twist)
+                    if missed:
+                        twist.linear.x = linearFactor * -distance
+                    else:
+                        twist.linear.x = linearFactor * distance
                     movePub.publish(twist)
                     rate.sleep()
+                    old = distance
                     distance = math.sqrt(((nextPoint.pose.position.x-x)**2) + ((nextPoint.pose.position.y-y)**2))
+                    if old < distance:
+                        missed = True
+                        print("missed")
                 q = nextPoint.pose.orientation
                 gtheta = math.atan2(2 * (q.x * q.y + q.w * q.z), q.w * q.w + q.x * q.x - q.z * q.z)
-                while abs(gtheta - theta) > 0.05:
+                print("turning")
+                while abs(gtheta - theta) > 0.03:
                     twist.angular.z = angluarFactor * (gtheta - theta)
-                    print(twist)
                     movePub.publish(twist)
                     rate.sleep()
             else:
                 blockage = True
         if blockage:
-            navOutPub.publish(-1) #Goal was blocked /
+            print("failed")
+            navOutPub.publish(-1) #Goal was blocked
+        print("DID IT YAY")
         navOutPub.publish(0) #Done
 
 
