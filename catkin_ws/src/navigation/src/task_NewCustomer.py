@@ -10,9 +10,10 @@ instance = 0
 
 class AskBooking(State):
     global instance
+
     def run(self):
         speech("Do you have a booking")
-        #response = listen()
+        # response = listen()
         response = 'no'
         instance.addInput(response)
 
@@ -23,11 +24,13 @@ class AskBooking(State):
             return NewCustomerTask.askGroupSize
         return NewCustomerTask.unknownAnswer
 
+
 class AskGroupSize(State):
     global instance
+
     def run(self):
         speech("How many people are there in your group")
-        #response = listen()
+        # response = listen()
         response = 9
         instance.addInput(response)
 
@@ -38,8 +41,10 @@ class AskGroupSize(State):
             instance.groupSize = int(input)
             return NewCustomerTask.checkGroup
 
+
 class GuideToTable(State):
     global instance
+
     def run(self):
         speech("Please follow me to your table")
         navigateTo("table"+str(instance.groupTable))
@@ -47,8 +52,10 @@ class GuideToTable(State):
         instance.addInput('')
         instance.running = False
 
+
 class GiveWaitingTime(State):
     global instance
+
     def run(self):
         speech("Your wait time is 60 minutes, is this okay")
         response = listen()
@@ -61,7 +68,9 @@ class GiveWaitingTime(State):
             instance.running = False
 
 class BookingDetails(State):
+
     global instance
+
     def run(self):
         instance.addInput('')
         instance.running = False
@@ -69,6 +78,7 @@ class BookingDetails(State):
 
 class CheckGroup(State):
     global instance
+
     def run(self):
         for table in self.model.tables:
             if table['available'] and table['places'] >= instance.groupSize:
@@ -78,19 +88,22 @@ class CheckGroup(State):
         instance.addInput('')
 
     def next(self, input):
-        if (instance.groupTable != -1):
+        if instance.groupTable != -1:
             return NewCustomerTask.guideToTable
         else:
             return NewCustomerTask.giveWaitingTime
 
+
 class UnknownAnswer(State):
     global instance
+
     def run(self):
         speech("Sorry I didn't understand your answer, please can you repeat that")
         instance.addInput('')
         
     def next(self, inputs):
         return instance.previousState
+
 
 class NewCustomerTask(StateMachine):
     def __init__(self, model):
