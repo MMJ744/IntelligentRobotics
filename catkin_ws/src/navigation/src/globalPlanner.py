@@ -76,7 +76,7 @@ def h(current, goal):
     #return math.sqrt((current.x-goal.x)**2 + (current.y-goal.y)**2)
     dx = abs(goal.x - current.x)
     dy = abs(goal.y - current.y)
-    return 1*(dx+dy) + (2-2*1)
+    return 1*(dx+dy) + (2-2*1)*min(dx,dy)
 
 
 def findPath(startx, starty, goalx, goaly):

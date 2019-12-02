@@ -219,7 +219,7 @@ def main():
         if go:
             go = False
             path,cost = AStarSearch((currentLocation[0],currentLocation[1]),(goalLocation[0],goalLocation[1]))
-            display(path,cost)
+            #display(path,cost)
             newPath = []
             for i in range(len(path)-1):
                 p1 = toPose(path[i])
@@ -240,6 +240,7 @@ def main():
             plan.header = header
             pathPub.publish(plan)
             print("published path")
+            display(path,cost)
         rate.sleep()
 
 def toPose(point):
