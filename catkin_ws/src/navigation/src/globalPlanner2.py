@@ -37,6 +37,11 @@ def processCostMap(costmap):
     staticObstacles = {key: None for key in temp} 
     
 def h(start, goal):
+    dx = abs(start[0] - goal[0])
+    dy = abs(start[1] - goal[1])
+    return dx + dy
+    
+def h2(start, goal):
         #Use Chebyshev distance heuristic
         D = 1
         D2 = 1
@@ -52,21 +57,17 @@ def get_neighbours(pos):
             y2 = pos[1] + dy
             if x2 < 0 or x2 > width or y2 < 0 or y2 > height:
                 continue
-            n.append((x2, y2))
-            if (x2, y2) in staticObstacles:
-                cost.append(1000)
-            else:
+            if (x2, y2) not in staticObstacles:
                 cost.append(1)
+                n.append((x2, y2))
         for dx, dy in [(1,1),(-1,1),(1,-1),(-1,-1)]:
             x2 = pos[0] + dx
             y2 = pos[1] + dy
             if x2 < 0 or x2 > width or y2 < 0 or y2 > height:
                 continue
-            n.append((x2, y2))
-            if (x2, y2) in staticObstacles:
-                cost.append(1000)
-            else:
+            if (x2, y2) not in staticObstacles:
                 cost.append(1.4)
+                n.append((x2, y2))
                 
         return n, cost
 
