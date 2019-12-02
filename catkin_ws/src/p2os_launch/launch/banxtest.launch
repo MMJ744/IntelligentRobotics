@@ -4,6 +4,7 @@
 	<!-- Run the map server (you can run it here or in another terminal) -->
 	<node name="map_server" pkg="map_server" type="map_server" args="/home/jack/robots/Maps/lgfloor.yaml"/>
 
+	<node pkg="navigation" type="taskExecuter.py" name="TaskManager"> </node>
 	<node pkg="navigation" type="taskManager.py" name="TaskManager"> </node>
 
 	<!-- transform laser co-ordinates into robot-base co-ordinate frame -->

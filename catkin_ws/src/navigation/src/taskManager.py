@@ -7,6 +7,13 @@ import rospy
 from navigation.msg import Task
 
 
+tm = None
+
+
+def new_task(task_type, table_number=-1, delay=0):
+    global tm
+
+    tm.add_task(tt.new(task_type, table_number, delay))
 
 
 class TaskManager:
@@ -14,10 +21,11 @@ class TaskManager:
     Listens for new tasks and broadcasts highest priority job to executer
     """
     def __init__(self):
+        print("new TaskManager")
 
+        rospy.init_node('Manager', anonymous=True)
         rospy.Subscriber("/task", Task, self.subscriber)
         self.pub = rospy.Publisher('/task', Task, queue_size=1)
-        rospy.init_node('Manager', anonymous=True)
 
         self.current_tasks = PriorityQueue
 
@@ -54,3 +62,18 @@ class TaskManager:
             finished_task = tt.create(task)
             self.update_priorities(remove=finished_task)
             self.publish_next_task()
+
+
+def main():
+    global tm
+    tm = TaskManager()
+    rate = rospy.Rate(1)
+    while not rospy.is_shutdown():
+        rate.sleep()
+
+
+if __name__ == '__main__':
+    try:
+        main()
+    except rospy.ROSInterruptException:
+        print("err task management")

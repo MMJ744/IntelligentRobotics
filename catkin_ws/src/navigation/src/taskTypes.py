@@ -1,4 +1,5 @@
 from datetime import datetime as dt
+import rospy
 
 
 def create(task_msg):
@@ -17,6 +18,24 @@ def create(task_msg):
 
     return task_info
 
+
+def new(task_type, table_number, delay):
+    created_at = dt.now() + rospy.Duration(delay*60)
+
+    if task_type == "CheckUp":
+        task_info = CheckUp(created_at, table_number)
+    elif task_type == "CollectPayment":
+        task_info = CollectPayment(created_at, table_number)
+    elif task_type == "NewCustomer":
+        task_info = NewCustomer(created_at)
+    elif task_type == "TakeOrder":
+        task_info = TakeOrder(created_at, table_number)
+    elif task_type == "Wander":
+        task_info = Wander(created_at)
+    else:
+        raise NotImplementedError
+
+    return task_info
 
 def get_priority_level(task_type):
     priority_multipliers = {

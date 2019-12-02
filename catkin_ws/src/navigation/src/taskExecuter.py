@@ -8,6 +8,7 @@ from task_NewCustomer import NewCustomerTask
 import rospy
 from navigation.msg import Task
 
+te = None
 
 class Model:
     def __init__(self):
@@ -78,3 +79,18 @@ class TaskExecuter:
         if not task.finished:
             priority_task = tt.create(task)
             self.run_task(priority_task)
+
+
+def main():
+    global te
+    te = TaskExecuter()
+    rate = rospy.Rate(1)
+    while not rospy.is_shutdown():
+        rate.sleep()
+
+
+if __name__ == '__main__':
+    try:
+        main()
+    except rospy.ROSInterruptException:
+        print("err task management")
