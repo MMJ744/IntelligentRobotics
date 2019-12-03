@@ -212,7 +212,7 @@ def main():
     rospy.Subscriber('/map_metadata', MapMetaData, metaCallback)
     rospy.Subscriber("amcl_pose", PoseWithCovarianceStamped, poseCallback)
     rospy.Subscriber("move_base_simple/goal",PoseStamped, goalCallback)
-    pathPub = rospy.Publisher("/path", Path, queue_size=1)
+    pathPub = rospy.Publisher("/move_base/GlobalPlanner/plan", Path, queue_size=1)
 
     rate = rospy.Rate(100)
     while not rospy.is_shutdown():
