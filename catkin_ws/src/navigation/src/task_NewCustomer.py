@@ -2,7 +2,7 @@
 from State import State
 from StateMachine import StateMachine
 from Speech import speech, navigate, listen
-from navController import main, navigateTo
+from navController import navigateTo
 import taskManager
 
 
