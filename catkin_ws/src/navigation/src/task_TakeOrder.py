@@ -2,6 +2,7 @@ from StateMachine import StateMachine
 from State import State
 from Speech import speech, listen
 import taskManager
+import taskExecuter
 from navController import navigateTo
 
 
@@ -40,7 +41,7 @@ class TakeFirstOrderItem(State):
         instance.addInput(listen())
 
     def next(self, instance, input):
-        print("Send order \'" + input + "\' for table " + str(instance.table.id) + " to the kitchen")
+        taskExecuter.send_message("kitchen", "Send order \'" + input + "\' for table " + str(instance.table.id) + " to the kitchen")
         return CheckMoreOrders()
 
 
@@ -68,7 +69,7 @@ class TakeOrderItem(State):
         if input == "":
             return UnknownAnswer()
         else:
-            print("Send order \'" + input + "\' for table " + str(instance.table.id) + " to the kitchen")
+            taskExecuter.send_message("kitchen", "Send order \'" + input + "\' for table " + str(instance.table.id) + " to the kitchen")
             return CheckMoreOrders()
 
 

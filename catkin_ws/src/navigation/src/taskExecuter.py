@@ -10,12 +10,23 @@ import rospy
 from navigation.msg import Task
 
 te = None
+model = None
+
+
+def send_message(channel, message):
+    global model
+    model.prepend_message(channel, message)
+
+
+def messages(channel):
+    global model
+    return model.messages[channel]
 
 
 class Model:
     def __init__(self):
 
-        self.locations = ["Kitchen", "Table1", "Table2", "Table3", "FrontDesk"]
+        self.locations = ["kitchen", "table1", "table2", "table3", "frontdesk"]
 
         self.tables = [
             {
@@ -27,8 +38,21 @@ class Model:
                 "places": 4,
                 "available": True,
                 'id': 2
+            },
+            {
+                "places": 3,
+                "available": True,
+                'id': 3
             }
         ]
+
+        self.messages = {
+            "kitchen": "",
+            "staff": ""
+        }
+
+    def prepend_message(self, channel, msg):
+        self.messages[channel] = msg + '\n' + self.messages[channel]
 
 
 class TaskExecuter:
@@ -37,7 +61,10 @@ class TaskExecuter:
     """
 
     def __init__(self):
+        global model
+
         self.model = Model()
+        model = self.model
 
         rospy.Subscriber("task", Task, self.subscriber)
         self.pub = rospy.Publisher('task', Task, queue_size=1)

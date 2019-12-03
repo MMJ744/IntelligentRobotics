@@ -3,6 +3,7 @@ from State import State
 from Speech import speech, listen
 import taskManager
 from navController import navigateTo
+import taskExecuter
 
 
 class NavigateToTable(State):
@@ -66,7 +67,7 @@ class DispatchHuman(State):
 
     def run(self, instance):
         speech("I'm sorry, I haven't been able to take a payment from you. Please await further assistance")
-        print("Table " + str(instance.table.id) + " unprofitable. Please assist")
+        taskExecuter.send_message("staff", "Table " + str(instance.table.id) + " unprofitable. Please assist")
         instance.running = False
 
 

@@ -2,6 +2,7 @@ from StateMachine import StateMachine
 from State import State
 from Speech import speech, listen
 from navController import navigateTo
+import taskExecuter
 
 
 class NavigateToTable(State):
@@ -23,7 +24,7 @@ class PerformCheckup(State):
         if input == "":
             return UnknownAnswer()
         else:
-            print("Log checkup comment: \'" + input + "\' on table " + str(instance.table.id))
+            taskExecuter.send_message("staff", "Log checkup comment: \'" + input + "\' on table " + str(instance.table.id))
             return ConfirmComments()
 
 

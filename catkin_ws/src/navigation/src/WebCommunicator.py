@@ -4,6 +4,7 @@ from flask import request
 import navTo
 
 import taskManager
+import taskExecuter
 
 app = Flask(__name__)
 
@@ -27,21 +28,30 @@ def hello():
 
 @app.route('/kitchen')
 def kitchen():
-    print("kitchen")
     try:
         table = request.args.get('table', '')
         taskManager.new_task("Deliver", table)
+        text = "waiter summoned for table " + table
     except:
-        print("error")
-        return "/kitchen?table=<table_number>"
+        text = "call with /kitchen?table=<table_number>"
+
+    text = text + "\n\n" + taskExecuter.messages("kitchen")
+    return text
+
+
+@app.route('/staff')
+def staff():
+    text = taskExecuter.messages("staff")
+    return text
 
 
 @app.route('/goto')
 def goto():
-    # navTo.navigate(request.args.get('location',''))
+    navTo.navigate(request.args.get('location',''))
     return 'going to ' + request.args.get('location', '') + str(locs[request.args.get('location', '')])
 
 
 if __name__ == '__main__':
     # navTo.main()
+
     app.run(host='0.0.0.0')
