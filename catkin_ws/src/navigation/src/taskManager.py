@@ -27,27 +27,27 @@ class TaskManager:
         rospy.Subscriber("/task", Task, self.subscriber)
         self.pub = rospy.Publisher('/task', Task, queue_size=1)
 
-        self.current_tasks = PriorityQueue
+        self.current_tasks = PriorityQueue()
 
-        self.add_task(tt.Wander)
+        self.add_task(tt.Wander())
 
         self.publish_next_task()
 
     def add_task(self, task):
-        self.current_tasks.put(task.priority, task)
+        self.current_tasks.put(task)
 
     def update_priorities(self, remove=None):
-        updated_priorities_queue = PriorityQueue
+        updated_priorities_queue = PriorityQueue()
 
         for task in self.current_tasks.queue:
             if not task == remove:                              # dubious, logic error?
                 task.update_priority()
-                updated_priorities_queue.put(task.priority, task)
+                updated_priorities_queue.put(task)
         self.current_tasks = updated_priorities_queue
 
     def publish_next_task(self):
         if self.current_tasks.empty():
-            next_task = tt.Wander
+            next_task = tt.Wander()
         else:
             next_task = self.current_tasks.get()
         t = Task()
@@ -60,7 +60,7 @@ class TaskManager:
     def subscriber(self, task):
         if task.finished:
             finished_task = tt.create(task)
-            self.update_priorities(remove=finished_task)
+            #  self.update_priorities(remove=finished_task)     No :'(
             self.publish_next_task()
 
 

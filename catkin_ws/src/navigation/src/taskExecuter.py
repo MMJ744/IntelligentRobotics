@@ -1,5 +1,6 @@
+#!/usr/bin/env python
 import taskTypes as tt
-from task_CheckUp import CheckUpTask
+from task_CheckUp import CheckupTask
 from task_CollectPayment import CollectPaymentTask
 from task_TakeOrder import TakeOrderTask
 from task_Wander import WanderTask

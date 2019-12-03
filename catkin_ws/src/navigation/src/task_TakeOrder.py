@@ -1,11 +1,11 @@
-import StateMachine
-import State
-from Speech import navigateTo, speech, listen
+from StateMachine import StateMachine
+from State import State
+from Speech import navigate, speech, listen
 
 
 class NavigateToTable(State):
     def run(self, instance):
-        navigateTo("table" + str(instance.table.id))
+        navigate("table" + str(instance.table.id))
 
     def next(self, instance, input):
         return CheckReady()
