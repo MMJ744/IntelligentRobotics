@@ -2,4 +2,4 @@
   <class name="global_planner/Empty" type="global_planner::GlobalPlanner" base_class_type="nav_core::BaseGlobalPlanner">
     <description>This is a global planner plugin by iroboapp project.</description>
   </class>
- </library>
+</library>

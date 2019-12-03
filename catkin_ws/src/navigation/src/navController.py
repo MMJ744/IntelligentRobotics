@@ -3,13 +3,17 @@ import rospy
 from navigation.msg import Target
 from geometry_msgs.msg import PoseStamped
 from std_msgs.msg import Int8, String, Header
-import tf
+import tf, math
 
 
 target = None
 locations = {}
 goalPub = 0
 navResult = -1
+x = 0.0
+y = 0.0
+theta = 0.0
+
 
 def navOutCallback(x):
     global navResult
@@ -24,20 +28,37 @@ def navIn(destination):
         print("found destination " + destination.data)
         goalPub.publish(locations[destination.data])
 
+
+def odomCallback(data):
+    global x
+    global y
+    global theta
+    x = data.pose.pose.position.x
+    y = data.pose.pose.position.y
+    q = data.pose.pose.orientation
+    theta = math.atan2(2 * (q.x * q.y + q.w * q.z), q.w * q.w + q.x * q.x - q.z * q.z)
+
+
 def navigateTo(destination):
     global goalPub
-    global navResult
     global locations
+    global x
+    global y
+    global theta
     print("trying to go to " + destination.data)
     if destination.data in locations:
         print("found destination " + destination.data)
-        goalPub.publish(locations[destination.data])
-    navResult = -1
+        goal = locations[destination.data]
+        goalPub.publish(goal)
+        q = goal.pose.orientation
+        gtheta = math.atan2(2 * (q.x * q.y + q.w * q.z), q.w * q.w + q.x * q.x - q.z * q.z)
     rate = rospy.Rate(10)
     while not rospy.is_shutdown():
-        while navResult == -1:
+        distance = math.sqrt(abs(goal.pose.position.x - x) + abs(goal.pose.position.y-y))
+        while distance > 0.5 or abs(gtheta - theta) > 0.2:
             rate.sleep()
-        return navResult
+            distance = math.sqrt(abs(goal.pose.position.x - x) + abs(goal.pose.position.y-y))
+
 
 def main():
     global goalPub
