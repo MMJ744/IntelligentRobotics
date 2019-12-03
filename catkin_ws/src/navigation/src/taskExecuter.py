@@ -4,6 +4,7 @@ from task_CollectPayment import CollectPaymentTask
 from task_TakeOrder import TakeOrderTask
 from task_Wander import WanderTask
 from task_NewCustomer import NewCustomerTask
+from task_Deliver import DeliverTask
 
 import rospy
 from navigation.msg import Task
@@ -59,6 +60,8 @@ class TaskExecuter:
             task_executable = NewCustomerTask(self.model)
         elif self.task_msg.task_type == "TakeOrder":
             task_executable = TakeOrderTask(self.model, self.task_msg.table_number)
+        elif self.task_msg.task_type == "Deliver":
+            task_executable = DeliverTask(self.model, self.task_msg.table_number)
         elif self.task_msg.task_type == "Wander":
             task_executable = WanderTask(self.model)
 
