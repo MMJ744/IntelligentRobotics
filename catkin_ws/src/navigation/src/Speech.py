@@ -35,7 +35,7 @@ def listen():
     # if a RequestError or UnknownValueError exception is caught,
     #     update the response object accordingly
     try:
-        response["transcription"] = recognizer.recognize_google(audio)
+        response["transcription"] = recognizer.recognize_ibm(audio)
     except sr.RequestError:
         # API was unreachable or unresponsive
         response["success"] = False
