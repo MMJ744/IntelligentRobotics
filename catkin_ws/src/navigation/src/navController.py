@@ -24,10 +24,14 @@ def navIn(destination):
         print("found destination " + destination.data)
         goalPub.publish(locations[destination.data])
 
-def navigateTo(destination=PoseStamped()):
+def navigateTo(destination):
     global goalPub
     global navResult
-    goalPub.publish(destination)
+    global locations
+    print("trying to go to " + destination.data)
+    if destination.data in locations:
+        print("found destination " + destination.data)
+        goalPub.publish(locations[destination.data])
     navResult = -1
     rate = rospy.Rate(10)
     while not rospy.is_shutdown():
