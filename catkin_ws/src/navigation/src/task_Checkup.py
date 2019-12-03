@@ -44,7 +44,7 @@ class UnknownAnswer(State):
 
 class CheckupTask(StateMachine):
     def __init__(self, model, table):
-        super(CheckupTask, self).__init__(CheckupTask.navigateToTable, model)
+        super(CheckupTask, self).__init__(NavigateToTable(), model)
         self.table = table
 
 # CheckupTask.navigateToTable = NavigateToTable()
