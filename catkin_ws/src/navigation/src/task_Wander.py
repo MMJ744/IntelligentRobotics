@@ -16,7 +16,7 @@ class CheckTables(State):
             #   self.model.tables[table]["available"] = True
         navigate(self.model.locations["FrontDesk"])
         # if vision.areHuman:
-        #   taskManager.new_task("NewCustomer")    
+        taskManager.new_task("NewCustomer")
         taskManager.new_task("Wander")
         instance.running = False
 
