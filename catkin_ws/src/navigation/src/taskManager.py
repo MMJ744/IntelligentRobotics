@@ -16,11 +16,11 @@ from navigation.msg import Task
 tm = None
 
 
-def new_task(task_type, table_number=-1, delay=0):
+def new_task(task_type, table_number=None, delay=0):
     """
-
-    :param task_type:
-    :param table_number:
+    adds task to priority queue, and will be executed once it becomes the highest priority job
+    :param task_type: name of task to be executed
+    :param table_number: relevant table number, defaults to None
     :param delay: minimum delay time on task execution in minutes, defaults to 0
     :return:
     """
@@ -45,8 +45,15 @@ class TaskManager:
 
         self.publish_next_task()
 
+    def __str__(self):
+        o = "Task Manager:\n\tCurrent Task -\n\t\t" + str(self.current_task) + "\n\tOther Tasks -"
+        for task in self.current_tasks.queue:
+            o = o + "\n\t\t " + str(task) + "\n"
+
+        return o
+
     def add_task(self, task):
-        self.current_tasks.put(task)
+        self.current_tasks.put(task.update_priority())
 
     def update_priorities(self):
         updated_priorities_queue = PriorityQueue()
@@ -73,12 +80,13 @@ class TaskManager:
 
     def subscriber(self, task):
         if task.finished:
+            print("_tm received task done: publish next task")
             finished_task = tt.create(task)
             if finished_task == self.current_task:
                 self.current_task = None
             self.update_priorities()
             self.publish_next_task()
-
+            print(self)
 
 
 def main():

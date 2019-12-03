@@ -3,7 +3,7 @@ import rospy
 
 
 def create(task_msg):
-    if task_msg.type == "CheckUp":
+    if task_msg.type == "Checkup":
         task_info = CheckUp(task_msg.created_at, task_msg.table_number)
     elif task_msg.type == "CollectPayment":
         task_info = CollectPayment(task_msg.created_at, task_msg.table_number)
@@ -22,7 +22,7 @@ def create(task_msg):
 def new(task_type, table_number, delay):
     created_at = dt.now() + rospy.Duration(delay*60)
 
-    if task_type == "CheckUp":
+    if task_type == "Checkup":
         task_info = CheckUp(created_at, table_number)
     elif task_type == "CollectPayment":
         task_info = CollectPayment(created_at, table_number)
@@ -39,7 +39,7 @@ def new(task_type, table_number, delay):
 
 def get_priority_level(task_type):
     priority_multipliers = {
-        "IMMEDIATE": 4,
+        "IMMEDIATE": float("inf"),
         "HIGH": 3,
         "MID": 2,
         "LOW": 1,
@@ -49,7 +49,7 @@ def get_priority_level(task_type):
         "Wander": "BASE",
         "NewCustomer": "MID",
         "CollectPayment": "MID",
-        "CheckUp": "LOW",
+        "Checkup": "LOW",
         "TakeOrder": "HIGH",
         "Deliver": "IMMEDIATE"
     }
@@ -70,6 +70,16 @@ class Base:
             self.time_created = time
         self.priority_level = get_priority_level(self.type)
         self.update_priority()
+
+    def __str__(self):
+        o = "p[ " + str(self.priority) + " ]\t" + self.type + "\t"
+        if self.table_number is not None:
+            o = o + "t(" + str(self.table_number) + ")"
+        else:
+            o = o + "\t"
+        o = o + "\t@ " + str(self.time_created)
+
+        return o
 
     def get_priority(self):
         return (self.time_created - dt.now()) * self.priority_level
