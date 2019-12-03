@@ -185,11 +185,10 @@ def display(path, cost):
     global temp
     print ("route" + str(path))
     print ("cost" + str(cost))
-    plt.plot([v[0] for v in path], [v[1] for v in path])
-    plt.plot([v[0] for v in temp], [v[1] for v in temp])
-    plt.xlim(-1,width)
-    plt.ylim(-1,height)
-    plt.savefig('path.png')
+    #plt.plot([v[0] for v in path], [v[1] for v in path])
+    #plt.plot([v[0] for v in temp], [v[1] for v in temp])
+    #plt.xlim(-1,width)
+    #plt.ylim(-1,height)
     posarr = PoseArray()
     header = Header()
     header.frame_id = "map"
