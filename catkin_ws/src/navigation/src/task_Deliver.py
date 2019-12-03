@@ -49,18 +49,11 @@ class NavigateToTable(State):
 
     def run(self, instance):
         navigateTo("table" + str(instance.table_number))
-
-    def next(self, instance, input):
-        return GiveFood()
-
-
-class GiveFood(State):
-    def run(self, instance):
         speech("Here is your " + str(instance.food_order))
-        instance.addInput(listen())
+        listen()
+        speech("I'll wait here until you tell me to go.")
 
     def next(self, instance, input):
-        speech("I'll wait here until  you tell me to go.")
         return TableWait()
 
 
