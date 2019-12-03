@@ -89,7 +89,7 @@ class UnknownAnswer(State):
 
 class TakeOrderTask(StateMachine):
     def __init__(self, model, table):
-        super(TakeOrderTask, self).__init__(NavigateToTable(), model)
+        StateMachine.__init__(self, NavigateToTable(), model)
         self.table = table
         self.group_size = model.tables[table]
         self.order_items_taken = 0

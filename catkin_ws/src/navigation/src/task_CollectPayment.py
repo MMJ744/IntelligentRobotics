@@ -89,7 +89,7 @@ class UnknownAnswer(State):
 
 class CollectPaymentTask(StateMachine):
     def __init__(self, model, table):
-        super(CollectPaymentTask, self).__init__(NavigateToTable(), model)
+        StateMachine.__init__(self, NavigateToTable(), model)
         self.table_number = table
         self.payment_taken = False
 

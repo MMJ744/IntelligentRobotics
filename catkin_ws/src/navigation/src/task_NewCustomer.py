@@ -108,7 +108,7 @@ class UnknownAnswer(State):
 
 class NewCustomerTask(StateMachine):
     def __init__(self, model):
-        super(NewCustomerTask, self).__init__(AskBooking(), model)
+        StateMachine.__init__(self, AskBooking(), model)
         self.group_table = -1
         self.group_size = 99999
 

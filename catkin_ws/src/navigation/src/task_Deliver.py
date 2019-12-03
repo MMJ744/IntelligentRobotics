@@ -91,7 +91,7 @@ class UnknownAnswer(State):
 
 class DeliverTask(StateMachine):
     def __init__(self, model, table):
-        super(DeliverTask, self).__init__(NavigateToKitchen(), model)
+        StateMachine.__init__(self, NavigateToKitchen(), model)
         self.table_number = table
 
 # CollectPaymentTask.navigateToTable = NavigateToTable()

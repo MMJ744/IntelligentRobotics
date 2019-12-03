@@ -23,7 +23,7 @@ class CheckTables(State):
 
 class WanderTask(StateMachine):
     def __init__(self, model):
-        super(WanderTask, self).__init__(CheckTables(), model)
+        StateMachine.__init__(self, CheckTables(), model)
 
 
 # WanderTask.checkEntry = CheckEntry()
