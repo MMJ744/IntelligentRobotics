@@ -72,8 +72,6 @@ class TakeOrderItem(State):
 class Finished(State):
     def run(self, instance):
         speech("Thank you. Your food will be with you soon")
-
-    def next(self, instance, input):
         instance.running = False
 
 
