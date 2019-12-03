@@ -1,4 +1,4 @@
-from datetime import datetime as dt
+#!/usr/bin/env python
 import rospy
 
 
@@ -20,7 +20,7 @@ def create(task_msg):
 
 
 def new(task_type, table_number, delay):
-    created_at = dt.now() + rospy.Duration(delay*60)
+    created_at = rospy.Time.now() + delay*60
 
     if task_type == "Checkup":
         task_info = CheckUp(created_at, table_number)
@@ -65,7 +65,7 @@ class Base:
         self.table_number = table_number
 
         if time is None:
-            self.time_created = dt.now()
+            self.time_created = rospy.Time.now()
         else:
             self.time_created = time
         self.priority_level = get_priority_level(self.type)
@@ -82,7 +82,7 @@ class Base:
         return o
 
     def get_priority(self):
-        return (self.time_created - dt.now()) * self.priority_level
+        return (self.time_created - rospy.Time.now()) * self.priority_level
 
     def update_priority(self):  # hot fix - unused
         self.priority = self.get_priority()
@@ -93,29 +93,29 @@ class Base:
 
 class Wander(Base):
     def __init__(self, time=None):
-        super().__init__("Wander", time)
+        Base.__init__(self, "Wander", time)
 
 
 class NewCustomer(Base):
     def __init__(self, time=None):
-        super().__init__("NewCustomer", time)
+        Base.__init__(self, "NewCustomer", time)
 
 
 class CheckUp(Base):
     def __init__(self, table_number, time=None):
-        super().__init__("CheckUp", time, table_number=table_number)
+        Base.__init__(self, "CheckUp", time, table_number=table_number)
 
 
 class TakeOrder(Base):
     def __init__(self, table_number, time=None):
-        super().__init__("TakeOrder", time, table_number=table_number)
+        Base.__init__(self, "TakeOrder", time, table_number=table_number)
 
 
 class Deliver(Base):
     def __init__(self, table_number, time=None):
-        super().__init__("Deliver", time, table_number=table_number)
+        Base.__init__(self, "Deliver", time, table_number=table_number)
 
 
 class CollectPayment(Base):
     def __init__(self, table_number, time=None):
-        super().__init__("CollectPayment", time, table_number=table_number)
+        Base.__init__(self, "CollectPayment", time, table_number=table_number)
