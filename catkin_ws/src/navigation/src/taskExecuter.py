@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 import taskTypes as tt
-from task_CheckUp import CheckupTask
+from task_Checkup import CheckupTask
 from task_CollectPayment import CollectPaymentTask
 from task_TakeOrder import TakeOrderTask
 from task_Wander import WanderTask
@@ -52,7 +52,7 @@ class TaskExecuter:
         task_executable = None
 
         if self.current_task.type == "CheckUp":
-            task_executable = CheckUpTask(self.model)
+            task_executable = CheckupTask(self.model)
         elif self.current_task.type == "CollectPayment":
             task_executable = CollectPaymentTask(self.model, task_info.table_number)
         elif self.current_task.type == "NewCustomer":

@@ -2,46 +2,24 @@ from State import State
 from StateMachine import StateMachine
 from Speech import navigate #, speech,  listen
 
-
-class CheckEntry(State):
-
-    def run(self):
-        navigate(self.model.locations["FrontDesk"])
-
-    def next(self, instance, input):
-        self.reverse = False
-        return CheckTables()
+import taskManager
 
 
 class CheckTables(State):
 
-    def run(self):
+    def run(self, instance):
         tbls = [filter(lambda tbl: not tbl["available"], self.model.tables)]
-        tbls.sort(reverse=self.reverse)
+        tbls.sort(reverse=True)
         for table in tbls:
             navigate("table" + table["id"])
-
-    def next(self, instance, input):
-        if self.reverse:
-            return CheckEntry()
-        else:
-            return CheckTables()
-
-
-class CheckKitchen(State):
-
-    def run(self):
-        navigate(self.model.locations["Kitchen"])
-
-    def next(self, instance, input):
-        self.reverse = True
-        return CheckTables()
+        navigate(self.model.locations["FrontDesk"])
+        taskManager.new_task("Wander")
+        instance.running = False
 
 
 class WanderTask(StateMachine):
     def __init__(self, model):
-        super(WanderTask, self).__init__(WanderTask.checkEntry, model)
-        self.reverse = False
+        super(WanderTask, self).__init__(CheckTables(), model)
 
 
 # WanderTask.checkEntry = CheckEntry()

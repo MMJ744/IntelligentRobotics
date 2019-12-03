@@ -1,6 +1,7 @@
 from StateMachine import StateMachine
 from State import State
 from Speech import navigate, speech, listen
+import taskManager
 
 
 class NavigateToTable(State):
@@ -31,6 +32,7 @@ class Postpone(State):
 
     def run(self, instance):
         speech("My apologies, I shall return later")
+        taskManager.new_task("CollectPayment", table_number=instance.table_number, delay=7.5)
         instance.running = False
 
 

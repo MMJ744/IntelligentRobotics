@@ -1,6 +1,7 @@
 from StateMachine import StateMachine
 from State import State
 from Speech import navigate, speech, listen
+import taskManager
 
 
 class NavigateToTable(State):
@@ -28,6 +29,7 @@ class CheckReady(State):
 class ComeBackLater(State):
     def run(self, instance):
         speech("Okay, I will come back later")
+        taskManager.new_task("TakeOrder", table_number=instance.table, delay=2)
         instance.running = False
 
 

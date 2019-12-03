@@ -78,7 +78,7 @@ class Base:
         self.priority = self.get_priority()
 
     def __lt__(self, other):
-        return self.get_priority() < other.get_priority()
+        return self.priority < other.priority
 
 
 class Wander(Base):

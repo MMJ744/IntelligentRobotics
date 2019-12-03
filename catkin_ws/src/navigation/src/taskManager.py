@@ -1,5 +1,11 @@
 #!/usr/bin/env python3
-from queue import PriorityQueue
+
+import sys
+
+if sys.version[0] == "2":
+    from Queue import PriorityQueue
+else:
+    from queue import PriorityQueue
 
 import taskTypes as tt
 
@@ -11,6 +17,13 @@ tm = None
 
 
 def new_task(task_type, table_number=-1, delay=0):
+    """
+
+    :param task_type:
+    :param table_number:
+    :param delay: minimum delay time on task execution in minutes, defaults to 0
+    :return:
+    """
     global tm
 
     tm.add_task(tt.new(task_type, table_number, delay))
@@ -28,40 +41,44 @@ class TaskManager:
         self.pub = rospy.Publisher('task', Task, queue_size=1)
 
         self.current_tasks = PriorityQueue()
-
-        self.add_task(tt.Wander())
+        self.current_task = None
 
         self.publish_next_task()
 
     def add_task(self, task):
         self.current_tasks.put(task)
 
-    def update_priorities(self, remove=None):
+    def update_priorities(self):
         updated_priorities_queue = PriorityQueue()
 
         for task in self.current_tasks.queue:
-            if not task == remove:                              # dubious, logic error?
-                task.update_priority()
-                updated_priorities_queue.put(task)
+            task.update_priority()
+            updated_priorities_queue.put(task)
         self.current_tasks = updated_priorities_queue
 
     def publish_next_task(self):
+        if self.current_task is not None:
+            self.add_task(self.current_task)
+
         if self.current_tasks.empty():
-            next_task = tt.Wander()
+            self.current_task = tt.Wander()
         else:
-            next_task = self.current_tasks.get()
+            self.current_task = self.current_tasks.get()
         t = Task()
-        t.task_type = next_task.type
-        t.created_at = next_task.time_created
-        t.table_number = next_task.table_number
+        t.task_type = self.current_task.type
+        t.created_at = self.current_task.time_created
+        t.table_number = self.current_task.table_number
         t.finished = False
         self.pub.publish(t)
 
     def subscriber(self, task):
         if task.finished:
             finished_task = tt.create(task)
-            #  self.update_priorities(remove=finished_task)     No :'(
+            if finished_task == self.current_task:
+                self.current_task = None
+            self.update_priorities()
             self.publish_next_task()
+
 
 
 def main():
