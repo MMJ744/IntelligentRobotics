@@ -24,8 +24,8 @@ class TaskManager:
         print("new TaskManager")
 
         rospy.init_node('Manager', anonymous=True)
-        rospy.Subscriber("/task", Task, self.subscriber)
-        self.pub = rospy.Publisher('/task', Task, queue_size=1)
+        rospy.Subscriber("task", Task, self.subscriber)
+        self.pub = rospy.Publisher('task', Task, queue_size=1)
 
         self.current_tasks = PriorityQueue()
 

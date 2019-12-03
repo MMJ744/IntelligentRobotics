@@ -38,8 +38,8 @@ class TaskExecuter:
     def __init__(self):
         self.model = Model()
 
-        rospy.Subscriber("/task", Task, self.subscriber)
-        self.pub = rospy.Publisher('/task', Task, queue_size=1)
+        rospy.Subscriber("task", Task, self.subscriber)
+        self.pub = rospy.Publisher('task', Task, queue_size=1)
         rospy.init_node('Executer', anonymous=True)
 
     def run_task(self, task_info):
