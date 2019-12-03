@@ -75,7 +75,20 @@ def initLocations():
     tbl.pose.orientation.w = boothW
     tbl.header = header
     locations['table3'] = tbl
-
+    tbl = PoseStamped()
+    tbl.pose.position.x = 5.129
+    tbl.pose.position.y = 17.120
+    tbl.pose.orientation.z = 0.69
+    tbl.pose.orientation.w = 0.72
+    tbl.header = header
+    locations['kitchen'] = tbl
+    tbl = PoseStamped()
+    tbl.pose.position.x = 26.75
+    tbl.pose.position.y = 20
+    tbl.pose.orientation.z = 0.69
+    tbl.pose.orientation.w = 0.72
+    tbl.header = header
+    locations['frontdesk'] = tbl
 
 if __name__ == '__main__':
     try:
