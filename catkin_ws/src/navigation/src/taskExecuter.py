@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-import taskTypes as tt
 from task_Checkup import CheckupTask
 from task_CollectPayment import CollectPaymentTask
 from task_TakeOrder import TakeOrderTask
@@ -10,6 +9,7 @@ import rospy
 from navigation.msg import Task
 
 te = None
+
 
 class Model:
     def __init__(self):
@@ -42,24 +42,24 @@ class TaskExecuter:
         self.pub = rospy.Publisher('task', Task, queue_size=1)
         rospy.init_node('Executer', anonymous=True)
 
-    def run_task(self, task_info):
+        self.task_msg = None
+        self.current_task = None
+
+    def run_task(self):
         """
         creates and runs task, broadcasting when done
-        :param task_info:
         """
-        self.current_task = task_info
-
         task_executable = None
 
-        if self.current_task.type == "CheckUp":
+        if self.task_msg.task_type == "Checkup":
             task_executable = CheckupTask(self.model)
-        elif self.current_task.type == "CollectPayment":
-            task_executable = CollectPaymentTask(self.model, task_info.table_number)
-        elif self.current_task.type == "NewCustomer":
+        elif self.task_msg.task_type == "CollectPayment":
+            task_executable = CollectPaymentTask(self.model, self.task_msg.table_number)
+        elif self.task_msg.task_type == "NewCustomer":
             task_executable = NewCustomerTask(self.model)
-        elif self.current_task.type == "TakeOrder":
-            task_executable = TakeOrderTask(self.model, task_info.table_number)
-        elif self.current_task.type == "Wander":
+        elif self.task_msg.task_type == "TakeOrder":
+            task_executable = TakeOrderTask(self.model, self.task_msg.table_number)
+        elif self.task_msg.task_type == "Wander":
             task_executable = WanderTask(self.model)
 
         if task_executable is None:
@@ -67,19 +67,18 @@ class TaskExecuter:
 
         task_executable.run_all()
 
-        self.publish_done(self.current_task)
+        self.publish_done()
 
-    def publish_done(self, task):
-        t = Task()
-        t.task_type = task.type
-        t.created_at = task.timeCreated
-        t.finished = True
-        self.pub.publish(t)
+    def publish_done(self):
+        print("_te finished task " + str(self.task_msg.task_type))
+        self.task_msg.finished = True
+        self.pub.publish(self.task_msg)
 
     def subscriber(self, task):
         if not task.finished:
-            priority_task = tt.create(task)
-            self.run_task(priority_task)
+            print("_te received new task: " + str(task.task_type))
+            self.task_msg = task
+            self.run_task()
 
 
 def main():
@@ -94,4 +93,4 @@ if __name__ == '__main__':
     try:
         main()
     except rospy.ROSInterruptException:
-        print("err task management")
+        print("err task executer")
