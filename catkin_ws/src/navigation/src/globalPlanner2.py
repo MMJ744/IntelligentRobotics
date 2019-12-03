@@ -211,7 +211,6 @@ def main():
     rospy.Subscriber('/map_metadata', MapMetaData, metaCallback)
     rospy.Subscriber("amcl_pose", PoseWithCovarianceStamped, poseCallback)
     rospy.Subscriber("move_base_simple/goal",PoseStamped, goalCallback)
-    pathPub = rospy.Publisher("/move_base/GlobalPlanner/plan", Path, queue_size=1)
     pathPub2 = rospy.Publisher("/path", Path, queue_size=1)
 
     rate = rospy.Rate(100)
@@ -238,7 +237,6 @@ def main():
             header = Header()
             header.frame_id = "map"
             plan.header = header
-            pathPub.publish(plan)
             pathPub2.publish(plan)
             print("published path")
             display(path,cost)
