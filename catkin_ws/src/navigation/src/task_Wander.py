@@ -12,7 +12,11 @@ class CheckTables(State):
         tbls.sort(reverse=True)
         for table in tbls:
             navigate("table" + table["id"])
+            # if vision.areHumans:
+            #   self.model.tables[table]["available"] = True
         navigate(self.model.locations["FrontDesk"])
+        # if vision.areHuman:
+        #   taskManager.new_task("NewCustomer")    
         taskManager.new_task("Wander")
         instance.running = False
 
