@@ -74,8 +74,11 @@ class Base:
     def get_priority(self):
         return (self.time_created - dt.now()) * self.priority_level
 
-    def update_priority(self):
+    def update_priority(self):  # hot fix - unused
         self.priority = self.get_priority()
+
+    def __lt__(self, other):
+        return self.get_priority() < other.get_priority()
 
 
 class Wander(Base):

@@ -44,10 +44,10 @@ class WanderTask(StateMachine):
         self.reverse = False
 
 
-WanderTask.checkEntry = CheckEntry()
-WanderTask.checkTables = CheckTables()
-WanderTask.checkKitchen = CheckKitchen()
-
-instance = WanderTask()
-instance.runAll()
+# WanderTask.checkEntry = CheckEntry()
+# WanderTask.checkTables = CheckTables()
+# WanderTask.checkKitchen = CheckKitchen()
+#
+# instance = WanderTask()
+# instance.runAll()
 
