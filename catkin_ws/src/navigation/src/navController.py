@@ -89,6 +89,13 @@ def initLocations():
     tbl.pose.orientation.w = 0.72
     tbl.header = header
     locations['frontdesk'] = tbl
+    tbl = PoseStamped()
+    tbl.pose.position.x = 26.75
+    tbl.pose.position.y = 13
+    tbl.pose.orientation.z = -0.5
+    tbl.pose.orientation.w = 0.85
+    tbl.header = header
+    locations['waitingarea'] = tbl
 
 if __name__ == '__main__':
     try:
