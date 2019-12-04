@@ -11,6 +11,7 @@ locations = {}
 goalPub = 0
 navResult = -1
 x = 0.0
+donePub = 0
 y = 0.0
 theta = 0.0
 
@@ -54,16 +55,19 @@ def navigateTo(destination):
             while distance > 0.5 or abs(gtheta - theta) > 0.2:
                 rate.sleep()
                 distance = math.sqrt(abs(goal.pose.position.x - x) + abs(goal.pose.position.y-y))
+        donePub.publish("done")
     else:
-        print("")
+        print("Didnt match location")
+        donePub.publish("error")
 
 def main():
     global goalPub
+    global donePub
     initLocations()
     rospy.init_node('navController', anonymous=True)
     goalPub = rospy.Publisher("move_base_simple/goal",PoseStamped,queue_size=10)
     rospy.Subscriber("navIn", String, navIn)
-    rospy.Subscriber("navOut", Int8, navOutCallback)
+    donePub = rospy.Publisher("navOut", String, queue_size=1)
     rate = rospy.Rate(10)
     while not rospy.is_shutdown():
         while True:
