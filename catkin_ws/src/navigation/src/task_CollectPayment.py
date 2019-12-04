@@ -2,7 +2,7 @@ from StateMachine import StateMachine
 from State import State
 from Speech import speech, listen
 import taskManager
-from navController import navigateTo
+import navTo
 import taskExecuter
 from rfid import readCard
 
@@ -10,7 +10,7 @@ from rfid import readCard
 class NavigateToTable(State):
 
     def run(self, instance):
-        navigateTo("table" + str(instance.table_number))
+        navTo.navigateTo("table" + str(instance.table_number))
 
     def next(self, instance, input):
         return AskIfFinished()

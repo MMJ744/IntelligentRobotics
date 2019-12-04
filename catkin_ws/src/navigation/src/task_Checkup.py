@@ -1,13 +1,13 @@
 from StateMachine import StateMachine
 from State import State
 from Speech import speech, listen
-from navController import navigateTo
+import navTo
 
 
 class NavigateToTable(State):
 
     def run(self, instance):
-        navigateTo("table" + str(instance.table))
+        navTo.navigateTo("table" + str(instance.table))
 
     def next(self, instance, input):
         return PerformCheckup()

@@ -3,13 +3,13 @@ from StateMachine import StateMachine
 from State import State
 from Speech import speech, listen
 import taskManager
-from navController import navigateTo
+import navTo
 
 
 class NavigateToKitchen(State):
 
     def run(self, instance):
-        navigateTo("kitchen")
+        navTo.navigateTo("kitchen")
 
     def next(self, instance, input):
         return AskOrder()
@@ -48,7 +48,7 @@ class KitchenWait(State):
 class NavigateToTable(State):
 
     def run(self, instance):
-        navigateTo("table" + str(instance.table_number))
+        navTo.navigateTo("table" + str(instance.table_number))
         speech("Here is your " + str(instance.food_order))
         listen()
         speech("I'll wait here until you tell me to go.")

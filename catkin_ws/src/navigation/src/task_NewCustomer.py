@@ -2,14 +2,14 @@
 from State import State
 from StateMachine import StateMachine
 from Speech import speech, navigate, listen
-from navController import navigateTo
+import navTo
 import taskManager
 
 
 class NavigateToFront(State):
 
     def run(self, instance):
-        navigateTo("frontdesk")
+        navTo.navigateTo("frontdesk")
 
     def next(self, instance, input):
         return AskBooking()
@@ -50,7 +50,7 @@ class GuideToTable(State):
 
     def run(self, instance):
         speech("Please follow me to your table")
-        navigateTo("table" + str(instance.group_table))
+        navTo.navigateTo("table" + str(instance.group_table))
         speech("Please take a seat. Someone will be with you in a few minutes")
         instance.addInput('')
         taskManager.new_task("TakeOrder", table_number=instance.group_table, delay=0.5)
