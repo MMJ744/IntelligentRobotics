@@ -11,13 +11,8 @@
 
  //Default Constructor
  namespace global_planner {
-  bool wait = true;
-  std::vector<geometry_msgs::PoseStamped> path;
-   void chatterCallback(const nav_msgs::Path& msg){
-     std::cout << "JJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJ" << std::endl;
-     path = msg.poses;
-     wait = false;
-   }
+  PyObject *pName, *pModule, *pFunc;
+  PyObject *pArgs, *pValue;
 
  GlobalPlanner::GlobalPlanner (){
 
@@ -25,6 +20,23 @@
 
  GlobalPlanner::GlobalPlanner(std::string name, costmap_2d::Costmap2DROS* costmap_ros){
    initialize(name, costmap_ros);
+   int i;
+   string s = "globalplanner"; 
+   int n = s.length(); 
+   char char_array[n + 1]; 
+   strcpy(char_array, s.c_str()); 
+   Py_SetProgramName(char_array);
+   Py_Initialize();
+   PyRun_SimpleString("import os, sys\n"
+                     "print sys.argv, \"\\n\".join(sys.path)\n"
+                     "print os.getcwd()\n"
+                     "import multiply\n");
+
+    pName = PyString_FromString("globalplanner");
+    /* Error checking of pName left out */
+
+    pModule = PyImport_Import(pName);
+    Py_DECREF(pName);
  }
 
 
@@ -33,21 +45,37 @@
  }
 
  bool GlobalPlanner::makePlan(const geometry_msgs::PoseStamped& start, const geometry_msgs::PoseStamped& goal,  std::vector<geometry_msgs::PoseStamped>& plan ){
+   if (pModule != NULL) {
+        pFunc = PyObject_GetAttrString(pModule, "main");
+        /* pFunc is a new reference */
 
-  //ros::init(0, nullptr, "listener");
-  ros::NodeHandle n;
-  ros::Subscriber sub = n.subscribe("plan", 1000, chatterCallback);
-  ros::Rate r(10);
-  std::cout << "PRINT1" << std::endl;
-  while(wait){
-    r.sleep();
-    std::cout << "~" << std::endl;
-  }
-  std::cout << "EXIT LOOP" << std::endl;
-  for (geometry_msgs::PoseStamped& pose : path) {
-    plan.push_back(pose);
-  }
-  wait = true;
+        if (pFunc && PyCallable_Check(pFunc)) {
+            pValue = PyObject_CallObject(pFunc, pArgs);
+            Py_DECREF(pArgs);
+            if (pValue != NULL) {
+                Py_DECREF(pValue);
+            }
+            else {
+                Py_DECREF(pFunc);
+                Py_DECREF(pModule);
+                PyErr_Print();
+                fprintf(stderr,"Call failed\n");
+                return 1;
+            }
+        }
+        else {
+            if (PyErr_Occurred())
+                PyErr_Print();
+            fprintf(stderr, "Cannot find function \"%s\"\n", "multiply");
+        }
+        Py_XDECREF(pFunc);
+        Py_DECREF(pModule);
+    }
+    else {
+        PyErr_Print();
+        fprintf(stderr, "Failed to load \"%s\"\n", "multiply");
+        return 1;
+    }
   return true;
  }
  };

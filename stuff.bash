@@ -7,3 +7,4 @@ cd src/pf_localisation/src/laser_trace
 ./compile.sh
 cd ../../../..
 catkin_make
+cd ..
