@@ -2,21 +2,21 @@
 import rospy
 from std_msgs.msg import String
 
-def terms():
+def findpeople():
 
     filepath = "/home/bianca/Desktop/Robot/darknet/Output.txt"
-    strings = ""
     rospy.init_node('vision_sender', anonymous=True)
     pub = rospy.Publisher('vision', String, queue_size=10)
-    rate = rospy.Rate(2) # 2hz
+    rate = rospy.Rate(5) # 2hz
 
     while not rospy.is_shutdown():
+        strings = ""
         with open(filepath) as fp:
             line = fp.readline()
             while line:
-                strings.append(".")
-                strings.append(line)
+                strings = strings + "." + line
                 line = fp.readline()
+        print(strings)
         rospy.loginfo(strings)
         pub.publish(strings)
         rate.sleep()
@@ -42,5 +42,5 @@ def terms():
 #    print(contents)
 
 if __name__ == '__main__':
-    terms()
+    findpeople()
 #    print("AAAAAAA")
