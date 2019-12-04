@@ -1,22 +1,15 @@
+#!/usr/bin/env python
 import random
 import time
 
 import speech_recognition as sr
 from gtts import gTTS
 import os
-import pyaudio
+import playsound
 
 def listen():
-    # create recognizer and mic instances
-    pyaudio.PyAudio().open(format=pyaudio.paInt16,
-                        rate=44100,
-                        channels=1, #change this to what your sound card supports
-                        input_device_index=6, #change this your input sound card index
-                        input=True,
-                        output=False,
-                        frames_per_buffer=1024)
     recognizer = sr.Recognizer()
-    microphone = sr.Microphone(device_index=6)
+    microphone = sr.Microphone(device_index=0)
 
     # check that recognizer and microphone arguments are appropriate type
     if not isinstance(recognizer, sr.Recognizer):
@@ -50,10 +43,17 @@ def listen():
     except sr.UnknownValueError:
         # speech was unintelligible
         response["error"] = "Unable to recognize speech"
-    print(response)
-    return response
+    print(response["transcription"])
+    return response["transcription"]
 
 def speech(text):
     print(text)
-    #tts = gTTS(text='Hello, do you have a booking', lang='en')
-    #tts.save("text.mp3")
+    filename = str(text) + '.mp3'
+    filename = filename.replace(' ','')
+    if not os.path.exists(filename):
+        tts = gTTS(text=text, lang='en')
+        tts.save(filename)
+    playsound.playsound(filename)
+
+def navigate(where):
+    print('Going to ' + where)

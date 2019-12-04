@@ -69,7 +69,8 @@ def main():
     rospy.Subscriber("navOut", Int8, navOutCallback)
     rate = rospy.Rate(10)
     while not rospy.is_shutdown():
-        rate.sleep()
+        while True:
+            rate.sleep()
 
 
 def initLocations():
