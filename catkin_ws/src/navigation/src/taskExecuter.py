@@ -52,7 +52,7 @@ class Model:
         }
 
     def prepend_message(self, channel, msg):
-        self.messages[channel] = msg + '\n' + self.messages[channel]
+        self.messages[channel] = "[" + str(rospy.Time.now()) + "]\t" + msg + '\n' + self.messages[channel]
 
 
 class TaskExecuter:

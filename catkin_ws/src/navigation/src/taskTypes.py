@@ -40,10 +40,10 @@ def new(task_type, table_number, delay):
 def get_priority_level(task_type):
     priority_multipliers = {
         "IMMEDIATE": float("inf"),
-        "HIGH": 3,
-        "MID": 2,
-        "LOW": 1,
-        "BASE": 0
+        "HIGH": 3.0,
+        "MID": 2.0,
+        "LOW": 1.0,
+        "BASE": 0.0
     }
     priority_levels = {
         "Wander": "BASE",

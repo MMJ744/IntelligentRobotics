@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 from flask import Flask
 from flask import request
-import navTo
+import navController
 
 import taskManager
 import taskExecuter
@@ -29,9 +29,12 @@ def hello():
 @app.route('/kitchen')
 def kitchen():
     try:
-        table = request.args.get('table', '')
-        taskManager.new_task("Deliver", table)
-        text = "waiter summoned for table " + table
+        user_int = int(request.args.get('table', ''))
+        user_str = "table" + str(user_int)
+        if user_str in navController.locations.keys:
+            taskManager.new_task("Deliver", user_int)
+        text = "waiter summoned for " + user_str
+        taskExecuter.send_message("kitchen", text)
     except:
         text = "call with /kitchen?table=<table_number>"
 
@@ -47,7 +50,7 @@ def staff():
 
 @app.route('/goto')
 def goto():
-    navTo.navigate(request.args.get('location',''))
+    navController.navigateTo(request.args.get('location',''))
     return 'going to ' + request.args.get('location', '') + str(locs[request.args.get('location', '')])
 
 
