@@ -75,7 +75,7 @@ def main():
 
 def initLocations():
     global locations
-    boothY = 13.5
+    boothY = 14.5
     boothZ = -0.7
     boothW = 0.7
     header = Header()
