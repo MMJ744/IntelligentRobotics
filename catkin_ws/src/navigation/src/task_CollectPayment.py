@@ -81,6 +81,7 @@ class DismissCustomers(State):
 
     def run(self, instance):
         speech("Thank you " + instance.user + ", your payment has been processed. You may now leave.")
+        taskExecuter.send_message("staff", "Payment taken from " + self.user + " @ Table " + str(instance.table.id))
         instance.running = False
 
 

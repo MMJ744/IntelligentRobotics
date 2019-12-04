@@ -1,8 +1,8 @@
 #!/usr/bin/env python
 import rospy
+from navigation.msg import Task
 
-
-def create(task_msg):
+def from_msg(task_msg):
     if task_msg.type == "Checkup":
         task_info = CheckUp(task_msg.created_at, task_msg.table_number)
     elif task_msg.type == "CollectPayment":
@@ -86,6 +86,15 @@ class Base:
 
     def update_priority(self):  # hot fix - unused
         self.priority = self.get_priority()
+
+    def to_msg(self, finished=False):
+        t = Task()
+        t.task_type = self.type
+        t.created_at = self.time_created
+        t.table_number = self.table_number
+        t.finished = finished
+
+        return t
 
     def __lt__(self, other):
         return self.priority < other.priority

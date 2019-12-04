@@ -23,11 +23,7 @@ def navOutCallback(x):
 def navIn(destination):
     global goalPub
     global locations
-    print("trying to go to " + destination.data)
-    if destination.data in locations:
-        print("found destination " + destination.data)
-        goalPub.publish(locations[destination.data])
-
+    navigateTo(destination.data)
 
 def odomCallback(data):
     global x
@@ -45,20 +41,21 @@ def navigateTo(destination):
     global x
     global y
     global theta
-    print("trying to go to " + destination.data)
-    if destination.data in locations:
-        print("found destination " + destination.data)
-        goal = locations[destination.data]
+    print("trying to go to " + destination)
+    if destination in locations:
+        print("found destination " + destination)
+        goal = locations[destination]
         goalPub.publish(goal)
         q = goal.pose.orientation
         gtheta = math.atan2(2 * (q.x * q.y + q.w * q.z), q.w * q.w + q.x * q.x - q.z * q.z)
-    rate = rospy.Rate(10)
-    while not rospy.is_shutdown():
-        distance = math.sqrt(abs(goal.pose.position.x - x) + abs(goal.pose.position.y-y))
-        while distance > 0.5 or abs(gtheta - theta) > 0.2:
-            rate.sleep()
+        rate = rospy.Rate(10)
+        while not rospy.is_shutdown():
             distance = math.sqrt(abs(goal.pose.position.x - x) + abs(goal.pose.position.y-y))
-
+            while distance > 0.5 or abs(gtheta - theta) > 0.2:
+                rate.sleep()
+                distance = math.sqrt(abs(goal.pose.position.x - x) + abs(goal.pose.position.y-y))
+    else:
+        print("")
 
 def main():
     global goalPub

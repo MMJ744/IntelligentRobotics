@@ -35,7 +35,7 @@ def listen():
     # if a RequestError or UnknownValueError exception is caught,
     #     update the response object accordingly
     try:
-        response["transcription"] = recognizer.recognize_google(audio)
+        response["transcription"] = recognizer.recognize_ibm(audio)
     except sr.RequestError:
         # API was unreachable or unresponsive
         response["success"] = False
@@ -51,7 +51,7 @@ def speech(text):
     filename = str(text) + '.mp3'
     filename = filename.replace(' ','')
     if not os.path.exists(filename):
-        tts = gTTS(text=text, lang='en')
+        tts = gTTS(text=text, lang='en-gh')
         tts.save(filename)
     playsound.playsound(filename)
 

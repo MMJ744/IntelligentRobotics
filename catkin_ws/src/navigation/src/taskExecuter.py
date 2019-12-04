@@ -1,10 +1,4 @@
 #!/usr/bin/env python
-from task_Checkup import CheckupTask
-from task_CollectPayment import CollectPaymentTask
-from task_TakeOrder import TakeOrderTask
-from task_Wander import WanderTask
-from task_NewCustomer import NewCustomerTask
-from task_Deliver import DeliverTask
 
 import rospy
 from navigation.msg import Task
@@ -66,31 +60,40 @@ class TaskExecuter:
         self.model = Model()
         model = self.model
 
-        rospy.Subscriber("task", Task, self.subscriber)
-        self.pub = rospy.Publisher('task', Task, queue_size=1)
+        rospy.Subscriber("task_e", Task, self.subscriber)
+        self.pub = rospy.Publisher('task_m', Task, queue_size=1)
         rospy.init_node('Executer', anonymous=True)
 
         self.task_msg = None
         self.current_task = None
 
     def run_task(self):
+
+        import task_Wander
+        import task_Checkup
+        import task_CollectPayment
+        import task_TakeOrder
+        import task_NewCustomer
+        import task_Deliver
+
+        
         """
         creates and runs task, broadcasting when done
         """
         task_executable = None
 
         if self.task_msg.task_type == "Checkup":
-            task_executable = CheckupTask(self.model)
-        elif self.task_msg.task_type == "CollectPayment":
-            task_executable = CollectPaymentTask(self.model, self.task_msg.table_number)
+            task_executable = task_Checkup.CheckupTask(self.model, self.task_msg.table_number)
+        if self.task_msg.task_type == "CollectPayment":
+            task_executable = task_CollectPayment.CollectPaymentTask(self.model, self.task_msg.table_number)
         elif self.task_msg.task_type == "NewCustomer":
-            task_executable = NewCustomerTask(self.model)
+            task_executable = task_NewCustomer.NewCustomerTask(self.model)
         elif self.task_msg.task_type == "TakeOrder":
-            task_executable = TakeOrderTask(self.model, self.task_msg.table_number)
+            task_executable = task_TakeOrder.TakeOrderTask(self.model, self.task_msg.table_number)
         elif self.task_msg.task_type == "Deliver":
-            task_executable = DeliverTask(self.model, self.task_msg.table_number)
+            task_executable = task_Deliver.DeliverTask(self.model, self.task_msg.table_number)
         elif self.task_msg.task_type == "Wander":
-            task_executable = WanderTask(self.model)
+            task_executable = task_Wander.WanderTask(self.model)
 
         if task_executable is None:
             raise NotImplementedError

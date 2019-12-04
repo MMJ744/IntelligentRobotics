@@ -7,12 +7,12 @@ class StateMachine:
         self.inputs = []
         self.running = True
         
-    def runAll(self):
-        self.currentState.run()
+    def run_all(self):
+        self.currentState.run(instance=self)
         while self.running:
             self.previousState = self.currentState
             self.currentState = self.currentState.next(self, self.inputs.pop())
-            self.currentState.run(self)
+            self.currentState.run(instance=self)
 
     def addInput(self, input):
         self.inputs.append(input)
