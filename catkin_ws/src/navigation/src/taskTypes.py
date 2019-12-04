@@ -7,7 +7,7 @@ def from_msg(task_msg):
         task_info = CheckUp(task_msg.table_number, task_msg.created_at)
     elif task_msg.task_type == "CollectPayment":
         task_info = CollectPayment(task_msg.table_number, task_msg.created_at)
-    elif task_msg.task_type == "NewCustomer":
+    elif task_msg.task_type == "NewCust":
         task_info = NewCustomer(task_msg.created_at)
     elif task_msg.task_type == "TakeOrder":
         task_info = TakeOrder(task_msg.table_number, task_msg.created_at)
@@ -26,7 +26,7 @@ def new(task_type, table_number, delay):
         task_info = CheckUp(time=created_at, table_number=table_number)
     elif task_type == "CollectPayment":
         task_info = CollectPayment(time=created_at, table_number=table_number)
-    elif task_type == "NewCustomer":
+    elif task_type == "NewCust":
         task_info = NewCustomer(time=created_at)
     elif task_type == "TakeOrder":
         task_info = TakeOrder(time=created_at, table_number=table_number)
@@ -47,7 +47,7 @@ def get_priority_level(task_type):
     }
     priority_levels = {
         "Wander": "BASE",
-        "NewCustomer": "MID",
+        "NewCust": "MID",
         "CollectPayment": "MID",
         "Checkup": "LOW",
         "TakeOrder": "HIGH",
@@ -116,7 +116,7 @@ class Wander(Base):
 
 class NewCustomer(Base):
     def __init__(self, time=None):
-        Base.__init__(self, "NewCustomer", time)
+        Base.__init__(self, "NewCust", time)
 
 
 class CheckUp(Base):

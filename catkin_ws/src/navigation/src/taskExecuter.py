@@ -87,7 +87,7 @@ class TaskExecuter:
             task_executable = task_Checkup.CheckupTask(self.model, self.task_msg.table_number)
         if self.task_msg.task_type == "CollectPayment":
             task_executable = task_CollectPayment.CollectPaymentTask(self.model, self.task_msg.table_number)
-        elif self.task_msg.task_type == "NewCustomer":
+        elif self.task_msg.task_type == "NewCust":
             task_executable = task_NewCustomer.NewCustomerTask(self.model)
         elif self.task_msg.task_type == "TakeOrder":
             task_executable = task_TakeOrder.TakeOrderTask(self.model, self.task_msg.table_number)
@@ -99,20 +99,18 @@ class TaskExecuter:
         if task_executable is None:
             raise NotImplementedError
 
-        print(task_executable)
-
         task_executable.run_all()
 
         self.publish_done()
 
     def publish_done(self):
-        print("_te finished task " + str(self.task_msg.task_type))
+        print("te | task_done\t" + str(self.task_msg.task_type))
         self.task_msg.finished = True
         self.pub.publish(self.task_msg)
 
     def subscriber(self, task):
         if not task.finished:
-            print("_te received new task: " + str(task.task_type))
+            print("te | new_task\t" + str(task.task_type))
             self.task_msg = task
             self.run_task()
 

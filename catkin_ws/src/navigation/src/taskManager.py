@@ -26,7 +26,6 @@ def new_task(task_type, table_number=None, delay=0):
     """
     global pub
 
-    print("tm: new_task: " + task_type)
     if pub is None:
         pub = rospy.Publisher('task_m', Task, queue_size=1)
 
@@ -54,17 +53,17 @@ class TaskManager:
 
 
     def __str__(self):
-        o = "Task Manager:\n\tCurrent Task -\n\t\t" + str(self.current_task) + "\n\tOther Tasks -"
+        o = "\nTask Manager:\n|\tCurrent Task -\n|\t\t" + str(self.current_task) + "\n|\tOther Tasks -"
         for task in self.current_tasks.queue:
-            o = o + "\n\t\t " + str(task)
+            o = o + "\n|\t\t" + str(task)
 
-        return o
+        return o + "\n"
 
 
     def add_task(self, task):
-        print("tm\tadd_task\t" + str(task))
+        print("tm | add_task\t" + str(task) + "\n")
         self.current_tasks.put(task)
-        print("tm\tadd_task\n" + str(self))
+        print(str(self))
 
 
     def update_priorities(self):
@@ -78,8 +77,8 @@ class TaskManager:
 
 
     def publish_next_task(self):
-        if self.current_task is not None:
-            self.add_task(self.current_task)
+        # if self.current_task is not None:
+        #    self.add_task(self.current_task)
 
         if self.current_tasks.empty():
             self.current_task = tt.Wander()
@@ -89,8 +88,6 @@ class TaskManager:
         t = self.current_task.to_msg()
         r = rospy.Rate(0.2)
         r.sleep()
-        print(type(t.table_number))
-        print(pub)
         pub.publish(t)
         print(self)
 
@@ -98,10 +95,9 @@ class TaskManager:
     def subscriber(self, task_msg):
         priority_task = tt.from_msg(task_msg)
         if task_msg.finished:
-            print("_tm received task done: publish next task")
+            print("tm | subscriber\tfinished")
             if priority_task == self.current_task:
                 self.current_task = None
-            print(self)
             self.update_priorities()
             self.publish_next_task()
         else:

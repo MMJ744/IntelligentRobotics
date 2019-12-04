@@ -19,8 +19,7 @@ class AskBooking(State):
 
     def run(self, instance):
         speech("Do you have a booking")
-        # response = listen()
-        response = 'no'
+        response = listen()
         instance.addInput(response)
 
     def next(self, instance, input):
@@ -35,12 +34,12 @@ class AskGroupSize(State):
 
     def run(self, instance):
         speech("How many people are there in your group")
-        # response = listen()
-        response = 3
+        response = listen()
         instance.addInput(response)
 
     def next(self, instance, input):
-        if input == '':
+        print(input)
+        if input is None or input == '':
             return UnknownAnswer()
         else:
             instance.group_size = int(input)
@@ -102,7 +101,8 @@ class UnknownAnswer(State):
         speech("Sorry I didn't understand your answer, please can you repeat that")
         instance.addInput('')
 
-    def next(self, instance, inputs):
+    def next(self, instance, input):
+        print(instance.previousState)
         return instance.previousState
 
 

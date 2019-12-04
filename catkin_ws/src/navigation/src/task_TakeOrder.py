@@ -105,5 +105,5 @@ class TakeOrderTask(StateMachine):
 # TakeOrderTask.finished = Finished()
 # TakeOrderTask.unknownAnswer = UnknownAnswer()
 #
-# instance = TakeOrderTask()
+# instance = TakeOrderTask(model=None,table=2)
 # instance.run_all()
