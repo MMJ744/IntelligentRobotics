@@ -70,6 +70,12 @@ class TaskExecuter:
     def run_task(self):
 
         import task_Wander
+        import task_Checkup
+        import task_CollectPayment
+        import task_TakeOrder
+        import task_NewCustomer
+        import task_Deliver
+
         
         """
         creates and runs task, broadcasting when done
@@ -77,15 +83,15 @@ class TaskExecuter:
         task_executable = None
 
         if self.task_msg.task_type == "Checkup":
-            task_executable = CheckupTask(self.model, self.task_msg.table_number)
+            task_executable = task_Checkup.CheckupTask(self.model, self.task_msg.table_number)
         if self.task_msg.task_type == "CollectPayment":
-            task_executable = CollectPaymentTask(self.model, self.task_msg.table_number)
+            task_executable = task_CollectPayment.CollectPaymentTask(self.model, self.task_msg.table_number)
         elif self.task_msg.task_type == "NewCustomer":
-            task_executable = NewCustomerTask(self.model)
+            task_executable = task_NewCustomer.NewCustomerTask(self.model)
         elif self.task_msg.task_type == "TakeOrder":
-            task_executable = TakeOrderTask(self.model, self.task_msg.table_number)
+            task_executable = task_TakeOrder.TakeOrderTask(self.model, self.task_msg.table_number)
         elif self.task_msg.task_type == "Deliver":
-            task_executable = DeliverTask(self.model, self.task_msg.table_number)
+            task_executable = task_Deliver.DeliverTask(self.model, self.task_msg.table_number)
         elif self.task_msg.task_type == "Wander":
             task_executable = task_Wander.WanderTask(self.model)
 
@@ -121,9 +127,3 @@ if __name__ == '__main__':
         main()
     except rospy.ROSInterruptException:
         print("err task executer")
-
-from task_Checkup import CheckupTask
-from task_CollectPayment import CollectPaymentTask
-from task_TakeOrder import TakeOrderTask
-from task_NewCustomer import NewCustomerTask
-from task_Deliver import DeliverTask
