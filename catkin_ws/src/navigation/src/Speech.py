@@ -51,7 +51,7 @@ def speech(text):
     filename = str(text) + '.mp3'
     filename = filename.replace(' ','')
     if not os.path.exists(filename):
-        tts = gTTS(text=text, lang='en')
+        tts = gTTS(text=text, lang='en-gh')
         tts.save(filename)
     playsound.playsound(filename)
 
