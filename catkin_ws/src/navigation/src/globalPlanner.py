@@ -26,6 +26,8 @@ temp = []
 
 staticObstacles = {}
 
+print("globalPlaner.py is running")
+
 def processCostMap(costmap):
     global staticObstacles
     global temp
@@ -146,7 +148,7 @@ def mapcallback(data):
         processCostMap(costmap)
         first = False
 
-
+    
 def metaCallback(data):
     global height
     global width
@@ -183,12 +185,6 @@ def calculateAngle(p1,p2):
 
 def display(path, cost):
     global temp
-    print ("route" + str(path))
-    print ("cost" + str(cost))
-    #plt.plot([v[0] for v in path], [v[1] for v in path])
-    #plt.plot([v[0] for v in temp], [v[1] for v in temp])
-    #plt.xlim(-1,width)
-    #plt.ylim(-1,height)
     posarr = PoseArray()
     header = Header()
     header.frame_id = "map"
@@ -202,8 +198,8 @@ def display(path, cost):
         l.append(pose)
     posarr.poses = l
     posarr.header = header
-    arpub.publish(posarr)
-
+    arpub.publish(posarr) 
+    
 def main():
     global go
     rospy.init_node('Global_Planner', anonymous=True)
@@ -220,6 +216,7 @@ def main():
             path,cost = AStarSearch((currentLocation[0],currentLocation[1]),(goalLocation[0],goalLocation[1]))
             #display(path,cost)
             newPath = []
+            newPathDebug = []
             for i in range(len(path)-1):
                 p1 = toPose(path[i])
                 p2 = toPose(path[i+1])
@@ -231,15 +228,17 @@ def main():
                 quat.z = q[2]
                 quat.w = q[3]
                 p1.pose.orientation = quat
-                newPath.append(p1)
+                newPath.append([p1.pose.position.x,p1.pose.position.y,q[0],q[1],q[2],q[3]])
+                newPathDebug.append(p1)
             plan = Path()
-            plan.poses = newPath
+            plan.poses = newPathDebug
             header = Header()
             header.frame_id = "map"
             plan.header = header
             pathPub2.publish(plan)
             print("published path")
             display(path,cost)
+            return newPath
         rate.sleep()
 
 def toPose(point):

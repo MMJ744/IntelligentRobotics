@@ -106,7 +106,7 @@ geometry_msgs
 ## DEPENDS: system dependencies of this project that dependent projects also need
 catkin_package(
 #  INCLUDE_DIRS include
-#  LIBRARIES navigation
+#  LIBRARIES navigation global_planner_lib
 	CATKIN_DEPENDS message_runtime roscpp rospy std_msg geometry_msgs setup_tf move_base urg_node sensor_msgs nav_msgs
 #  DEPENDS system_lib
 )
