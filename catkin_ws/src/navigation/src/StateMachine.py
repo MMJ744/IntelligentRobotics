@@ -12,7 +12,11 @@ class StateMachine:
         self.currentState.run(instance=self)
         while self.running:
             self.previousState = self.currentState
-            self.currentState = self.currentState.next(instance=self, input=self.inputs.pop())
+            try:
+                input = self.inputs.pop()
+            except expression as identifier:
+                input = ""
+            self.currentState = self.currentState.next(instance=self, input=input)
             self.currentState.run(instance=self)
 
     def addInput(self, input):
