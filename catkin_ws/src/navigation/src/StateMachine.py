@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 class StateMachine:
     def __init__(self, initial_state, model):
+        print("\tNew StateMachine")
         self.model = model
         self.currentState = initial_state
         self.previousState = initial_state
@@ -11,7 +12,7 @@ class StateMachine:
         self.currentState.run(instance=self)
         while self.running:
             self.previousState = self.currentState
-            self.currentState = self.currentState.next(self, self.inputs.pop())
+            self.currentState = self.currentState.next(instance=self, input=self.inputs.pop())
             self.currentState.run(instance=self)
 
     def addInput(self, input):

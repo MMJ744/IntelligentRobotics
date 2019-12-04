@@ -9,7 +9,7 @@ import taskManager
 class NavigateToFront(State):
 
     def run(self, instance):
-        navigateTo("front")
+        navigateTo("frontdesk")
 
     def next(self, instance, input):
         return AskBooking()
@@ -36,7 +36,7 @@ class AskGroupSize(State):
     def run(self, instance):
         speech("How many people are there in your group")
         # response = listen()
-        response = 9
+        response = 3
         instance.addInput(response)
 
     def next(self, instance, input):
@@ -44,7 +44,7 @@ class AskGroupSize(State):
             return UnknownAnswer()
         else:
             instance.group_size = int(input)
-            return CheckGroup
+            return CheckGroup()
 
 
 class GuideToTable(State):
@@ -54,7 +54,7 @@ class GuideToTable(State):
         navigateTo("table" + str(instance.group_table))
         speech("Please take a seat. Someone will be with you in a few minutes")
         instance.addInput('')
-        taskManager.new_task("TakeOrder", table_number=instance.group_table, delay=5)
+        taskManager.new_task("TakeOrder", table_number=instance.group_table, delay=0.5)
         instance.running = False
 
 
@@ -82,7 +82,7 @@ class BookingDetails(State):
 class CheckGroup(State):
 
     def run(self, instance):
-        for table in instance.tables:
+        for table in instance.model.tables:
             if table['available'] and table['places'] >= instance.group_size:
                 table['available'] = False
                 instance.group_table = table['id']
@@ -102,7 +102,7 @@ class UnknownAnswer(State):
         speech("Sorry I didn't understand your answer, please can you repeat that")
         instance.addInput('')
 
-    def run(self, instance, inputs):
+    def next(self, instance, inputs):
         return instance.previousState
 
 

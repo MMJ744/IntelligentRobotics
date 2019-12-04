@@ -25,7 +25,7 @@ class Model:
         self.tables = [
             {
                 "places": 6,
-                "available": False,
+                "available": True,
                 'id': 1
             },
             {
@@ -57,6 +57,7 @@ class TaskExecuter:
     def __init__(self):
         global model
 
+        print("new TaskExecuter")
         self.model = Model()
         model = self.model
 
@@ -97,6 +98,8 @@ class TaskExecuter:
 
         if task_executable is None:
             raise NotImplementedError
+
+        print(task_executable)
 
         task_executable.run_all()
 

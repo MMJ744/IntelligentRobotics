@@ -16,7 +16,7 @@ from navigation.msg import Task
 pub = None
 
 
-def new_task(task_type, table_number=1, delay=0):
+def new_task(task_type, table_number=None, delay=0):
     """
     adds task to priority queue, and will be executed once it becomes the highest priority job
     :param task_type: name of task to be executed
@@ -26,10 +26,11 @@ def new_task(task_type, table_number=1, delay=0):
     """
     global pub
 
+    print("tm: new_task: " + task_type)
     if pub is None:
         pub = rospy.Publisher('task_m', Task, queue_size=1)
 
-    pub.publish(tt.new(task_type, table_number, delay))
+    pub.publish(tt.new(task_type, table_number, delay).to_msg())
 
 
 
@@ -55,21 +56,24 @@ class TaskManager:
     def __str__(self):
         o = "Task Manager:\n\tCurrent Task -\n\t\t" + str(self.current_task) + "\n\tOther Tasks -"
         for task in self.current_tasks.queue:
-            o = o + "\n\t\t " + str(task) + "\n"
+            o = o + "\n\t\t " + str(task)
 
         return o
 
 
     def add_task(self, task):
-        self.current_tasks.put(task.update_priority())
+        print("tm\tadd_task\t" + str(task))
+        self.current_tasks.put(task)
+        print("tm\tadd_task\n" + str(self))
 
 
     def update_priorities(self):
         updated_priorities_queue = PriorityQueue()
 
         for task in self.current_tasks.queue:
-            task.update_priority()
-            updated_priorities_queue.put(task)
+            if task is not None:
+                task.update_priority()
+                updated_priorities_queue.put(task)
         self.current_tasks = updated_priorities_queue
 
 
@@ -97,6 +101,7 @@ class TaskManager:
             print("_tm received task done: publish next task")
             if priority_task == self.current_task:
                 self.current_task = None
+            print(self)
             self.update_priorities()
             self.publish_next_task()
         else:
@@ -105,7 +110,6 @@ class TaskManager:
 
 def main():
     TaskManager()
-    print("_tm: " + str(tm))
     rate = rospy.Rate(1)
     while not rospy.is_shutdown():
         rate.sleep()

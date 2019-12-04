@@ -3,15 +3,15 @@ import rospy
 from navigation.msg import Task
 
 def from_msg(task_msg):
-    if task_msg.type == "Checkup":
-        task_info = CheckUp(task_msg.created_at, task_msg.table_number)
-    elif task_msg.type == "CollectPayment":
-        task_info = CollectPayment(task_msg.created_at, task_msg.table_number)
-    elif task_msg.type == "NewCustomer":
+    if task_msg.task_type == "Checkup":
+        task_info = CheckUp(task_msg.table_number, task_msg.created_at)
+    elif task_msg.task_type == "CollectPayment":
+        task_info = CollectPayment(task_msg.table_number, task_msg.created_at)
+    elif task_msg.task_type == "NewCustomer":
         task_info = NewCustomer(task_msg.created_at)
-    elif task_msg.type == "TakeOrder":
-        task_info = TakeOrder(task_msg.created_at, task_msg.table_number)
-    elif task_msg.type == "Wander":
+    elif task_msg.task_type == "TakeOrder":
+        task_info = TakeOrder(task_msg.table_number, task_msg.created_at)
+    elif task_msg.task_type == "Wander":
         task_info = Wander(task_msg.created_at)
     else:
         raise NotImplementedError
@@ -20,18 +20,18 @@ def from_msg(task_msg):
 
 
 def new(task_type, table_number, delay):
-    created_at = rospy.Time.now() + delay*60
+    created_at = rospy.Time.now() + rospy.Duration(delay*60)
 
     if task_type == "Checkup":
-        task_info = CheckUp(created_at, table_number)
+        task_info = CheckUp(time=created_at, table_number=table_number)
     elif task_type == "CollectPayment":
-        task_info = CollectPayment(created_at, table_number)
+        task_info = CollectPayment(time=created_at, table_number=table_number)
     elif task_type == "NewCustomer":
-        task_info = NewCustomer(created_at)
+        task_info = NewCustomer(time=created_at)
     elif task_type == "TakeOrder":
-        task_info = TakeOrder(created_at, table_number)
+        task_info = TakeOrder(time=created_at, table_number=table_number)
     elif task_type == "Wander":
-        task_info = Wander(created_at)
+        task_info = Wander(time=created_at)
     else:
         raise NotImplementedError
 
@@ -61,6 +61,7 @@ class Base:
         """
         timestamp and priority level
         """
+        self.priority = None
         self.type = task_type
         self.table_number = table_number
 
@@ -72,26 +73,34 @@ class Base:
         self.update_priority()
 
     def __str__(self):
-        o = "p[ " + str(self.priority) + " ]\t" + self.type + "\t"
+        o = self.type + "\t"
         if self.table_number is not None:
             o = o + "t(" + str(self.table_number) + ")"
         else:
             o = o + "\t"
-        o = o + "\t@ " + str(self.time_created)
+        o = o + "\t@ " + str(self.time_created) + "\tp[ " + str(self.priority) + " ]"
 
         return o
 
     def get_priority(self):
-        return (self.time_created - rospy.Time.now()) * self.priority_level
+        # print("tt\tget_priority\t" + str(self))
+        return (self.time_created - rospy.Time.now()).to_sec() * self.priority_level
 
     def update_priority(self):  # hot fix - unused
+        # print("tt\tupdate_priority\t" + str(self))
         self.priority = self.get_priority()
+        # print("tt\tupdate_priority\t" + str(self))
 
     def to_msg(self, finished=False):
         t = Task()
         t.task_type = self.type
         t.created_at = self.time_created
-        t.table_number = self.table_number
+
+        if self.table_number is None:
+            t.table_number = -1
+        else:
+            t.table_number = self.table_number
+
         t.finished = finished
 
         return t

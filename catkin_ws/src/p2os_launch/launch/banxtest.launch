@@ -4,7 +4,7 @@
 	<!-- Run the map server (you can run it here or in another terminal) -->
 	<node name="map_server" pkg="map_server" type="map_server" args="/home/matty/IntelligentRobotics/Maps/lgfloor.yaml"/>
 
-	<node pkg="navigation" type="taskExecuter.py" name="TaskExecuter"> </node>
+	<node pkg="navigation" type="taskExecuter.py" name="TaskExecuter" output="screen"> </node>
 	<node pkg="navigation" type="taskManager.py" name="TaskManager" output="screen"> </node>
 
 	<node pkg="p2os_driver" type="p2os_driver" name="p2os">

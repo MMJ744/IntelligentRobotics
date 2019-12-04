@@ -8,7 +8,7 @@ from navController import navigateTo
 
 class NavigateToTable(State):
     def run(self, instance):
-        navigateTo("table" + str(instance.table.id))
+        navigateTo("table" + str(instance.table))
 
     def next(self, instance, input):
         return CheckReady()
