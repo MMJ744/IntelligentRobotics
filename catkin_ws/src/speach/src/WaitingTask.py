@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 from State import State
 from StateMachine import StateMachine
 from Speech import listen, speech
