@@ -4,6 +4,7 @@ from Speech import speech, listen
 import taskManager
 from navController import navigateTo
 import taskExecuter
+from rfid import readCard
 
 
 class NavigateToTable(State):
@@ -42,7 +43,9 @@ class TakePayment(State):
 
     def run(self, instance):
         speech("Please present your card to make your payment")
-        instance.payment_taken = True  # Le bodge
+        instance.user = readCard()
+        if instance.user is not None:
+            instance.payment_taken = True
 
     def next(self, instance, input):
         if instance.payment_taken:
@@ -55,6 +58,9 @@ class TakePaymentRetry(State):
 
     def run(self, instance):
         speech("I'm sorry, that payment wasn't successful. Please try again.")
+        instance.user = readCard()
+        if instance.user is not None:
+            instance.payment_taken = True
 
     def next(self, instance, input):
         if instance.payment_taken:
@@ -74,7 +80,7 @@ class DispatchHuman(State):
 class DismissCustomers(State):
 
     def run(self, instance):
-        speech("Thank you, your payment has been processed. You may now leave.")
+        speech("Thank you " + instance.user + ", your payment has been processed. You may now leave.")
         instance.running = False
 
 
@@ -93,6 +99,7 @@ class CollectPaymentTask(StateMachine):
         StateMachine.__init__(self, NavigateToTable(), model)
         self.table_number = table
         self.payment_taken = False
+        self.user = None
 
 # CollectPaymentTask.navigateToTable = NavigateToTable()
 # CollectPaymentTask.askIfFinished = AskIfFinished()
