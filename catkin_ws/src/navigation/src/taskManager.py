@@ -25,7 +25,7 @@ def new_task(task_type, table_number=1, delay=0):
     :return:
     """
     global tm
-
+    print("tm.new_task on " + str(tm))
     tm.add_task(tt.new(task_type, table_number, delay))
 
 
@@ -101,7 +101,9 @@ class TaskManager:
 
 def main():
     global tm
+
     tm = TaskManager()
+    print("_tm: " + str(tm))
     rate = rospy.Rate(1)
     while not rospy.is_shutdown():
         rate.sleep()

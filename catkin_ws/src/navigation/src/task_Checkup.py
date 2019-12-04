@@ -2,7 +2,6 @@ from StateMachine import StateMachine
 from State import State
 from Speech import speech, listen
 from navController import navigateTo
-import taskExecuter
 
 
 class NavigateToTable(State):
@@ -56,3 +55,6 @@ class CheckupTask(StateMachine):
 #
 # instance = CheckupTask()
 # instance.runAll()
+
+
+import taskExecuter
