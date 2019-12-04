@@ -109,6 +109,7 @@ class TaskExecuter:
         self.pub.publish(self.task_msg)
 
     def subscriber(self, task):
+        print("_te: heard task " + str(task))
         if not task.finished:
             print("te | new_task\t" + str(task.task_type))
             self.task_msg = task

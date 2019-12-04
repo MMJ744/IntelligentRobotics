@@ -1,5 +1,4 @@
 <launch>
-	<master auto="start"/>
 
 	<!-- Run the map server (you can run it here or in another terminal) -->
 	<node name="map_server" pkg="map_server" type="map_server" args="/home/matty/IntelligentRobotics/Maps/lgfloor.yaml"/>
