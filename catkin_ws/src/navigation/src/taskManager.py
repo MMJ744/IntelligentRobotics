@@ -83,8 +83,6 @@ class TaskManager:
         t.finished = False
         r = rospy.Rate(0.2)
         r.sleep()
-        print(type(t.table_number))
-        print(self.pub)
         self.pub.publish(t)
         print(self)
 
@@ -103,7 +101,6 @@ def main():
     global tm
 
     tm = TaskManager()
-    print("_tm: " + str(tm))
     rate = rospy.Rate(1)
     while not rospy.is_shutdown():
         rate.sleep()

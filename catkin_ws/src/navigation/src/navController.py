@@ -1,17 +1,19 @@
 #!/usr/bin/env python
 import rospy
 from navigation.msg import Target
+from nav_msgs.msg import Odometry
 from geometry_msgs.msg import PoseStamped
 from std_msgs.msg import Int8, String, Header
 import tf, math
 
 
 target = None
-locations = {}
+locations = None
 goalPub = 0
 navResult = -1
 x = 0.0
-donePub = 0
+donePub = None
+odomsub = None
 y = 0.0
 theta = 0.0
 
@@ -39,32 +41,42 @@ def odomCallback(data):
 def navigateTo(destination):
     global goalPub
     global locations
+    global odomsub
     global x
     global y
     global theta
+    rate = rospy.Rate(10)
+    if odomsub is None or goalPub is None or locations is None:
+        print("stuff was none")
+        initLocations()
     print("trying to go to " + destination)
     if destination in locations:
         print("found destination " + destination)
         goal = locations[destination]
+        goalPub = rospy.Publisher("move_base_simple/goal",PoseStamped,queue_size=1)
+        rate.sleep()#Dont delete these
+        rate.sleep()#Our robot is sleep deprived
         goalPub.publish(goal)
         q = goal.pose.orientation
         gtheta = math.atan2(2 * (q.x * q.y + q.w * q.z), q.w * q.w + q.x * q.x - q.z * q.z)
-        rate = rospy.Rate(10)
+        
+        print("published goal")
         while not rospy.is_shutdown():
             distance = math.sqrt(abs(goal.pose.position.x - x) + abs(goal.pose.position.y-y))
             while distance > 0.5 or abs(gtheta - theta) > 0.2:
                 rate.sleep()
                 distance = math.sqrt(abs(goal.pose.position.x - x) + abs(goal.pose.position.y-y))
-        donePub.publish("done")
+        print("arrived")
     else:
         print("Didnt match location")
-        donePub.publish("error")
 
 def main():
     global goalPub
     global donePub
+    global odomsub
     initLocations()
     rospy.init_node('navController', anonymous=True)
+    odomsub = rospy.Subscriber("odom", Odometry, odomCallback)
     goalPub = rospy.Publisher("move_base_simple/goal",PoseStamped,queue_size=10)
     rospy.Subscriber("navIn", String, navIn)
     donePub = rospy.Publisher("navOut", String, queue_size=1)
@@ -76,6 +88,11 @@ def main():
 
 def initLocations():
     global locations
+    global odomsub
+    global goalPub
+    locations = {}
+    odomsub = rospy.Subscriber("odom", Odometry, odomCallback)
+    goalPub = rospy.Publisher("move_base_simple/goal",PoseStamped,queue_size=10)
     boothY = 14.5
     boothZ = -0.7
     boothW = 0.7

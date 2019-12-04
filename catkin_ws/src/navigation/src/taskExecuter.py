@@ -57,6 +57,8 @@ class TaskExecuter:
     def __init__(self):
         global model
 
+        print("new TaskExecuter")
+
         self.model = Model()
         model = self.model
 
@@ -70,7 +72,7 @@ class TaskExecuter:
     def run_task(self):
 
         import task_Wander
-        
+
         """
         creates and runs task, broadcasting when done
         """
@@ -102,6 +104,7 @@ class TaskExecuter:
         self.pub.publish(self.task_msg)
 
     def subscriber(self, task):
+        print("_te: heard task " + str(task))
         if not task.finished:
             print("_te received new task: " + str(task.task_type))
             self.task_msg = task
