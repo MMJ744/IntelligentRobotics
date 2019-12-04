@@ -13,7 +13,7 @@ import rospy
 from navigation.msg import Task
 
 
-tm = None
+pub = None
 
 
 def new_task(task_type, table_number=1, delay=0):
@@ -24,9 +24,13 @@ def new_task(task_type, table_number=1, delay=0):
     :param delay: minimum delay time on task execution in minutes, defaults to 0
     :return:
     """
-    global tm
-    print("tm.new_task on " + str(tm))
-    tm.add_task(tt.new(task_type, table_number, delay))
+    global pub
+
+    if pub is None:
+        pub = rospy.Publisher('task_m', Task, queue_size=1)
+
+    pub.publish(tt.new(task_type, table_number, delay))
+
 
 
 class TaskManager:
@@ -35,10 +39,12 @@ class TaskManager:
     """
     def __init__(self):
         print("new TaskManager")
+        global pub
 
         rospy.init_node('Manager', anonymous=True)
-        rospy.Subscriber("task_", Task, self.subscriber)
-        self.pub = rospy.Publisher('task', Task, queue_size=1)
+        rospy.Subscriber("task_m", Task, self.subscriber)
+        if pub is None:
+            pub = rospy.Publisher('task_e', Task, queue_size=1)
 
         self.current_tasks = PriorityQueue()
         self.current_task = None
@@ -75,34 +81,30 @@ class TaskManager:
             self.current_task = tt.Wander()
         else:
             self.current_task = self.current_tasks.get()
-        t = Task()
-        t.task_type = self.current_task.type
-        t.created_at = self.current_task.time_created
-        #t.table_number = self.current_task.table_number
-        t.table_number = 1
-        t.finished = False
+
+        t = self.current_task.to_msg()
         r = rospy.Rate(0.2)
         r.sleep()
         print(type(t.table_number))
-        print(self.pub)
-        self.pub.publish(t)
+        print(pub)
+        pub.publish(t)
         print(self)
 
 
-    def subscriber(self, task):
-        if task.finished:
+    def subscriber(self, task_msg):
+        priority_task = tt.from_msg(task_msg)
+        if task_msg.finished:
             print("_tm received task done: publish next task")
-            finished_task = tt.create(task)
-            if finished_task == self.current_task:
+            if priority_task == self.current_task:
                 self.current_task = None
             self.update_priorities()
             self.publish_next_task()
+        else:
+            self.add_task(priority_task)
 
 
 def main():
-    global tm
-
-    tm = TaskManager()
+    TaskManager()
     print("_tm: " + str(tm))
     rate = rospy.Rate(1)
     while not rospy.is_shutdown():
