@@ -21,17 +21,28 @@ def hello():
 
 @app.route('/kitchen')
 def kitchen():
-    print("kitchen")
-    global model
-    print(model)
-        
-    user_int = int(request.args.get('table', ''))
-    user_str = "table" + str(user_int)
-    taskManager.new_task("Deliver", user_int)
-    text = "waiter summoned for " + user_str
-    model.prepend_message("kitchen", text)
+    print("kitchentask")
+    try:
+        user_int = int(request.args.get('table', ''))
+        user_str = "table" + str(user_int)
+        taskManager.new_task("Deliver", user_int)
+        text = "waiter summoned for " + user_str
+        model.prepend_message("kitchen", text)
 
-    text = text + "\n\n" + model.messages["kitchen"]
+        text = text + "\n\n" + model.messages["kitchen"]
+        print("kitchentask")
+    except:
+        text = "error creating delivery task, please try again"
+        print("kitchentask failed")
+
+    return text
+
+
+@app.route('/kitchen')
+def kitchen():
+    print("kitchen")
+
+    text = model.messages["kitchen"]
     return text
 
 
