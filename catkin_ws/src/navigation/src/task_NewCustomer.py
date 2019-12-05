@@ -127,23 +127,25 @@ class CheckGroup(State):
 
     def run(self, instance):
         speech("Table for " + str(instance.group_size))
-        instance.group_table = None
         print("group=" + str(instance.group_size))
-        for table in instance.model.tables:
-            print("table? " + str(table))
-            print("\tavail:" + str(table['available']) + "\tplaces:" + str(table['places'] >= instance.group_size))
-            if table['available'] and table['places'] >= instance.group_size:
-                print(table['id'])
-                table['available'] = False
-                instance.group_table = table['id']
-                break
-        instance.addInput('')
 
     def next(self, instance, input):
-        if instance.group_table is not None:
-            return GuideToTable()
-        else:
+
+        big_tables = list(filter(lambda t: t['places'] >= instance.group_size, instance.model.tables))
+
+        if big_tables is []:
+            speech("Sorry, we don't have any tables in the restaurant big enough to seat " + str(instance.group_table) + " people.")
+            return Goodbye()
+
+        big_avail_tables = list(filter(lambda t: t['available'], big_tables))
+
+        if big_avail_tables is []:
+            speech("Sorry, all our tables of size " + str(instance.group_table) + " or above are busy at the moment.")
             return GiveWaitingTime()
+
+        big_avail_tables.sort(key=(lambda x: x['places']))
+        instance.group_table = big_avail_tables[0]
+        return GuideToTable()
 
 
 class UnknownAnswer(State):
