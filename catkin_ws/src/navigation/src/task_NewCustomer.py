@@ -18,7 +18,7 @@ class NavigateToFront(State):
 class AskBooking(State):
 
     def run(self, instance):
-        speech("Do you have a booking")
+        speech("Do you have a booking?")
         response = listen()
         instance.addInput(response)
 
@@ -33,7 +33,7 @@ class AskBooking(State):
 class AskGroupSize(State):
 
     def run(self, instance):
-        speech("How many people are there in your group")
+        speech("How many people are there in your group?")
         response = listen()
         instance.addInput(response)
 
@@ -98,7 +98,7 @@ class CheckGroup(State):
 class UnknownAnswer(State):
 
     def run(self, instance):
-        speech("Sorry I didn't understand your answer, please can you repeat that")
+        speech("Sorry, I didn't understand your answer, let me try again")
         instance.addInput('')
 
     def next(self, instance, input):

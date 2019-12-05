@@ -16,7 +16,7 @@ class NavigateToTable(State):
 
 class CheckReady(State):
     def run(self, instance):
-        speech("Hello again. Are we ready to order?")
+        speech("Are we ready to order?")
         instance.addInput(listen())
 
     def next(self, instance, input):
@@ -47,7 +47,7 @@ class TakeFirstOrderItem(State):
 
 class CheckMoreOrders(State):
     def run(self, instance):
-        speech("Would anyone else like to order")
+        speech("Would anyone else like to order?")
         instance.addInput(listen())
 
     def next(self, instance, input):
@@ -81,7 +81,7 @@ class Finished(State):
 
 class UnknownAnswer(State):
     def run(self, instance):
-        speech("Sorry I didn't understand your answer, please can you repeat that")
+        speech("Sorry, I didn't understand your answer, let me try again")
         instance.addInput('')
 
     def next(self, instance, input):

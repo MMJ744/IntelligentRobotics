@@ -36,7 +36,7 @@ class ConfirmComments(State):
 
 class UnknownAnswer(State):
     def run(self, instance):
-        speech("Sorry I didn't understand your answer, please can you repeat that")
+        speech("Sorry, I didn't understand your answer, let me try again")
         instance.addInput('')
 
     def next(self, instance, input):
