@@ -33,6 +33,7 @@ class AskBooking(State):
 class AskGroupSize(State):
 
     def run(self, instance):
+        instance.group_size = 99999
         speech("How many people are there in your group?")
         response = listen()
         instance.addInput(response)
@@ -42,9 +43,10 @@ class AskGroupSize(State):
         if input is None or input == '':
             return UnknownAnswer()
         else:
-            answer = filter(lambda x: x.isdigit(), input)
-            if answer == '': return UnknownAnswer()
-            instance.group_size = int()
+            answer = list(filter(lambda x: x.isdigit(), input))
+            if answer == []: 
+                return UnknownAnswer()
+            instance.group_size = int(answer[0])
             return CheckGroup()
 
 
@@ -55,7 +57,7 @@ class GuideToTable(State):
         navTo.navigateTo("table" + str(instance.group_table))
         speech("Please take a seat. Someone will be with you in a few minutes")
         instance.addInput('')
-        taskManager.new_task("TakeOrder", table_number=instance.group_table, delay=0.5)
+        # taskManager.new_task("TakeOrder", table_number=instance.group_table, delay=0.5)
         instance.running = False
 
 
@@ -83,15 +85,20 @@ class BookingDetails(State):
 class CheckGroup(State):
 
     def run(self, instance):
+        instance.group_table = None
+        print("group=" + str(instance.group_size))
         for table in instance.model.tables:
+            print("table? " + str(table))
+            print("\tavail:" + str(table['available']) + "\tplaces:" + str(table['places'] >= instance.group_size))
             if table['available'] and table['places'] >= instance.group_size:
+                print(table['id'])
                 table['available'] = False
                 instance.group_table = table['id']
                 break
         instance.addInput('')
 
     def next(self, instance, input):
-        if instance.group_table != -1:
+        if instance.group_table is not None:
             return GuideToTable()
         else:
             return GiveWaitingTime()
@@ -111,7 +118,7 @@ class UnknownAnswer(State):
 class NewCustomerTask(StateMachine):
     def __init__(self, model):
         StateMachine.__init__(self, NavigateToFront(), model)
-        self.group_table = -1
+        self.group_table = None
         self.group_size = 99999
 
 # NewCustomerTask.askBooking = AskBooking()

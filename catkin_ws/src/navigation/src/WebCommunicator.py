@@ -23,15 +23,13 @@ def hello():
 def kitchen():
     print("kitchen")
     global model
-    
-    try:
-        user_int = int(request.args.get('table', ''))
-        user_str = "table" + str(user_int)
-        taskManager.new_task("Deliver", user_int)
-        text = "waiter summoned for " + user_str
-        model.prepend_message("kitchen", text)
-    except:
-        text = "call with /kitchen?table=<table_number>"
+    print(model)
+        
+    user_int = int(request.args.get('table', ''))
+    user_str = "table" + str(user_int)
+    taskManager.new_task("Deliver", user_int)
+    text = "waiter summoned for " + user_str
+    model.prepend_message("kitchen", text)
 
     text = text + "\n\n" + model.messages["kitchen"]
     return text

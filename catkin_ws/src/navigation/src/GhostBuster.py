@@ -9,12 +9,11 @@ def BerNerNerNerNerNerNer():
 
 def BerNerNerNerNerNer():
     rospy.init_node('GhostBuster',anonymous=True)
-    rate = rospy.Rate(0.2)
+    rate = rospy.Rate(0.3)
     print("hi")
     while not rospy.is_shutdown():
         rate.sleep()
         BerNerNerNerNerNerNer()
-        rate.sleep()
     print("bye")
 
 

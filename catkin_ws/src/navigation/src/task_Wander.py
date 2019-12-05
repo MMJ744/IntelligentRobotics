@@ -12,11 +12,13 @@ class CheckTables(State):
         tbls.sort(reverse=True)
         print(instance.model.tables)
         print(tbls)
+        '''
         for table_int in tbls:
             print(table_int)
             navTo.navigateTo("table" + str(table_int))    
             if vision.are_people():
                 instance.model.tables[table_int]["available"] = True
+        '''
         navTo.navigateTo("frontdesk")
         if vision.are_people():
             taskManager.new_task("NewCust")

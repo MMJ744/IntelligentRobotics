@@ -49,7 +49,7 @@ def navIn(destination):
         gtheta = math.atan2(2 * (q.x * q.y + q.w * q.z), q.w * q.w + q.x * q.x - q.z * q.z)
         print("published goal")
         distance = math.sqrt(abs(goal.pose.position.x - x) + abs(goal.pose.position.y-y))
-        while distance > 0.5 and (abs(gtheta - odomtheta) > 0.2 or abs(gtheta - amcltheta) > 0.2):
+        while (distance > 0.5 or (abs(gtheta - odomtheta) > 0.2 and abs(gtheta - amcltheta) > 0.2)) and not rospy.is_shutdown():
             print(distance)
             print(gtheta - odomtheta)
             print(gtheta - amcltheta)
