@@ -16,7 +16,7 @@ model = None
 @app.route('/')
 def hello():
     print("hello")
-    return 'Hello'
+    return 'Hello World'
 
 
 @app.route('/kitchen')

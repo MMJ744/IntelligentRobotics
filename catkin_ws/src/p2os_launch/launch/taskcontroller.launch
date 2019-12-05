@@ -2,5 +2,6 @@
 
 	<node pkg="navigation" type="taskExecuter.py" name="TaskExecuter" output="screen"> </node>
 	<node pkg="navigation" type="taskManager.py" name="TaskManager" output="screen"> </node>
+	<node pkg="navigation" type="WebCommunicator.py" name="WebCommunicator" output="screen"> </node>
 
 </launch>
