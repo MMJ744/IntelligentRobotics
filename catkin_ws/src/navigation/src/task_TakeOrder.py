@@ -20,9 +20,9 @@ class CheckReady(State):
         instance.addInput(listen())
 
     def next(self, instance, input):
-        if input[2:] == "no":
+        if "no" in input:
             return ComeBackLater()
-        elif input[3:] == "yes":
+        elif "yes" in input:
             return TakeFirstOrderItem()
         else:
             return UnknownAnswer()
@@ -41,7 +41,7 @@ class TakeFirstOrderItem(State):
         instance.addInput(listen())
 
     def next(self, instance, input):
-        taskExecuter.send_message("kitchen", "Send order \'" + input + "\' for table " + str(instance.table.id) + " to the kitchen")
+        taskExecuter.send_message("kitchen", "Send order \'" + input + "\' for table " + str(instance.table) + " to the kitchen")
         return CheckMoreOrders()
 
 
@@ -51,9 +51,9 @@ class CheckMoreOrders(State):
         instance.addInput(listen())
 
     def next(self, instance, input):
-        if input[3:] == "yes":
+        if 'yes' in input:
             return TakeOrderItem()
-        elif input[2:] == "no":
+        elif 'no' in input:
             return Finished()
         else:
             return UnknownAnswer()
