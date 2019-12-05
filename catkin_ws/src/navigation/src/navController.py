@@ -15,7 +15,8 @@ x = 0.0
 donePub = None
 odomsub = None
 y = 0.0
-theta = 0.0
+odomtheta = 0.0
+amcltheta = 0.0
 
 
 def navOutCallback(x):
@@ -31,7 +32,8 @@ def navIn(destination):
     global odomsub
     global x
     global y
-    global theta
+    global odomtheta
+    global amcltheta
     rate = rospy.Rate(10)
     destination = destination.data
     if odomsub is None or goalPub is None or locations is None:
@@ -47,9 +49,10 @@ def navIn(destination):
         gtheta = math.atan2(2 * (q.x * q.y + q.w * q.z), q.w * q.w + q.x * q.x - q.z * q.z)
         print("published goal")
         distance = math.sqrt(abs(goal.pose.position.x - x) + abs(goal.pose.position.y-y))
-        print(distance)
-        print(gtheta - theta)
-        while distance > 0.5 :
+        while distance > 0.5 and (abs(gtheta - odomtheta) > 0.2 or abs(gtheta - amcltheta) > 0.2):
+            print(distance)
+            print(gtheta - odomtheta)
+            print(gtheta - amcltheta)
             rate.sleep()
             distance = math.sqrt(abs(goal.pose.position.x - x) + abs(goal.pose.position.y-y))
         print("arrived")
@@ -59,17 +62,20 @@ def navIn(destination):
         donePub.publish("invalid")
     print("bye")
 
-def odomCallback(data):
+def amclCallback(data):
     global x
     global y
+    global amcltheta
     x = data.pose.pose.position.x
     y = data.pose.pose.position.y
-    
+    q = data.pose.pose.orientation
+    amcltheta = math.atan2(2 * (q.x * q.y + q.w * q.z), q.w * q.w + q.x * q.x - q.z * q.z)
+
 
 def odomCall(data):
-    global theta
+    global odomtheta
     q = data.pose.pose.orientation
-    theta = math.atan2(2 * (q.x * q.y + q.w * q.z), q.w * q.w + q.x * q.x - q.z * q.z)
+    odomtheta = math.atan2(2 * (q.x * q.y + q.w * q.z), q.w * q.w + q.x * q.x - q.z * q.z)
 
 def main():
     global goalPub
@@ -78,7 +84,7 @@ def main():
     rospy.init_node('navController', anonymous=True)
     initLocations()
     odomsub = rospy.Subscriber("/odom", Odometry, odomCall)
-    odomsub = rospy.Subscriber("/amcl_pose", PoseWithCovarianceStamped, odomCallback)
+    odomsub = rospy.Subscriber("/amcl_pose", PoseWithCovarianceStamped, amclCallback)
     goalPub = rospy.Publisher("move_base_simple/goal",PoseStamped,queue_size=10)
     rospy.Subscriber("navIn", String, navIn)
     donePub = rospy.Publisher("navOut", String, queue_size=1)
