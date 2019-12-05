@@ -89,10 +89,17 @@ class GiveWaitingTime(State):
 
     def next(self, instance, input):
         result = utils.getYesNo(input)
-        if 'yes'==result:
+        if 'yes' == result:
             return GuideToWaitingarea()
         else:
-            return BookingDetails()
+            return Goodbye()
+
+
+class Goodbye(State):
+
+    def run(self, instance):
+        speech("Sorry about that. Goodbye")
+        instance.running = False
 
 
 class BookingDetails(State):
@@ -100,7 +107,6 @@ class BookingDetails(State):
     def run(self, instance):
         speech("Please present your card to validate your booking")
         instance.user = readCard()
-        
 
     def next(self, instance, input):
         if instance.user is not None:
@@ -115,6 +121,7 @@ class BookingDetails(State):
         else:
             print("That didnt work")
             return UnknownAnswer()
+
 
 class CheckGroup(State):
 

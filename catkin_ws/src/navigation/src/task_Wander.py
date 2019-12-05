@@ -18,7 +18,8 @@ class CheckTables(State):
             print(table_int)
             navTo.navigateTo("table" + str(table_int))    
             if not vision.are_people():
-                instance.model.tables[table_int-1]["available"] = False
+                speech("It looks like this table is empty. I'll mark it as available")
+                instance.model.tables[table_int-1]["available"] = True
         navTo.navigateTo("frontdesk")
         r = rospy.Rate(1)
         r.sleep()
