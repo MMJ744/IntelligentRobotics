@@ -77,7 +77,7 @@ class TakeOrderItem(State):
 class Finished(State):
     def run(self, instance):
         speech("Thank you. Your food will be with you soon")
-        taskManager.new_task("Deliver", table_number=instance.table, delay=9999)
+        taskManager.new_task("Deliver", table_number=instance.table, delay=1)
         instance.running = False
 
 

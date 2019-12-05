@@ -80,10 +80,6 @@ class TaskManager:
 
         for task in self.current_tasks.queue:
             if task is not None:
-                if task.table is not None and task.model.tables[task.table]["available"]:
-                    print("update_priorities skipped empty table task tid:" + str(task.table))
-                    continue
-
                 task.update_priority()
                 updated_priorities_queue.put(task)
         self.current_tasks = updated_priorities_queue

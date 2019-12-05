@@ -34,7 +34,7 @@ def convertToNum(data):
 
 def getYesNo(data):
     tokens = data.split()
-    if 'yes' in tokens or 'yeah' in tokens or 'okay' in tokens':
+    if 'yes' in tokens or 'yeah' in tokens or 'okay' in tokens:
         return 'yes'
     if 'no' in tokens or 'nah' in tokens:
         return 'no'

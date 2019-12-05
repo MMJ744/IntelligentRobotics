@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 from State import State
 from StateMachine import StateMachine
-from Speech import speech, navigate, listen
+from Speech import speech, listen
 import navTo
 import taskManager
 from rfid import readCard
@@ -133,18 +133,18 @@ class CheckGroup(State):
 
         big_tables = list(filter(lambda t: t['places'] >= instance.group_size, instance.model.tables))
 
-        if big_tables is []:
-            speech("Sorry, we don't have any tables in the restaurant big enough to seat " + str(instance.group_table) + " people.")
+        if big_tables == []:
+            speech("Sorry, we don't have any tables in the restaurant big enough to seat " + str(instance.group_size) + " people.")
             return Goodbye()
 
         big_avail_tables = list(filter(lambda t: t['available'], big_tables))
 
-        if big_avail_tables is []:
-            speech("Sorry, all our tables of size " + str(instance.group_table) + " or above are busy at the moment.")
+        if big_avail_tables == []:
+            speech("Sorry, all our tables of size " + str(instance.group_size) + " or above are busy at the moment.")
             return GiveWaitingTime()
 
         big_avail_tables.sort(key=(lambda x: x['places']))
-        instance.group_table = big_avail_tables[0]
+        instance.group_table = big_avail_tables[0]['id']
         return GuideToTable()
 
 

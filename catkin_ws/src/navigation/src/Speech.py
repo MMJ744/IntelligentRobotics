@@ -7,9 +7,9 @@ from gtts import gTTS
 import os
 import playsound
 
-def listen(show):
+def listen():
     recognizer = sr.Recognizer()
-    microphone = sr.Microphone(device_index=0)
+    microphone = sr.Microphone()
 
     # check that recognizer and microphone arguments are appropriate type
     if not isinstance(recognizer, sr.Recognizer):
@@ -21,10 +21,30 @@ def listen(show):
     # adjust the recognizer sensitivity to ambient noise and record audio
     # from the microphone
     with microphone as source:
-        audio = recognizer.adjust_for_ambient_noise(source)
-        audio = recognizer.listen(source, phrase_time_limit=5)
+        # recognizer.adjust_for_ambient_noise(source)
+        audio = recognizer.listen(source, phrase_time_limit=3)
 
-    return recognizer.recognize_google(audio, show_all=show)
+    # set up the response object
+    response = {
+        "success": True,
+        "error": None,
+        "transcription": None
+    }
+
+    # try recognizing the speech in the recording
+    # if a RequestError or UnknownValueError exception is caught,
+    #     update the response object accordingly
+    try:
+        response["transcription"] = recognizer.recognize_google(audio)
+    except sr.RequestError:
+        # API was unreachable or unresponsive
+        response["success"] = False
+        response["error"] = "API unavailable"
+    except sr.UnknownValueError:
+        # speech was unintelligible
+        response["error"] = "Unable to recognize speech"
+    print(response["transcription"])
+    return response["transcription"]
 
 def speech(text):
     print("speech:" + text)
@@ -34,5 +54,6 @@ def speech(text):
         tts = gTTS(text=text, lang='en-gh')
         tts.save(filename)
     playsound.playsound(filename)
-    
-print(listen(True))
+
+def navigate(where):
+    print('Going to ' + where)
