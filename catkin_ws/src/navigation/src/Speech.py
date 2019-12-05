@@ -50,9 +50,9 @@ def speech(text):
     print("speech:" + text)
     filename = str(text) + '.mp3'
     filename = filename.replace(' ','')
-    if not os.path.exists(filename):
+    if not os.path.exists('voice/'+filename):
         tts = gTTS(text=text, lang='en-gh')
-        tts.save(filename)
+        tts.save('voice/'+filename)
     playsound.playsound(filename)
 
 def navigate(where):
