@@ -8,43 +8,22 @@ import os
 import playsound
 
 def listen():
-    recognizer = sr.Recognizer()
-    microphone = sr.Microphone()
+    os.environ["GOOGLE_APPLICATION_CREDENTIALS"]="KEYS.JSON"
+    r = sr.Recognizer()
+    file = sr.Microphone()
 
-    # check that recognizer and microphone arguments are appropriate type
-    if not isinstance(recognizer, sr.Recognizer):
-        raise TypeError("`recognizer` must be `Recognizer` instance")
-
-    if not isinstance(microphone, sr.Microphone):
-        raise TypeError("`microphone` must be `Microphone` instance")
-
-    # adjust the recognizer sensitivity to ambient noise and record audio
-    # from the microphone
-    with microphone as source:
-        # recognizer.adjust_for_ambient_noise(source)
-        audio = recognizer.listen(source, phrase_time_limit=3)
-
-    # set up the response object
-    response = {
-        "success": True,
-        "error": None,
-        "transcription": None
-    }
-
-    # try recognizing the speech in the recording
-    # if a RequestError or UnknownValueError exception is caught,
-    #     update the response object accordingly
+    with file as source:
+        audio = r.adjust_for_ambient_noise(source)
+        audio = r.listen(source)
+        
     try:
-        response["transcription"] = recognizer.recognize_google(audio)
-    except sr.RequestError:
-        # API was unreachable or unresponsive
-        response["success"] = False
-        response["error"] = "API unavailable"
-    except sr.UnknownValueError:
-        # speech was unintelligible
-        response["error"] = "Unable to recognize speech"
-    print(response["transcription"])
-    return response["transcription"]
+        recog = r.recognize_google_cloud(audio, language = 'en-US')
+        print("You said: " + recog)
+    except sr.UnknownValueError as u:
+        print(u)
+        print("Google Cloud Speech Recognition could not understand audio")
+    except sr.RequestError as e:
+        print("Could not request results from Google Cloud Speech Recognition service; {0}".format(e))  
 
 def speech(text):
     print("speech:" + text)
@@ -55,5 +34,4 @@ def speech(text):
         tts.save(filename)
     playsound.playsound(filename)
 
-def navigate(where):
-    print('Going to ' + where)
+print(listen())
