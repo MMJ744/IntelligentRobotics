@@ -1,24 +1,12 @@
 #!/usr/bin/env python
 from flask import Flask
 from flask import request
-import navController
+import navTo
 
 import taskManager
 import taskExecuter
 
 app = Flask(__name__)
-
-locs = {
-    'table1': {
-        'x': 10,
-        'y': 20
-    },
-    'table2': {
-        'x': 59,
-        'y': 23
-    }
-}
-
 
 @app.route('/')
 def hello():
@@ -50,7 +38,7 @@ def staff():
 
 @app.route('/goto')
 def goto():
-    navController.navigateTo(request.args.get('location',''))
+    navTo.navigateTo(request.args.get('location',''))
     return 'going to ' + request.args.get('location', '') + str(locs[request.args.get('location', '')])
 
 
