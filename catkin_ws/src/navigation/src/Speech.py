@@ -7,7 +7,7 @@ from gtts import gTTS
 import os
 import playsound
 
-def listen():
+def listen(show):
     recognizer = sr.Recognizer()
     microphone = sr.Microphone(device_index=0)
 
@@ -21,10 +21,10 @@ def listen():
     # adjust the recognizer sensitivity to ambient noise and record audio
     # from the microphone
     with microphone as source:
-        recognizer.adjust_for_ambient_noise(source)
-        audio = recognizer.listen(source)
+        audio = recognizer.adjust_for_ambient_noise(source)
+        audio = recognizer.listen(source, phrase_time_limit=5)
 
-    return recognizer.recognize_google(audio)
+    return recognizer.recognize_google(audio, show_all=show)
 
 def speech(text):
     print("speech:" + text)
@@ -34,3 +34,5 @@ def speech(text):
         tts = gTTS(text=text, lang='en-gh')
         tts.save(filename)
     playsound.playsound(filename)
+    
+print(listen(True))
