@@ -85,4 +85,4 @@ def text2int(textnum):
             current = 0
 
     return result + current
-print(getNum("There are twenty four people in my group"))
+#print(getNum("There are one million one people in my group"))
