@@ -4,6 +4,7 @@ from StateMachine import StateMachine
 from Speech import speech, navigate, listen
 import navTo
 import taskManager
+from rfid import readCard
 
 
 class NavigateToFront(State):
@@ -50,6 +51,17 @@ class AskGroupSize(State):
             return CheckGroup()
 
 
+class GuideToWaitingarea(State):
+
+    def run(self, instance):
+        speech("Please follow me to the waiting area")
+        navTo.navigateTo("waitingarea")
+        speech("I will come get you when your table is ready")
+        instance.addInput('')
+        # add a task to collect them after the time
+        instance.running = False
+
+
 class GuideToTable(State):
 
     def run(self, instance):
@@ -64,13 +76,13 @@ class GuideToTable(State):
 class GiveWaitingTime(State):
 
     def run(self, instance):
-        speech("Your wait time is 60 minutes, is this okay")
+        speech("Your wait time is 5 minutes, is this okay")
         response = listen()
         instance.addInput(response)
 
     def next(self, instance, input):
         if 'yes' in input:
-            return GuideToTable()
+            return GuideToWaitingarea()
         else:
             return BookingDetails()
 
@@ -78,8 +90,16 @@ class GiveWaitingTime(State):
 class BookingDetails(State):
 
     def run(self, instance):
-        instance.addInput('')
-        instance.running = False
+        speech("Please present your card to validate your booking")
+        instance.user = readCard()
+        if instance.user is not None:
+            #Check bookings if they have a booking
+            if user in instance.model.bookings:
+                instance.group_size = instance.model.bookings[instance.user]
+                del instance.model.bookings[instance.user]
+                return CheckGroup()
+        speech("Sorry I coouldn't find your booking")
+        return AskGroupSize()
 
 
 class CheckGroup(State):

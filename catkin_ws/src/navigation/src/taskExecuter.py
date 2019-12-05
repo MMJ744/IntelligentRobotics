@@ -33,7 +33,7 @@ class Model:
                 'id': 3
             }
         ]
-
+        self.bookings = {"Brexit Means Brexit": 1, "Barry Bee Benson": 5}
         self.messages = {
             "kitchen": "kitchen",
             "staff": "staff"
