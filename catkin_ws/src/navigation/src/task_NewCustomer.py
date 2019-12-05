@@ -95,7 +95,7 @@ class BookingDetails(State):
         instance.user = readCard()
         if instance.user is not None:
             #Check bookings if they have a booking
-            if user in instance.model.bookings:
+            if instance.user in instance.model.bookings:
                 instance.group_size = instance.model.bookings[instance.user]
                 del instance.model.bookings[instance.user]
                 return CheckGroup()
