@@ -2,6 +2,7 @@
 
 import rospy
 from navigation.msg import Task
+import WebCommunicator
 
 
 def messages(channel):
@@ -33,8 +34,8 @@ class Model:
         ]
 
         self.messages = {
-            "kitchen": "",
-            "staff": ""
+            "kitchen": "kitchen",
+            "staff": "staff"
         }
 
     def prepend_message(self, channel, msg):
@@ -113,6 +114,7 @@ def main():
     global te
     te = TaskExecuter()
     rate = rospy.Rate(1)
+    WebCommunicator.main(te.model)
     while not rospy.is_shutdown():
         rate.sleep()
 
