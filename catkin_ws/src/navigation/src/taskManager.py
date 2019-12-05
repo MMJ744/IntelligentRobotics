@@ -16,7 +16,7 @@ from navigation.msg import Task
 pub = None
 
 
-def new_task(task_type, table_number=None, delay=0):
+def new_task(task_type, table_number=None, delay=0, customerID=None):
     """
     adds task to priority queue, and will be executed once it becomes the highest priority job
     :param task_type: name of task to be executed
@@ -36,7 +36,7 @@ def new_task(task_type, table_number=None, delay=0):
     if pub is None:
         pub = rospy.Publisher('task_m', Task, queue_size=1)
 
-    pub.publish(tt.new(task_type, table_number, delay).to_msg())
+    pub.publish(tt.new(task_type, table_number, delay, customerID).to_msg())
 
     print("tm new_task\\:" + task_type)
 

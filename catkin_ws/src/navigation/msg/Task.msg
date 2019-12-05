@@ -2,4 +2,5 @@
 string task_type
 time created_at
 int8 table_number
+int8 customerID
 bool finished

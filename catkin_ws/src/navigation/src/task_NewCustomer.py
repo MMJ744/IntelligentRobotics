@@ -76,7 +76,9 @@ class GuideToTable(State):
         navTo.navigateTo("table" + str(instance.group_table))
         speech("Please take a seat. Someone will be with you in a few minutes")
         instance.addInput('')
-        taskManager.new_task("TakeOrder", table_number=instance.group_table, delay=0.5)
+        cusID = instance.model.tables[instance.table_number-1]['customerID']
+        taskManager.new_task("TakeOrder", table_number=instance.group_table, delay=0.5, customerID=cusID)
+        instance.model.tables[instance.table_number]
         instance.running = False
 
 
@@ -145,6 +147,8 @@ class CheckGroup(State):
 
         big_avail_tables.sort(key=(lambda x: x['places']))
         instance.group_table = big_avail_tables[0]
+        instance.model.tables[instance.group_table]['avaliable'] = False
+        instance.model.tables[instance.group_table]['customerID'] +=1 
         return GuideToTable()
 
 
