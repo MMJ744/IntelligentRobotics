@@ -61,7 +61,8 @@ class TableWait(State):
     def run(self, instance):
         response = listen()
         if response is not None and 'go' in response:
-            taskManager.new_task("Checkup", table_number=instance.table_number, delay=1)
+            cusID = instance.model.tables[instance.table_number-1]['customerID']
+            taskManager.new_task("Checkup", table_number=instance.table_number, delay=1, customerID=cusID)
             instance.running = False
         instance.addInput(response)
 

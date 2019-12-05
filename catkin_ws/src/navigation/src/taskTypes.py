@@ -61,13 +61,14 @@ def get_priority_level(task_type):
 
 
 class Base:
-    def __init__(self, task_type, time, table_number=None):
+    def __init__(self, task_type, time, table_number=None, customerID=None):
         """
         timestamp and priority level
         """
         self.priority = None
         self.type = task_type
         self.table_number = table_number
+        self.customerID = customerID
 
         if time is None:
             self.time_created = rospy.Time.now()
@@ -82,9 +83,16 @@ class Base:
             o = o + "t(" + str(self.table_number) + ")"
         else:
             o = o + "\t"
+        if self.customerID is not None:
+            o = o + "c(" + str(self.customerID) + ")"
+        else:
+            o = o + "\c"
         o = o + "\t@ " + str(self.time_created) + "\tp[ " + str(self.priority) + " ]"
 
         return o
+    
+    def get_customerID(self):
+        return self.customerID
 
     def get_priority(self):
         # print("tt\tget_priority\t" + str(self))
@@ -106,6 +114,8 @@ class Base:
             t.table_number = self.table_number
 
         t.finished = finished
+        
+        t.customerID = self.customerID
 
         return t
 
@@ -125,19 +135,19 @@ class NewCustomer(Base):
 
 class Checkup(Base):
     def __init__(self, table_number, time=None):
-        Base.__init__(self, "Checkup", time, table_number=table_number)
+        Base.__init__(self, "Checkup", time, table_number=table_number, customerID=customerID)
 
 
 class TakeOrder(Base):
     def __init__(self, table_number, time=None):
-        Base.__init__(self, "TakeOrder", time, table_number=table_number)
+        Base.__init__(self, "TakeOrder", time, table_number=table_number, customerID=customerID)
 
 
 class Deliver(Base):
     def __init__(self, table_number, time=None):
-        Base.__init__(self, "Deliver", time, table_number=table_number)
+        Base.__init__(self, "Deliver", time, table_number=table_number, customerID=customerID)
 
 
 class CollectPayment(Base):
     def __init__(self, table_number, time=None):
-        Base.__init__(self, "CollectPayment", time, table_number=table_number)
+        Base.__init__(self, "CollectPayment", time, table_number=table_number, customerID=customerID)
