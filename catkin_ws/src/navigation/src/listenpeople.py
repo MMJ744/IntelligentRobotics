@@ -5,6 +5,7 @@ from std_msgs.msg import String
 
 checkarray = [0, 0, 0, 0, 0]
 counter = 0
+sub = None
 
 def callback(data):
     rospy.loginfo(rospy.get_caller_id() + 'I heard %s', data.data)
@@ -19,7 +20,7 @@ def arepeoplearray(data):
         checkarray[counter] = 0
     counter = (counter + 1) % 5
 
-def arepeople():
+def are_people():
     return 1 in checkarray
 
 def listenpeople():
@@ -29,12 +30,18 @@ def listenpeople():
     # anonymous=True flag means that rospy will choose a unique
     # name for our 'listener' node so that multiple listeners can
     # run simultaneously.
-    rospy.init_node('listenpeople', anonymous=True)
+    # rospy.init_node('listenpeople', anonymous=True)
 
-    rospy.Subscriber('vision', String, callback)
+    global sub
+
+    if sub is None:
+        sub = rospy.Subscriber('vision', String, callback)
     
     # spin() simply keeps python from exiting until this node is stopped
-    rospy.spin()
+    # rospy.spin()
 
 if __name__ == '__main__':
     listenpeople()
+
+
+listenpeople()

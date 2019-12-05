@@ -1,7 +1,8 @@
 from State import State
 from StateMachine import StateMachine
 import navTo
-
+import listenpeople as vision
+from Speech import speech
 
 class CheckTables(State):
 
@@ -10,11 +11,12 @@ class CheckTables(State):
         tbls.sort(reverse=True)
         for table_int in tbls:
             navTo.navigateTo("table" + str(table_int))    
-            # if vision.areHumans:
-            # self.model.tables[table]["available"] = True
+            if vision.are_people:
+                self.model.tables[table_int]["available"] = True
         navTo.navigateTo("frontdesk")
-        # if vision.areHuman:
-        taskManager.new_task("NewCust")
+        if vision.are_people:
+            taskManager.new_task("NewCust")
+            speech("I'll be right with you")
         taskManager.new_task("Wander")
         instance.running = False
 
