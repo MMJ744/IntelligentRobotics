@@ -118,7 +118,7 @@ def main():
         te = TaskExecuter()
 
     rate = rospy.Rate(1)
-    WebCommunicator.main(te.model)
+    #WebCommunicator.main(te.model)
     while not rospy.is_shutdown():
         rate.sleep()
 

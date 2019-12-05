@@ -25,9 +25,15 @@ class AskBooking(State):
         instance.addInput(response)
 
     def next(self, instance, input):
-        if 'yes' in input:
-            return BookingDetails()
-        if 'no' in input:
+        #if 'yes' in input:
+        #    return BookingDetails()
+        #if 'no' in input:
+        #    return AskGroupSize()
+        #return UnknownAnswer()
+        res = utils.getYesNo(input)
+        if res=='yes':
+            return  BookingDetails()
+        if res=='no':
             return AskGroupSize()
         return UnknownAnswer()
 
@@ -45,7 +51,7 @@ class AskGroupSize(State):
         if input is None or input == '':
             return UnknownAnswer()
         else:
-            answer = utils.convertToNum(input)
+            answer = utils.getNum(input)
             if answer == '' or answer == ' ': 
                 return UnknownAnswer()
             instance.group_size = int(answer)
@@ -82,7 +88,8 @@ class GiveWaitingTime(State):
         instance.addInput(response)
 
     def next(self, instance, input):
-        if 'yes' in input:
+        result = utils.getYesNo(input)
+        if 'yes'==result:
             return GuideToWaitingarea()
         else:
             return BookingDetails()

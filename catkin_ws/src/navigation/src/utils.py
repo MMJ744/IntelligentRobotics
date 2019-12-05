@@ -22,3 +22,21 @@ def convertToNum(data):
     if len(result) == 0: return ''
     print(result[0])
     return result[0]
+
+def getYesNo(data):
+    tokens = data.split()
+    if 'yes' in tokens:
+        return 'yes'
+    if 'no' in tokens:
+        return 'no'
+    return None
+
+def getNum(data):
+    tokens = data.split()
+    reg = '[0-9]+'
+    for x in tokens:
+        m = re.match(reg,x)
+        if m:
+            print(m.group(0))
+            return m.group(0)
+    return ''

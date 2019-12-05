@@ -4,7 +4,7 @@ from navigation.msg import Task
 
 def from_msg(task_msg):
     if task_msg.task_type == "Checkup":
-        task_info = CheckUp(task_msg.table_number, task_msg.created_at)
+        task_info = Checkup(task_msg.table_number, task_msg.created_at)
     elif task_msg.task_type == "CollectPayment":
         task_info = CollectPayment(task_msg.table_number, task_msg.created_at)
     elif task_msg.task_type == "NewCust":
@@ -25,7 +25,7 @@ def new(task_type, table_number, delay):
     created_at = rospy.Time.now() + rospy.Duration(delay*60)
 
     if task_type == "Checkup":
-        task_info = CheckUp(time=created_at, table_number=table_number)
+        task_info = Checkup(time=created_at, table_number=table_number)
     elif task_type == "CollectPayment":
         task_info = CollectPayment(time=created_at, table_number=table_number)
     elif task_type == "NewCust":
@@ -123,9 +123,9 @@ class NewCustomer(Base):
         Base.__init__(self, "NewCust", time)
 
 
-class CheckUp(Base):
+class Checkup(Base):
     def __init__(self, table_number, time=None):
-        Base.__init__(self, "CheckUp", time, table_number=table_number)
+        Base.__init__(self, "Checkup", time, table_number=table_number)
 
 
 class TakeOrder(Base):

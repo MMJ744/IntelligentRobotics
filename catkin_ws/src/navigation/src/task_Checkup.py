@@ -2,6 +2,7 @@ from StateMachine import StateMachine
 from State import State
 from Speech import speech, listen
 import navTo
+import taskManager
 
 
 class NavigateToTable(State):
@@ -31,6 +32,7 @@ class ConfirmComments(State):
 
     def run(self, instance):
         speech("Okay, thank you for your comments. They have been submitted to my organic comrades for review")
+        taskManager.new_task("CollectPayment", table_number=instance.table,delay=2)
         instance.running = False
 
 
