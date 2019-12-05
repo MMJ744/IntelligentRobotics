@@ -4,6 +4,7 @@ from StateMachine import StateMachine
 from Speech import speech, navigate, listen
 import navTo
 import taskManager
+import utils
 
 
 class NavigateToFront(State):
@@ -43,10 +44,10 @@ class AskGroupSize(State):
         if input is None or input == '':
             return UnknownAnswer()
         else:
-            answer = list(filter(lambda x: x.isdigit(), input))
-            if answer == []: 
+            answer = utils.convertToNum(input)
+            if answer == '' or answer == ' ': 
                 return UnknownAnswer()
-            instance.group_size = int(answer[0])
+            instance.group_size = int(answer)
             return CheckGroup()
 
 
@@ -57,7 +58,7 @@ class GuideToTable(State):
         navTo.navigateTo("table" + str(instance.group_table))
         speech("Please take a seat. Someone will be with you in a few minutes")
         instance.addInput('')
-        # taskManager.new_task("TakeOrder", table_number=instance.group_table, delay=0.5)
+        taskManager.new_task("TakeOrder", table_number=instance.group_table, delay=0.5)
         instance.running = False
 
 

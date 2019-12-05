@@ -3,6 +3,7 @@ from StateMachine import StateMachine
 import navTo
 import listenpeople as vision
 from Speech import speech
+import rospy
 
 class CheckTables(State):
 
