@@ -21,7 +21,7 @@ def arepeoplearray(data):
     counter = (counter + 1) % 5
 
 def are_people():
-    return 1 in checkarray or True
+    return 1 in checkarray
 
 def listenpeople():
 
