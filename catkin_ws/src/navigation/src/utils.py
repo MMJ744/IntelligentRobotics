@@ -2,6 +2,15 @@ import re
 from word2number import w2n
 import nltk
 
+numwords = {}
+units = [
+    "zero", "one", "two", "three", "four", "five", "six", "seven", "eight",
+    "nine", "ten", "eleven", "twelve", "thirteen", "fourteen", "fifteen",
+    "sixteen", "seventeen", "eighteen", "nineteen",
+]
+tens = ["", "", "twenty", "thirty", "forty", "fifty", "sixty", "seventy", "eighty", "ninety"]
+
+scales = ["hundred", "thousand", "million", "billion", "trillion"]
 def convertToNum(data):
     print(data)
     tokens = nltk.word_tokenize(str(data))
@@ -39,4 +48,41 @@ def getNum(data):
         if m:
             print(m.group(0))
             return m.group(0)
+    analyise = []
+    started = False
+    keepgoing = True
+    for x in tokens:
+        if x in units or x in tens or x in scales:
+            if not started or keepgoing:
+                started = True
+                analyise.append(x)
+        elif started:
+            keepgoing = False
+    if not analyise == []:
+        return text2int(analyise)
     return ''
+
+def text2int(textnum):
+    global numwords
+    global units
+    global tens
+    global scales
+    if numwords=={}:
+      numwords["and"] = (1, 0)
+      for idx, word in enumerate(units):    numwords[word] = (1, idx)
+      for idx, word in enumerate(tens):     numwords[word] = (1, idx * 10)
+      for idx, word in enumerate(scales):   numwords[word] = (10 ** (idx * 3 or 2), 0)
+
+    current = result = 0
+    for word in textnum:
+        if word not in numwords:
+            print('text2int error')
+            return ''
+        scale, increment = numwords[word]
+        current = current * scale + increment
+        if scale > 100:
+            result += current
+            current = 0
+
+    return result + current
+#print(getNum("There are one million one people in my group"))
