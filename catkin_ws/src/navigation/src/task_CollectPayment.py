@@ -73,7 +73,7 @@ class DispatchHuman(State):
 
     def run(self, instance):
         speech("I'm sorry, I haven't been able to take a payment from you. Please await further assistance")
-        taskExecuter.send_message("staff", "Table " + str(instance.table.id) + " unprofitable. Please assist")
+        taskExecuter.send_message("staff", "Table " + str(instance.table) + " unprofitable. Please assist")
         instance.running = False
 
 
@@ -81,7 +81,7 @@ class DismissCustomers(State):
 
     def run(self, instance):
         speech("Thank you " + instance.user + ", your payment has been processed. You may now leave.")
-        taskExecuter.send_message("staff", "Payment taken from " + self.user + " @ Table " + str(instance.table.id))
+        taskExecuter.send_message("staff", "Payment taken from " + self.user + " @ Table " + str(instance.table))
         instance.running = False
 
 

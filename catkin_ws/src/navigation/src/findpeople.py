@@ -4,10 +4,10 @@ from std_msgs.msg import String
 
 def findpeople():
 
-    filepath = "/home/bianca/Desktop/Robot/darknet/Output.txt"
+    filepath = "/home/matty/Output.txt"
     rospy.init_node('vision_sender', anonymous=True)
     pub = rospy.Publisher('vision', String, queue_size=10)
-    rate = rospy.Rate(5) # 2hz
+    rate = rospy.Rate(10) # 2hz
 
     while not rospy.is_shutdown():
         strings = ""
@@ -16,8 +16,6 @@ def findpeople():
             while line:
                 strings = strings + "." + line
                 line = fp.readline()
-        print(strings)
-        rospy.loginfo(strings)
         pub.publish(strings)
         rate.sleep()
 

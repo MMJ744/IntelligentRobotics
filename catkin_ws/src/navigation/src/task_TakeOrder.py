@@ -41,7 +41,7 @@ class TakeFirstOrderItem(State):
         instance.addInput(listen())
 
     def next(self, instance, input):
-        taskExecuter.send_message("kitchen", "Send order \'" + input + "\' for table " + str(instance.table) + " to the kitchen")
+        instance.model.prepend_message("kitchen", "Send order \'" + input + "\' for table " + str(instance.table) + " to the kitchen")
         return CheckMoreOrders()
 
 
@@ -69,7 +69,8 @@ class TakeOrderItem(State):
         if input == "":
             return UnknownAnswer()
         else:
-            taskExecuter.send_message("kitchen", "Send order \'" + input + "\' for table " + str(instance.table.id) + " to the kitchen")
+            print("to:" + str(instance.model))
+            instance.model.prepend_message("kitchen", "Send order \'" + input + "\' for table " + str(instance.table) + " to the kitchen")
             return CheckMoreOrders()
 
 

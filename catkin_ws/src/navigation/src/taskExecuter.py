@@ -3,14 +3,6 @@
 import rospy
 from navigation.msg import Task
 
-te = None
-model = None
-
-
-def send_message(channel, message):
-    global model
-    model.prepend_message(channel, message)
-
 
 def messages(channel):
     global model
@@ -82,7 +74,7 @@ class TaskExecuter:
         creates and runs task, broadcasting when done
         """
         task_executable = None
-
+        
         if self.task_msg.task_type == "Checkup":
             task_executable = task_Checkup.CheckupTask(self.model, self.task_msg.table_number)
         if self.task_msg.task_type == "CollectPayment":
@@ -95,10 +87,11 @@ class TaskExecuter:
             task_executable = task_Deliver.DeliverTask(self.model, self.task_msg.table_number)
         elif self.task_msg.task_type == "Wander":
             task_executable = task_Wander.WanderTask(self.model)
-
+        
         if task_executable is None:
             raise NotImplementedError
 
+        print("te:" + str(task_executable.model))
         task_executable.run_all()
 
         self.publish_done()

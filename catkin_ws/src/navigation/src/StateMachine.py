@@ -19,6 +19,7 @@ class StateMachine:
             except:
                 print("sm | inputs_empty")
             
+
             self.nextState = self.currentState.next(instance=self, input=input)
             self.previousState = self.currentState
             self.currentState = self.nextState
