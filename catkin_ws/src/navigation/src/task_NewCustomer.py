@@ -42,7 +42,9 @@ class AskGroupSize(State):
         if input is None or input == '':
             return UnknownAnswer()
         else:
-            instance.group_size = int(filter(lambda x: x.isdigit(), input))
+            answer = filter(lambda x: x.isdigit(), input)
+            if answer == '': return UnknownAnswer()
+            instance.group_size = int()
             return CheckGroup()
 
 
@@ -108,7 +110,7 @@ class UnknownAnswer(State):
 
 class NewCustomerTask(StateMachine):
     def __init__(self, model):
-        StateMachine.__init__(self, AskBooking(), model)
+        StateMachine.__init__(self, NavigateToFront(), model)
         self.group_table = -1
         self.group_size = 99999
 

@@ -15,10 +15,10 @@ class CheckTables(State):
         for table_int in tbls:
             print(table_int)
             navTo.navigateTo("table" + str(table_int))    
-            if vision.are_people:
-                self.model.tables[table_int]["available"] = True
+            if vision.are_people():
+                instance.model.tables[table_int]["available"] = True
         navTo.navigateTo("frontdesk")
-        if vision.are_people:
+        if vision.are_people():
             taskManager.new_task("NewCust")
             speech("I'll be right with you")
         taskManager.new_task("Wander")
