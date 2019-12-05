@@ -18,7 +18,7 @@ class Model:
 
         self.tables = [
             {
-                "places": 3,
+                "places": 8,
                 "available": True,
                 'id': 1
             },
@@ -28,7 +28,7 @@ class Model:
                 'id': 2
             },
             {
-                "places": 8,
+                "places": 3,
                 "available": True,
                 'id': 3
             }
