@@ -1,3 +1,3 @@
 #!/usr/bin/env python
 int64 id
-geometry_msgs/Pose pose
+geometry_msgs/PoseStamped pose

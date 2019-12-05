@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 2.8.3)
+cmake_minimum_required(VERSION 3.10.2)
 project(navigation)
 
 ## Compile as C++11, supported in ROS Kinetic and newer
@@ -52,6 +52,7 @@ find_package(catkin REQUIRED COMPONENTS
 add_message_files(
 	FILES
 	Target.msg
+	Task.msg
 )
 
 ## Generate services in the 'srv' folder
@@ -106,8 +107,8 @@ geometry_msgs
 ## DEPENDS: system dependencies of this project that dependent projects also need
 catkin_package(
 #  INCLUDE_DIRS include
-#  LIBRARIES navigation
-	CATKIN_DEPENDS message_runtime roscpp rospy std_msg
+#  LIBRARIES navigation global_planner_lib
+	CATKIN_DEPENDS message_runtime roscpp rospy std_msg geometry_msgs setup_tf move_base urg_node sensor_msgs nav_msgs
 #  DEPENDS system_lib
 )
 
@@ -206,3 +207,18 @@ include_directories(
 
 ## Add folders to be run by python nosetests
 # catkin_add_nosetests(test)
+
+ find_package(PythonLibs)
+
+ add_library(global_planner_lib src/global_planner.cpp)
+ target_include_directories(global_planner_lib PUBLIC ${PYTHON_INCLUDE_DIRS})
+ target_link_libraries(global_planner_lib ${PYTHON_LIBRARIES})
+
+ add_executable(talker src/test.cpp)
+ target_link_libraries(talker ${catkin_LIBRARIES})
+ #target_include_directories(talker PUBLIC /usr/include/python3.6)
+
+
+message("include dirs is ${PYTHON_INCLUDE_DIRS}")
+ target_include_directories(talker PUBLIC ${PYTHON_INCLUDE_DIRS})
+ target_link_libraries(talker ${PYTHON_LIBRARIES})

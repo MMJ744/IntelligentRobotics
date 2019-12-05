@@ -60,10 +60,32 @@
   <exec_depend>std_msg</exec_depend>
 	<build_depend>message_generation</build_depend>
 	<exec_depend>message_runtime</exec_depend>
-
+	<build_depend>geometry_msgs</build_depend>
+	<build_export_depend>geometry_msgs</build_export_depend>
+	<exec_depend>geometry_msgs</exec_depend>
+	<build_depend>setup_tf</build_depend>
+	<build_export_depend>setup_tf</build_export_depend>
+	<exec_depend>setup_tf</exec_depend>
+	<build_depend>move_base</build_depend>
+	<build_export_depend>move_base</build_export_depend>
+	<exec_depend>move_base</exec_depend>
+	<!--<build_depend></build_depend>
+	<build_export_depend></build_export_depend>
+	<exec_depend></exec_depend> -->
+	<build_depend>urg_node</build_depend>
+	<build_export_depend>urg_node</build_export_depend>
+	<exec_depend>urg_node</exec_depend>
+	<build_depend>sensor_msgs</build_depend>
+	<build_export_depend>sensor_msgs</build_export_depend>
+	<exec_depend>sensor_msgs</exec_depend>
+	<build_depend>nav_msgs</build_depend>
+	<build_export_depend>nav_msgs</build_export_depend>
+	<exec_depend>nav_msgs</exec_depend>
+  <build_depend>nav_core</build_depend>
+  <exec_depend>nav_core</exec_depend>
   <!-- The export tag contains other, unspecified, tags -->
-  <export>
-    <!-- Other tools can request additional information be placed here -->
-
+   <export>
+  <nav_core plugin="${prefix}/global_planner_plugin.xml" />
   </export>
+
 </package>
