@@ -4,6 +4,7 @@ import rospy
 from navigation.msg import Task
 import WebCommunicator
 
+te = None
 
 def messages(channel):
     global model
@@ -17,7 +18,7 @@ class Model:
 
         self.tables = [
             {
-                "places": 3,
+                "places": -1,
                 "available": True,
                 'id': 1
             },
@@ -112,7 +113,10 @@ class TaskExecuter:
 
 def main():
     global te
-    te = TaskExecuter()
+
+    if te is None:
+        te = TaskExecuter()
+
     rate = rospy.Rate(1)
     WebCommunicator.main(te.model)
     while not rospy.is_shutdown():
