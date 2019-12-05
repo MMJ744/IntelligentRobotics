@@ -31,7 +31,8 @@ class CheckReady(State):
 class ComeBackLater(State):
     def run(self, instance):
         speech("Okay, I will come back later")
-        taskManager.new_task("TakeOrder", table_number=instance.table, delay=2)
+        cusID = instance.model.tables[instance.table_number-1]['customerID']
+        taskManager.new_task("TakeOrder", table_number=instance.table, delay=2, customerID=cusID)
         instance.running = False
 
 
@@ -77,7 +78,8 @@ class TakeOrderItem(State):
 class Finished(State):
     def run(self, instance):
         speech("Thank you. Your food will be with you soon")
-        taskManager.new_task("Deliver", table_number=instance.table, delay=1)
+        taskManager.new_task("Deliver", table_number=instance.table, delay=1, customerID=cusID)
+        cusID = instance.model.tables[instance.table_number-1]['customerID']
         instance.running = False
 
 

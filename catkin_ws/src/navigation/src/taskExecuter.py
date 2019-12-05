@@ -20,17 +20,20 @@ class Model:
             {
                 "places": 8,
                 "available": True,
-                'id': 1
+                'id': 1,
+                'customerID': 0
             },
             {
                 "places": 5,
                 "available": True,
-                'id': 2
+                'id': 2,
+                'customerID': 0
             },
             {
                 "places": 3,
                 "available": True,
-                'id': 3
+                'id': 3,
+                'customerID': 0
             }
         ]
         self.bookings = {"Brexit Means Brexit": 1, "Barry Bee Benson": 5}
@@ -77,24 +80,25 @@ class TaskExecuter:
         """
         task_executable = None
         
-        if self.task_msg.task_type == "Checkup":
-            task_executable = task_Checkup.CheckupTask(self.model, self.task_msg.table_number)
-        if self.task_msg.task_type == "CollectPayment":
-            task_executable = task_CollectPayment.CollectPaymentTask(self.model, self.task_msg.table_number)
-        elif self.task_msg.task_type == "NewCust":
-            task_executable = task_NewCustomer.NewCustomerTask(self.model)
-        elif self.task_msg.task_type == "TakeOrder":
-            task_executable = task_TakeOrder.TakeOrderTask(self.model, self.task_msg.table_number)
-        elif self.task_msg.task_type == "Deliver":
-            task_executable = task_Deliver.DeliverTask(self.model, self.task_msg.table_number)
-        elif self.task_msg.task_type == "Wander":
-            task_executable = task_Wander.WanderTask(self.model)
-        
-        if task_executable is None:
-            raise NotImplementedError
+        if (self.task_msg.customerID == self.model.tables[self.task_msg.table_number]['customerID'] or self.task_msg.customerID is None) and not self.model.tables[self.task_msg.table_number]['available']
+            if self.task_msg.task_type == "Checkup":
+                task_executable = task_Checkup.CheckupTask(self.model, self.task_msg.table_number)
+            if self.task_msg.task_type == "CollectPayment":
+                task_executable = task_CollectPayment.CollectPaymentTask(self.model, self.task_msg.table_number)
+            elif self.task_msg.task_type == "NewCust":
+                task_executable = task_NewCustomer.NewCustomerTask(self.model)
+            elif self.task_msg.task_type == "TakeOrder":
+                task_executable = task_TakeOrder.TakeOrderTask(self.model, self.task_msg.table_number)
+            elif self.task_msg.task_type == "Deliver":
+                task_executable = task_Deliver.DeliverTask(self.model, self.task_msg.table_number)
+            elif self.task_msg.task_type == "Wander":
+                task_executable = task_Wander.WanderTask(self.model)
+            
+            if task_executable is None:
+                raise NotImplementedError
 
-        print("te:" + str(task_executable.model))
-        task_executable.run_all()
+            print("te:" + str(task_executable.model))
+            task_executable.run_all()
 
         self.publish_done()
 
