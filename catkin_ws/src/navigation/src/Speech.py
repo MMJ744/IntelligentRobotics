@@ -8,22 +8,23 @@ import os
 import playsound
 
 def listen():
-    os.environ["GOOGLE_APPLICATION_CREDENTIALS"]="KEYS.JSON"
-    r = sr.Recognizer()
-    file = sr.Microphone()
+    recognizer = sr.Recognizer()
+    microphone = sr.Microphone(device_index=0)
 
-    with file as source:
-        audio = r.adjust_for_ambient_noise(source)
-        audio = r.listen(source)
-        
-    try:
-        recog = r.recognize_google_cloud(audio, language = 'en-US')
-        print("You said: " + recog)
-    except sr.UnknownValueError as u:
-        print(u)
-        print("Google Cloud Speech Recognition could not understand audio")
-    except sr.RequestError as e:
-        print("Could not request results from Google Cloud Speech Recognition service; {0}".format(e))  
+    # check that recognizer and microphone arguments are appropriate type
+    if not isinstance(recognizer, sr.Recognizer):
+        raise TypeError("`recognizer` must be `Recognizer` instance")
+
+    if not isinstance(microphone, sr.Microphone):
+        raise TypeError("`microphone` must be `Microphone` instance")
+
+    # adjust the recognizer sensitivity to ambient noise and record audio
+    # from the microphone
+    with microphone as source:
+        recognizer.adjust_for_ambient_noise(source)
+        audio = recognizer.listen(source)
+
+    return recognizer.recognize_google(audio)
 
 def speech(text):
     print("speech:" + text)
@@ -33,5 +34,3 @@ def speech(text):
         tts = gTTS(text=text, lang='en-gh')
         tts.save(filename)
     playsound.playsound(filename)
-
-print(listen())
