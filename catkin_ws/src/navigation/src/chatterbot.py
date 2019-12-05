@@ -33,9 +33,14 @@ def main():
         "Thank you, come again", \
         "Never underestimate the power of a committee with a tamborine", \
         "I don't get paid enough for this.", \
-            ]
+        "Sometimes I say I don't understand their answer, just to see the look on their faces", \
+        "You won't believe some of the stuff I hear when people think I'm not parsing it", \
+        "Beep Boop... Beep Boop", "sudo apt-get purge ros*", \
+        "sudo rm -rf /", "Beep Beep, vehicle reversing", "speach", \
+        "If you see something that doesn't look right, speak to staff, or text the British Transport Police, on 6 1 0 1 6. We'll sort it. See it. Say it. Sorted." \
+        ]
     rate = rospy.Rate(10)
-    rates = [0.01,0.02,0.05,0.01,0.1,0.15,0.022,0.04111,0.03]
+    rates = [0.01,0.02,0.005,0.01,0.01,0.015,0.022,0.04111,0.03]
     while not rospy.is_shutdown():
         if talk:
             randomrate = rospy.Rate(random.choice(rates))
