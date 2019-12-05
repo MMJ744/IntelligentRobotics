@@ -9,7 +9,7 @@ import playsound
 
 def listen():
     recognizer = sr.Recognizer()
-    microphone = sr.Microphone(device_index=0)
+    microphone = sr.Microphone()
 
     # check that recognizer and microphone arguments are appropriate type
     if not isinstance(recognizer, sr.Recognizer):
@@ -21,8 +21,8 @@ def listen():
     # adjust the recognizer sensitivity to ambient noise and record audio
     # from the microphone
     with microphone as source:
-        recognizer.adjust_for_ambient_noise(source)
-        audio = recognizer.listen(source)
+        # recognizer.adjust_for_ambient_noise(source)
+        audio = recognizer.listen(source, phrase_time_limit=3)
 
     # set up the response object
     response = {
@@ -57,3 +57,5 @@ def speech(text):
 
 def navigate(where):
     print('Going to ' + where)
+
+listen()

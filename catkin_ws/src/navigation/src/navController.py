@@ -47,7 +47,9 @@ def navIn(destination):
         gtheta = math.atan2(2 * (q.x * q.y + q.w * q.z), q.w * q.w + q.x * q.x - q.z * q.z)
         print("published goal")
         distance = math.sqrt(abs(goal.pose.position.x - x) + abs(goal.pose.position.y-y))
-        while distance > 0.5 or abs(gtheta - theta) > 0.2:
+        print(distance)
+        print(gtheta - theta)
+        while distance > 0.5 :
             rate.sleep()
             distance = math.sqrt(abs(goal.pose.position.x - x) + abs(goal.pose.position.y-y))
         print("arrived")

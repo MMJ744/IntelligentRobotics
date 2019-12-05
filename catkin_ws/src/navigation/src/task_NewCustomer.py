@@ -42,7 +42,7 @@ class AskGroupSize(State):
         if input is None or input == '':
             return UnknownAnswer()
         else:
-            instance.group_size = int(input)
+            instance.group_size = int(filter(lambda x: x.isdigit(), input))
             return CheckGroup()
 
 
