@@ -13,6 +13,8 @@ def from_msg(task_msg):
         task_info = TakeOrder(task_msg.table_number, task_msg.created_at)
     elif task_msg.task_type == "Wander":
         task_info = Wander(task_msg.created_at)
+    elif task_msg.task_type == "Deliver":
+        task_info = Deliver(task_msg.table_number, task_msg.created_at)
     else:
         raise NotImplementedError
 
@@ -32,6 +34,8 @@ def new(task_type, table_number, delay):
         task_info = TakeOrder(time=created_at, table_number=table_number)
     elif task_type == "Wander":
         task_info = Wander(time=created_at)
+    elif task_type == "Deliver":
+        task_info = Deliver(time=created_at, table_number=table_number)
     else:
         raise NotImplementedError
 

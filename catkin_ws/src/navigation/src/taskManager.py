@@ -26,10 +26,19 @@ def new_task(task_type, table_number=None, delay=0):
     """
     global pub
 
+    print("tm new_task/:" + task_type)
+
+    SEQUENCES_SHORTENED = True
+
+    if SEQUENCES_SHORTENED:
+        delay = 0
+
     if pub is None:
         pub = rospy.Publisher('task_m', Task, queue_size=1)
 
     pub.publish(tt.new(task_type, table_number, delay).to_msg())
+
+    print("tm new_task\\:" + task_type)
 
 
 

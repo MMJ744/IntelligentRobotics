@@ -77,6 +77,7 @@ class TakeOrderItem(State):
 class Finished(State):
     def run(self, instance):
         speech("Thank you. Your food will be with you soon")
+        taskManager.new_task("Deliver", table_number=instance.table, delay=9999)
         instance.running = False
 
 
@@ -93,7 +94,7 @@ class TakeOrderTask(StateMachine):
     def __init__(self, model, table):
         StateMachine.__init__(self, NavigateToTable(), model)
         self.table = table
-        self.group_size = model.tables[table]
+        self.group_size = model.tables[table-1]
         self.order_items_taken = 0
 
 

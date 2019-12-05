@@ -18,17 +18,17 @@ class Model:
 
         self.tables = [
             {
-                "places": -1,
+                "places": 3,
                 "available": True,
                 'id': 1
             },
             {
-                "places": 6,
+                "places": 5,
                 "available": True,
                 'id': 2
             },
             {
-                "places": 5,
+                "places": 8,
                 "available": True,
                 'id': 3
             }

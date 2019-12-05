@@ -66,7 +66,7 @@ class GuideToWaitingarea(State):
 class GuideToTable(State):
 
     def run(self, instance):
-        speech("Please follow me to your table")
+        speech("Please follow me")
         navTo.navigateTo("table" + str(instance.group_table))
         speech("Please take a seat. Someone will be with you in a few minutes")
         instance.addInput('')
@@ -93,19 +93,26 @@ class BookingDetails(State):
     def run(self, instance):
         speech("Please present your card to validate your booking")
         instance.user = readCard()
+        
+
+    def next(self, instance, input):
         if instance.user is not None:
             #Check bookings if they have a booking
             if instance.user in instance.model.bookings:
                 instance.group_size = instance.model.bookings[instance.user]
                 del instance.model.bookings[instance.user]
+                speech("Hi there, " + instance.user)
                 return CheckGroup()
-        speech("Sorry I coouldn't find your booking")
-        return AskGroupSize()
-
+            speech("Sorry I couldn't find your booking")
+            return AskGroupSize()
+        else:
+            print("That didnt work")
+            return UnknownAnswer()
 
 class CheckGroup(State):
 
     def run(self, instance):
+        speech("Table for " + str(instance.group_size))
         instance.group_table = None
         print("group=" + str(instance.group_size))
         for table in instance.model.tables:

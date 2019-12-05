@@ -36,10 +36,10 @@ class KitchenWait(State):
         instance.addInput(listen())
 
     def next(self, instance, input):
-        if 'go' in input:
-            return NavigateToTable()
-        elif input == '':
+        if input is None or input == '':
             return instance.currentState
+        elif 'go' in input:
+            return NavigateToTable()
         else:
             speech("I'll wait here until you tell me to go.")
             return instance.currentState
@@ -60,7 +60,8 @@ class NavigateToTable(State):
 class TableWait(State):
     def run(self, instance):
         response = listen()
-        if 'go' in response:
+        if response is not None and 'go' in response:
+            taskManager.add_task("Checkup", table_number=instance.table, delay=1)
             instance.running = False
         instance.addInput(response)
 

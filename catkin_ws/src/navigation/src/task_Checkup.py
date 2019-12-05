@@ -23,7 +23,7 @@ class PerformCheckup(State):
         if input == "":
             return UnknownAnswer()
         else:
-            taskExecuter.send_message("staff", "Log checkup comment: \'" + input + "\' on table " + str(instance.table.id))
+            instance.model.prepend_message("staff", "Log checkup comment: \'" + input + "\' on table " + str(instance.table))
             return ConfirmComments()
 
 
