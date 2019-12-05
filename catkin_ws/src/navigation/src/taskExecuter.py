@@ -80,8 +80,7 @@ class TaskExecuter:
         """
         task_executable = None
         
-        if self.task_msg.customerID == self.model.tables[self.task_msg.table_number]['cusomterID'] or self.task_msg.customerID is None:
-        
+        if (self.task_msg.customerID == self.model.tables[self.task_msg.table_number]['customerID'] or self.task_msg.customerID is None) and not self.model.tables[self.task_msg.table_number]['available']
             if self.task_msg.task_type == "Checkup":
                 task_executable = task_Checkup.CheckupTask(self.model, self.task_msg.table_number)
             if self.task_msg.task_type == "CollectPayment":
