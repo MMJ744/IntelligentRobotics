@@ -207,16 +207,14 @@ def main():
     rospy.Subscriber('/map_metadata', MapMetaData, metaCallback)
     rospy.Subscriber("amcl_pose", PoseWithCovarianceStamped, poseCallback)
     rospy.Subscriber("move_base_simple/goal",PoseStamped, goalCallback)
-    pathPub2 = rospy.Publisher("/path", Path, queue_size=1)
+    pathPub = rospy.Publisher("/move_base/GlobalPlanner/plan", Path, queue_size=1)
 
     rate = rospy.Rate(100)
     while not rospy.is_shutdown():
         if go:
             go = False
             path,cost = AStarSearch((currentLocation[0],currentLocation[1]),(goalLocation[0],goalLocation[1]))
-            #display(path,cost)
             newPath = []
-            newPathDebug = []
             for i in range(len(path)-1):
                 p1 = toPose(path[i])
                 p2 = toPose(path[i+1])
@@ -228,17 +226,15 @@ def main():
                 quat.z = q[2]
                 quat.w = q[3]
                 p1.pose.orientation = quat
-                newPath.append([p1.pose.position.x,p1.pose.position.y,q[0],q[1],q[2],q[3]])
-                newPathDebug.append(p1)
+                newPath.append(p1)
             plan = Path()
-            plan.poses = newPathDebug
+            plan.poses = newPath
             header = Header()
             header.frame_id = "map"
             plan.header = header
-            pathPub2.publish(plan)
+            pathPub.publish(plan)
             print("published path")
             display(path,cost)
-            return newPath
         rate.sleep()
 
 def toPose(point):
