@@ -32,9 +32,21 @@ class Model:
                 'customerID': 0
             },
             {
-                "places": 3,
+                "places": 7,
                 "available": True,
                 'id': 3,
+                'customerID': 0
+            },
+            {
+                "places": 4,
+                "available": True,
+                'id': 4,
+                'customerID': 0
+            },
+            {
+                "places": 6,
+                "available": True,
+                'id': 5,
                 'customerID': 0
             }
         ]
