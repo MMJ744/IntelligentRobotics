@@ -45,7 +45,10 @@ def main():
         "sudo rm -rf", "Beep Beep, vehicle reversing", "speach", \
         "If you see something that doesn't look right, speak to staff, or text the British Transport Police, on 6 1 0 1 6. We'll sort it. See it. Say it. Sorted.", \
         "Error 404 quote not found", \
-        "You have arrived at your destination"]
+        "You have arrived at your destination", \
+        "It's half past 12 somewhere", \
+        "speAch", \
+        "In 400 meters turn right"]
     rate = rospy.Rate(10)
     rates = [0.01,0.02,0.005,0.01,0.01,0.015,0.022,0.04111,0.03]
     while not rospy.is_shutdown():

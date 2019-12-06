@@ -81,7 +81,7 @@ class TaskExecuter:
         creates and runs task, broadcasting when done
         """
         task_executable = None
-        self.model.output += "\n" + self.task_msg.task_type
+        self.model.output += "<p>" + self.task_msg.task_type + "</p>"
         print(self.task_msg.customerID)
         if (self.task_msg.customerID == -1 or self.task_msg.customerID == self.model.tables[self.task_msg.table_number]['customerID']):
             if self.task_msg.task_type == "Checkup":
@@ -102,10 +102,10 @@ class TaskExecuter:
 
             print("te:" + str(task_executable.model))
             task_executable.run_all()
-            self.model.output += '  :  I ran'
+            self.model.output += '  :  I ran </p>'
         else:
-            self.model.output += '  :  I didnt run ;('
-
+            self.model.output += '  :  I didnt run ;( </p>'
+        
         self.publish_done()
 
     def publish_done(self):
