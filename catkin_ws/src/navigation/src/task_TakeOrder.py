@@ -20,6 +20,7 @@ class CheckReady(State):
     def run(self, instance):
         if not vision.are_people():
             speech("I can't see anyone")
+            instance.model.tables[instance.table-1]['available'] = True
             instance.running = False
             return
         speech("Are we ready to order?")
