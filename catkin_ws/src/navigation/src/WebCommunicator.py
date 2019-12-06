@@ -54,6 +54,13 @@ def staff():
     return text
 
 
+@app.route('/model')
+def model():
+    print("model")
+    global model
+    return str(model)
+
+
 @app.route('/goto')
 def goto():
     navTo.navigateTo(request.args.get('location',''))
