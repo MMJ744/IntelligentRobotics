@@ -21,7 +21,7 @@ def arepeoplearray(data):
     counter = (counter + 1) % 5
 
 def are_people():
-    IGNORE_VISION = True
+    IGNORE_VISION = False
     return 1 in checkarray or IGNORE_VISION
 
 def listenpeople():
