@@ -40,12 +40,12 @@ class Model:
         ]
         self.bookings = {"Brexit Means Brexit": 1, "Barry Bee Benson": 5}
         self.messages = {
-            "kitchen": "<p>kitchen<\\p>",
-            "staff": "<p>staff<\\p>"
+            "kitchen": "<p>kitchen</p>",
+            "staff": "<p>staff</p>"
         }
 
     def prepend_message(self, channel, msg):
-        self.messages[channel] = "<p>[" + str(rospy.Time.now()) + "]\t" + msg + '<\\p>' + self.messages[channel]
+        self.messages[channel] = "<p>[" + str(rospy.Time.now()) + "]\t" + msg + '</p>' + self.messages[channel]
 
 
 class TaskExecuter:
