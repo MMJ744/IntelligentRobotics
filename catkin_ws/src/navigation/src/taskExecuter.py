@@ -87,6 +87,7 @@ class TaskExecuter:
         import task_TakeOrder
         import task_NewCustomer
         import task_Deliver
+        import task_CollectFromWaitingArea
 
         
         """
@@ -107,6 +108,8 @@ class TaskExecuter:
                 task_executable = task_Deliver.DeliverTask(self.model, self.task_msg.table_number)
             elif self.task_msg.task_type == "Wander":
                 task_executable = task_Wander.WanderTask(self.model)
+            elif self.task_msg.task_type == "CollectFromWaitingArea":
+                task_executable = task_CollectFromWaitingArea.CollectFromWaitingAreaTask(self.model)
             
             if task_executable is None:
                 raise NotImplementedError
