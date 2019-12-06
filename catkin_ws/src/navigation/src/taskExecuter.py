@@ -83,7 +83,7 @@ class TaskExecuter:
         task_executable = None
         self.model.output += "\n" + self.task_msg.task_type
         print(self.task_msg.customerID)
-        if (self.task_msg.customerID == self.model.tables[self.task_msg.table_number]['customerID'] or self.task_msg.customerID == -1):
+        if (self.task_msg.customerID == -1 or self.task_msg.customerID == self.model.tables[self.task_msg.table_number]['customerID']):
             if self.task_msg.task_type == "Checkup":
                 task_executable = task_Checkup.CheckupTask(self.model, self.task_msg.table_number)
             if self.task_msg.task_type == "CollectPayment":

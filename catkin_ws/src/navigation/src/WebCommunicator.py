@@ -24,8 +24,8 @@ def hello():
     return model.output
 
 
-@app.route('/kitchen')
-def kitchen():
+@app.route('/kitchentask')
+def kitchentask():
     print("kitchentask")
     try:
         user_int = int(request.args.get('table', ''))
