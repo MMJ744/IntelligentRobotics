@@ -33,7 +33,6 @@
 		<param name="controller_frequency" type="double" value="15.0" />
 	</node>
 
-	<node pkg="navigation" type="navController.py" name="navController"></node>
 	<node pkg="navigation" type="GhostBuster.py" name="GhostBuster"></node>
 	<node pkg="rviz" type="rviz" name="rviz"> </node>
 </launch>
