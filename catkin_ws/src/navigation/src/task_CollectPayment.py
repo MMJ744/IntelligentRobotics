@@ -35,7 +35,7 @@ class Postpone(State):
 
     def run(self, instance):
         speech("My apologies, I shall return later")
-        cusID = instance.model.tables[instance.table_number-1]['customerID']
+        cusID = instance.model.tables[instance.table-1]['customerID']
         taskManager.new_task("CollectPayment", table_number=instance.table_number, delay=7.5, customerID=cusID )
         instance.running = False
 
