@@ -4,6 +4,7 @@ from flask import request
 import navTo
 import navController
 import navTo
+import traceback
 
 import taskManager
 import taskExecuter
@@ -64,6 +65,13 @@ def goto():
     navTo.navigateTo(request.args.get('location',''))
     return 'going to ' + request.args.get('location', '')
 
+
+@app.route('/stack')
+def goto():
+    trace = ""
+    for line in traceback.format_stack():
+        trace += line
+    return trace
 
 
 def main(modelt):
