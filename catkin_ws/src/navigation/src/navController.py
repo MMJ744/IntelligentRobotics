@@ -17,7 +17,8 @@ odomsub = None
 y = 0.0
 odomtheta = 0.0
 amcltheta = 0.0
-
+x2 = 0.0
+y2 = 0.0
 
 def navOutCallback(x):
     global navResult
@@ -32,6 +33,8 @@ def navIn(destination):
     global odomsub
     global x
     global y
+    global x2
+    global y2
     global odomtheta
     global amcltheta
     rate = rospy.Rate(10)
@@ -49,12 +52,14 @@ def navIn(destination):
         gtheta = math.atan2(2 * (q.x * q.y + q.w * q.z), q.w * q.w + q.x * q.x - q.z * q.z)
         print("published goal")
         distance = math.sqrt(abs(goal.pose.position.x - x) + abs(goal.pose.position.y-y))
-        while distance > 0.5 and not rospy.is_shutdown():
+        d2 = math.sqrt(abs(goal.pose.position.x - x2) + abs(goal.pose.position.y-y2))
+        while distance > 0.7 and d2 > 0.7 and not rospy.is_shutdown():
             print(distance)
             print(gtheta - odomtheta)
             print(gtheta - amcltheta)
             rate.sleep()
             distance = math.sqrt(abs(goal.pose.position.x - x) + abs(goal.pose.position.y-y))
+            d2 = math.sqrt(abs(goal.pose.position.x - x2) + abs(goal.pose.position.y - y2))
         print("arrived")
         donePub.publish("done")
     else:
@@ -74,6 +79,10 @@ def amclCallback(data):
 
 def odomCall(data):
     global odomtheta
+    global x2
+    global y2
+    x2 = data.pose.pose.position.x
+    y2 = data.pose.pose.position.y
     q = data.pose.pose.orientation
     odomtheta = math.atan2(2 * (q.x * q.y + q.w * q.z), q.w * q.w + q.x * q.x - q.z * q.z)
 
