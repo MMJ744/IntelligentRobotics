@@ -16,7 +16,7 @@ from navigation.msg import Task
 pub = None
 
 
-def new_task(task_type, table_number=None, delay=0, customerID=None):
+def new_task(task_type, table_number=None, delay=0, customerID=-1):
     """
     adds task to priority queue, and will be executed once it becomes the highest priority job
     :param task_type: name of task to be executed

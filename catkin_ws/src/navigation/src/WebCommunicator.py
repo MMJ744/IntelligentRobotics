@@ -31,6 +31,7 @@ def kitchen():
     text = "waiter summoned for " + user_str
     model.prepend_message("kitchen", text)
 
+    print("kitchen")
     text = text + "\n\n" + model.messages["kitchen"]
     return text
 
