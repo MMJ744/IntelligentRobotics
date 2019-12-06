@@ -68,6 +68,8 @@ class GuideToWaitingarea(State):
         instance.addInput('')
         # add a task to collect them after the time
         taskManager.new_task("CollectFromWaitingArea", table_number=None, delay=5, customerID=-1)
+        r = rospy.Rate(1)
+        r.sleep()
         instance.running = False
 
 

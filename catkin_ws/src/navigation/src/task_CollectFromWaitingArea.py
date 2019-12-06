@@ -4,6 +4,7 @@ import navTo
 from speech import speech, listen
 import utils
 import taskManager
+import rospy
 
 
 class NavigateToWaitingArea(State):
@@ -89,6 +90,8 @@ class GuideToTable(State):
         instance.addInput('')
         cusID = instance.model.tables[instance.table_number-1]['customerID']
         taskManager.new_task("TakeOrder", table_number=instance.group_table, delay=0.5, customerID=cusID)
+        r = rospy.Rate(1)
+        r.sleep()
         instance.model.tables[instance.table_number]
         instance.running = False
 
@@ -112,6 +115,8 @@ class Leave(State):
     def run(self, instance):
         speech("Thanks again for your patience. I'll be back soon.")
         taskManager.new_task("CollectFromWaitingArea", table_number=None, delay=5, customerID=-1)
+        r = rospy.Rate()
+        r.sleep()
         instance.running = False
 
 
