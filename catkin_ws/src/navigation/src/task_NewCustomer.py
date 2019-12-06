@@ -138,18 +138,22 @@ class CheckGroup(State):
     def next(self, instance, input):
 
         big_tables = list(filter(lambda t: t['places'] >= instance.group_size, instance.model.tables))
+        print("big enough = " + str(big_tables))
 
         if big_tables == []:
             speech("Sorry, we don't have any tables in the restaurant big enough to seat " + str(instance.group_size) + " people.")
             return Goodbye()
 
         big_avail_tables = list(filter(lambda t: t['available'], big_tables))
+        print("big enough and free = " + str(big_avail_tables))
 
         if big_avail_tables == []:
             speech("Sorry, all our tables of size " + str(instance.group_size) + " or above are busy at the moment.")
             return GiveWaitingTime()
 
         big_avail_tables.sort(key=(lambda x: x['places']))
+        print("big enough and free and sorted = " + str(big_avail_tables))
+
         instance.group_table = big_avail_tables[0]['id']
         instance.model.tables[instance.group_table-1]['customerID'] +=1 
         instance.model.tables[instance.group_table-1]['avaliable'] = False
