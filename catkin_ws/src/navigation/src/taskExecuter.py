@@ -38,7 +38,7 @@ class Model:
                 'customerID': 0
             }
         ]
-        self.bookings = {"Brexit Means Brexit": 1, "Barry Bee Benson": 5}
+        self.bookings = {"Brexit Means Brexit": 1, "Barry Bee Benson": 5, "Blank Boi": 2, "Whatever you want":7}
         self.messages = {
             "kitchen": "<p>kitchen<\\p>",
             "staff": "<p>staff<\\p>"
