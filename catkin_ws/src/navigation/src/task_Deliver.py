@@ -4,7 +4,7 @@ from State import State
 from Speech import speech, listen
 import taskManager
 import navTo
-
+import rospy
 
 class NavigateToKitchen(State):
 
@@ -64,6 +64,8 @@ class TableWait(State):
         if response is not None and 'go' in response:
             cusID = instance.model.tables[instance.table_number-1]['customerID']
             taskManager.new_task("Checkup", table_number=instance.table_number, delay=1, customerID=cusID)
+            r = rospy.Rate(1)
+            r.sleep()
             instance.running = False
         instance.addInput(response)
 

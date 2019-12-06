@@ -4,7 +4,7 @@ from Speech import speech, listen
 import listenpeople as vision
 import navTo
 import taskManager
-
+import rospy
 
 class NavigateToTable(State):
 
@@ -39,6 +39,8 @@ class ConfirmComments(State):
         speech("Okay, thank you for your comments. They have been submitted to my organic comrades for review")
         cusID = instance.model.tables[instance.table-1]['customerID']
         taskManager.new_task("CollectPayment", table_number=instance.table,delay=2,customerID=cusID)
+        r = rospy.Rate(1)
+        r.sleep()
         instance.running = False
 
 

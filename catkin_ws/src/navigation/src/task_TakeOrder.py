@@ -5,6 +5,7 @@ import listenpeople as vision
 import taskManager
 import taskExecuter
 import navTo
+import rospy
 
 
 class NavigateToTable(State):
@@ -38,6 +39,8 @@ class ComeBackLater(State):
         speech("Okay, I will come back later")
         cusID = instance.model.tables[instance.table-1]['customerID']
         taskManager.new_task("TakeOrder", table_number=instance.table, delay=5, customerID=cusID)
+        r = rospy.Rate(1)
+        r.sleep()
         instance.running = False
 
 
@@ -85,6 +88,8 @@ class Finished(State):
         speech("Thank you. Your food will be with you soon")
         cusID = instance.model.tables[instance.table-1]['customerID']
         taskManager.new_task("Deliver", table_number=instance.table, delay=1, customerID=cusID)
+        r = rospy.Rate(1)
+        r.sleep()
         instance.running = False
 
 

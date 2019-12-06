@@ -6,6 +6,7 @@ import listenpeople as vision
 import navTo
 import taskExecuter
 from rfid import readCard
+import rospy
 
 
 class NavigateToTable(State):
@@ -42,6 +43,8 @@ class Postpone(State):
         speech("My apologies, I shall return later")
         cusID = instance.model.tables[instance.table_number-1]['customerID']
         taskManager.new_task("CollectPayment", table_number=instance.table_number, delay=7.5, customerID=cusID )
+        r = rospy.Rate(1)
+        r.sleep()
         instance.running = False
 
 

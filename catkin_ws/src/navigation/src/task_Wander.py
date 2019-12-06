@@ -27,6 +27,7 @@ class CheckTables(State):
             taskManager.new_task("NewCust")
             speech("I'll be right with you")
         taskManager.new_task("Wander")
+        r.sleep()
         instance.running = False
 
 

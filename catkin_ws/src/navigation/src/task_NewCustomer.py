@@ -6,6 +6,7 @@ import navTo
 import taskManager
 from rfid import readCard
 import utils
+import rospy
 
 
 class NavigateToFront(State):
@@ -79,7 +80,9 @@ class GuideToTable(State):
         instance.addInput('')
         cusID = instance.model.tables[instance.group_table-1]['customerID']
         print(cusID)
-        taskManager.new_task("TakeOrder", table_number=instance.group_table, delay=0.5, customerID=cusID)
+        taskManager.new_task("TakeOrder", table_number=instance.group_table, delay=1, customerID=cusID)
+        r = rospy.Rate(1)
+        r.sleep()
         instance.running = False
 
 
