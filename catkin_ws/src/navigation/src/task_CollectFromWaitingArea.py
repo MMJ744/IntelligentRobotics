@@ -8,6 +8,7 @@ import rospy
 
 
 class NavigateToWaitingArea(State):
+
     def run(self, instance):
         navTo.navigateTo("waitingarea")
 
@@ -16,6 +17,7 @@ class NavigateToWaitingArea(State):
 
 
 class ThankForWaiting(State):
+
     def run(self, instance):
         speech("Hi again, thanks for waiting! Your patience is appreciated.")
 
@@ -52,18 +54,22 @@ class CheckGroup(State):
     def next(self, instance, input):
 
         big_tables = list(filter(lambda t: t['places'] >= instance.group_size, instance.model.tables))
+        print("big enough = " + str(big_tables))
 
         if big_tables == []:
             speech("Sorry, we don't have any tables in the restaurant big enough to seat " + str(instance.group_size) + " people.")
             return Evict()
 
         big_avail_tables = list(filter(lambda t: t['available'], big_tables))
+        print("big enough and free = " + str(big_avail_tables))
 
         if big_avail_tables == []:
             speech("Sorry, all our tables of size " + str(instance.group_size) + " or above are still busy.")
             return GiveWaitingTime()
 
         big_avail_tables.sort(key=(lambda x: x['places']))
+        print("big enough and free and sorted = " + str(big_avail_tables))
+
         instance.group_table = big_avail_tables[0]['id']
         instance.model.tables[instance.group_table]['customerID'] +=1
         instance.model.tables[instance.group_table]['avaliable'] = False
@@ -82,7 +88,6 @@ class UnknownAnswer(State):
 
 
 class GuideToTable(State):
-
     def run(self, instance):
         speech("Please follow me")
         navTo.navigateTo("table" + str(instance.group_table))
@@ -121,6 +126,7 @@ class Leave(State):
 
 
 class Evict(State):
+
     def run(self, instance):
         speech("On behalf and myself and various carbon-based associates, we sincerely apologies for the confusion,"
                "but we will not be able to serve you today. Please leave the premises whenever you're ready.")
@@ -128,11 +134,13 @@ class Evict(State):
 
 
 class Goodbye(State):
+
     def run(self, instance):
         speech("Sorry about that. Goodbye")
         instance.running = False
 
 
 class CollectFromWaitingAreaTask(StateMachine):
+
     def __init__(self, model):
         StateMachine.__init__(self, NavigateToWaitingArea(), model)
