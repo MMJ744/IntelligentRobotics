@@ -37,7 +37,7 @@ class ComeBackLater(State):
     def run(self, instance):
         speech("Okay, I will come back later")
         cusID = instance.model.tables[instance.table-1]['customerID']
-        taskManager.new_task("TakeOrder", table_number=instance.table, delay=2, customerID=cusID)
+        taskManager.new_task("TakeOrder", table_number=instance.table, delay=5, customerID=cusID)
         instance.running = False
 
 
