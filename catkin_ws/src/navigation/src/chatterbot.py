@@ -48,7 +48,8 @@ def main():
         "You have arrived at your destination", \
         "It's half past 12 somewhere", \
         "speAch", \
-        "In 400 meters turn right"]
+        "In 400 meters turn right", \
+        "Dominos cookie rookie"]
     rate = rospy.Rate(10)
     rates = [0.01,0.02,0.005,0.01,0.01,0.015,0.022,0.04111,0.03]
     while not rospy.is_shutdown():
