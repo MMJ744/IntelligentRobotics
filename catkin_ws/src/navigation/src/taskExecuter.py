@@ -13,6 +13,8 @@ def messages(channel):
 
 class Model:
     def __init__(self):
+        
+        self.output = ''
 
         self.locations = ["kitchen", "table1", "table2", "table3", "frontdesk"]
 
@@ -79,7 +81,7 @@ class TaskExecuter:
         creates and runs task, broadcasting when done
         """
         task_executable = None
-        
+        self.model.output += "\n" + self.task_msg.task_type
         if (self.task_msg.customerID == self.model.tables[self.task_msg.table_number]['customerID'] or self.task_msg.customerID is None) and not self.model.tables[self.task_msg.table_number]['available']
             if self.task_msg.task_type == "Checkup":
                 task_executable = task_Checkup.CheckupTask(self.model, self.task_msg.table_number)
@@ -99,6 +101,9 @@ class TaskExecuter:
 
             print("te:" + str(task_executable.model))
             task_executable.run_all()
+            self.model.output += '  :  I ran'
+        else:
+            self.model.output += '  :  I didnt run ;('
 
         self.publish_done()
 

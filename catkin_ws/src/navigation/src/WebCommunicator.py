@@ -18,6 +18,11 @@ def hello():
     print("hello")
     return 'Hello World'
 
+@app.route('/tasks')
+def hello():
+    global model
+    return model.output
+
 
 @app.route('/kitchen')
 def kitchen():
