@@ -144,7 +144,7 @@ class CheckGroup(State):
             speech("Sorry, we don't have any tables in the restaurant big enough to seat " + str(instance.group_size) + " people.")
             return Goodbye()
 
-        big_avail_tables = list(filter(lambda t: t['available'], big_tables))
+        big_avail_tables = list(filter(lambda t: t['available'] is True, big_tables))
         print("big enough and free = " + str(big_avail_tables))
 
         if big_avail_tables == []:
@@ -156,7 +156,7 @@ class CheckGroup(State):
 
         instance.group_table = big_avail_tables[0]['id']
         instance.model.tables[instance.group_table-1]['customerID'] +=1 
-        instance.model.tables[instance.group_table-1]['avaliable'] = False
+        instance.model.tables[instance.group_table-1]['available'] = False
         return GuideToTable()
 
 
