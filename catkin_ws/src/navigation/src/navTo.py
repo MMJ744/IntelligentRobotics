@@ -32,7 +32,7 @@ def navigateTo(loc):
         if dataN == "invalid": return False
     dataN = ''
     print('HERE')
-    rate = rospy.Rate(0.5)
+    rate = rospy.Rate(0.2)
     rate.sleep()
     return True
     

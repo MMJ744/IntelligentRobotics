@@ -15,6 +15,8 @@ def from_msg(task_msg):
         task_info = Wander(time=task_msg.created_at)
     elif task_msg.task_type == "Deliver":
         task_info = Deliver(table_number=task_msg.table_number, time=task_msg.created_at, customerID=task_msg.customerID)
+    elif task_msg.task_type == "CollectFromWaitingArea":
+        task_info = CollectFromWaitingArea()
     else:
         raise NotImplementedError
 
@@ -37,7 +39,7 @@ def new(task_type, table_number, delay, customerID):
     elif task_type == "Deliver":
         task_info = Deliver(time=created_at, table_number=table_number, customerID=customerID)
     elif task_type == "CollectFromWaitingArea":
-        task_info = CollectFromWaitingArea(time=created_at, table_number=table_number)
+        task_info = CollectFromWaitingArea(time=created_at)
     else:
         raise NotImplementedError
 
@@ -157,5 +159,5 @@ class CollectPayment(Base):
 
 
 class CollectFromWaitingArea(Base):
-    def __init__(self, table_number, time=None):
-        Base.__init__(self, "CollectFromWaitingArea", time, table_number=table_number, customerID=customerID)
+    def __init__(self, time=None):
+        Base.__init__(self, "CollectFromWaitingArea", time)

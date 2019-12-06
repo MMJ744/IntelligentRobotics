@@ -1,7 +1,7 @@
 from StateMachine import StateMachine
 from State import State
 import navTo
-from speech import speech, listen
+from Speech import speech, listen
 import utils
 import taskManager
 import rospy
@@ -18,7 +18,7 @@ class NavigateToWaitingArea(State):
             speech("Oh, it's empty")
             instance.running = False
 
-    def next(self, instance):
+    def next(self, instance, input):
         return ThankForWaiting()
 
 
@@ -27,7 +27,7 @@ class ThankForWaiting(State):
     def run(self, instance):
         speech("Hi again, thanks for waiting! Your patience is appreciated.")
 
-    def next(self, instance):
+    def next(self, instance, input):
         return AskGroupSize()
 
 
@@ -126,7 +126,7 @@ class Leave(State):
     def run(self, instance):
         speech("Thanks again for your patience. I'll be back soon.")
         taskManager.new_task("CollectFromWaitingArea", table_number=None, delay=5, customerID=-1)
-        r = rospy.Rate()
+        r = rospy.Rate(1)
         r.sleep()
         instance.running = False
 
@@ -134,7 +134,7 @@ class Leave(State):
 class Evict(State):
 
     def run(self, instance):
-        speech("On behalf and myself and various carbon-based associates, we sincerely apologies for the confusion,"
+        speech("On behalf and myself and various carbon-based associates, we sincerely apologise for the confusion,"
                "but we will not be able to serve you today. Please leave the premises whenever you're ready.")
         instance.running = False
 

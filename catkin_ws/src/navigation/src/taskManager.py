@@ -94,6 +94,12 @@ class TaskManager:
         else:
             self.current_task = self.current_tasks.get()
 
+        print(self.current_task.priority)
+        if self.current_task.priority > 0:
+            self.current_tasks.put(self.current_task)
+            self.current_task = tt.Wander()
+            rospy.logwarn("positive priority, replacing with wander")
+
         t = self.current_task.to_msg()
         r = rospy.Rate(0.2)
         r.sleep()
