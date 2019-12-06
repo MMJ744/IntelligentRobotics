@@ -77,8 +77,8 @@ class CheckGroup(State):
         print("big enough and free and sorted = " + str(big_avail_tables))
 
         instance.group_table = big_avail_tables[0]['id']
-        instance.model.tables[instance.group_table]['customerID'] +=1
-        instance.model.tables[instance.group_table]['avaliable'] = False
+        instance.model.tables[instance.group_table-1]['customerID'] +=1
+        instance.model.tables[instance.group_table-1]['avaliable'] = False
         return GuideToTable()
 
 
