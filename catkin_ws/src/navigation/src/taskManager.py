@@ -28,7 +28,7 @@ def new_task(task_type, table_number=None, delay=0, customerID=-1):
 
     print("tm new_task/:" + task_type)
 
-    SEQUENCES_SHORTENED = True
+    SEQUENCES_SHORTENED = False
 
     if SEQUENCES_SHORTENED:
         delay = 0
