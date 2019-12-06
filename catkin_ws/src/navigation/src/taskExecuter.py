@@ -26,7 +26,7 @@ class Model:
                 'customerID': 0
             },
             {
-                "places": 5,
+                "places": -1,
                 "available": True,
                 'id': 2,
                 'customerID': 0
