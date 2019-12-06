@@ -22,6 +22,7 @@ class AskBooking(State):
     def run(self, instance):
         speech("Do you have a booking?")
         response = listen()
+        response = 'yes' # TODO remove me
         instance.addInput(response)
 
     def next(self, instance, input):
@@ -76,9 +77,8 @@ class GuideToTable(State):
         navTo.navigateTo("table" + str(instance.group_table))
         speech("Please take a seat. Someone will be with you in a few minutes")
         instance.addInput('')
-        cusID = instance.model.tables[instance.table_number-1]['customerID']
+        cusID = instance.model.tables[instance.group_table-1]['customerID']
         taskManager.new_task("TakeOrder", table_number=instance.group_table, delay=0.5, customerID=cusID)
-        instance.model.tables[instance.table_number]
         instance.running = False
 
 

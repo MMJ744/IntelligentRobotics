@@ -5,7 +5,7 @@ from std_msgs.msg import String
 from p2os_msgs.msg import SonarArray
 
 talk = True
-sonar = 999
+sonar = 0.2
 
 def navIn(data):
     global talk
@@ -19,7 +19,7 @@ def navOut(data):
 
 def sonarCallback(data):
     global sonar
-    sonar = min(data.ranges[3:6])
+    sonar = min(data.ranges)
 
 
 def main():
@@ -30,7 +30,7 @@ def main():
     rate = rospy.Rate(10)
     screamRate = rospy.Rate(0.75)
     while not rospy.is_shutdown():
-        if talk and sonar < 0.3:
+        if talk and sonar < 0.25:
             speech("wilhelmscream")
             screamRate.sleep()
         rate.sleep()
