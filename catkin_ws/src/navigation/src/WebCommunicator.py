@@ -19,7 +19,7 @@ def hello():
     return 'Hello World'
 
 @app.route('/tasks')
-def hello():
+def tasks():
     global model
     return model.output
 
