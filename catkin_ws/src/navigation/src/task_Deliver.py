@@ -39,6 +39,7 @@ class KitchenWait(State):
         if input is None or input == '':
             return instance.currentState
         elif 'go' in input:
+            print("Delivering to table " + str(instance.table_number))
             return NavigateToTable()
         else:
             speech("I'll wait here until you tell me to go.")
@@ -51,7 +52,7 @@ class NavigateToTable(State):
         navTo.navigateTo("table" + str(instance.table_number))
         speech("Here is your " + str(instance.food_order))
         listen()
-        speech("I'll wait here until you tell me to go.")
+        speech("Please tell me to go when you've got your food")
 
     def next(self, instance, input):
         return TableWait()
