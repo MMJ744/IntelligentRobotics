@@ -51,10 +51,10 @@ def get_priority_level(task_type):
     }
     priority_levels = {
         "Wander": "BASE",
-        "NewCust": "MID",
+        "NewCust": "HIGH",
         "CollectPayment": "MID",
         "Checkup": "LOW",
-        "TakeOrder": "HIGH",
+        "TakeOrder": "MID",
         "Deliver": "IMMEDIATE"
     }
     return priority_multipliers[priority_levels[task_type]]

@@ -23,7 +23,6 @@ class AskBooking(State):
     def run(self, instance):
         speech("Do you have a booking?")
         response = listen()
-        response = 'yes' # TODO remove me
         instance.addInput(response)
 
     def next(self, instance, input):
