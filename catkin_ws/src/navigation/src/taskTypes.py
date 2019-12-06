@@ -4,17 +4,17 @@ from navigation.msg import Task
 
 def from_msg(task_msg):
     if task_msg.task_type == "Checkup":
-        task_info = Checkup(task_msg.table_number, task_msg.created_at)
+        task_info = Checkup(table_number=task_msg.table_number, time=task_msg.created_at)
     elif task_msg.task_type == "CollectPayment":
-        task_info = CollectPayment(task_msg.table_number, task_msg.created_at)
+        task_info = CollectPayment(table_number=task_msg.table_number, time=task_msg.created_at)
     elif task_msg.task_type == "NewCust":
-        task_info = NewCustomer(task_msg.created_at)
+        task_info = NewCustomer(time=task_msg.created_atss)
     elif task_msg.task_type == "TakeOrder":
-        task_info = TakeOrder(task_msg.table_number, task_msg.created_at)
+        task_info = TakeOrder(table_number=task_msg.table_number, time=task_msg.created_at)
     elif task_msg.task_type == "Wander":
-        task_info = Wander(task_msg.created_at)
+        task_info = Wander(time=task_msg.created_at)
     elif task_msg.task_type == "Deliver":
-        task_info = Deliver(task_msg.table_number, task_msg.created_at)
+        task_info = Deliver(table_number=task_msg.table_number, time=task_msg.created_at)
     else:
         raise NotImplementedError
 
