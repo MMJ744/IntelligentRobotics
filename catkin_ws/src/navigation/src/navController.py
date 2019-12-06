@@ -141,13 +141,13 @@ def initLocations():
     locations['table5'] = tbl
     tbl = PoseStamped()
     tbl.pose.position.x = 5.129
-    tbl.pose.position.y = 17.120
+    tbl.pose.position.y = 19.120
     tbl.pose.orientation.z = 0.69
     tbl.pose.orientation.w = 0.72
     tbl.header = header
     locations['kitchen'] = tbl
     tbl = PoseStamped()
-    tbl.pose.position.x = 28.75
+    tbl.pose.position.x = 26.75
     tbl.pose.position.y = 18.7
     tbl.pose.orientation.z = 0.69
     tbl.pose.orientation.w = 0.72
