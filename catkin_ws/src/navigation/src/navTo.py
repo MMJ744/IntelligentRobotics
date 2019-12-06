@@ -12,14 +12,14 @@ def navCallback(data):
     #print(dataN)
 
 def navigateTo(loc):
-    dataN = None
     print('navto going ' + loc)
     global pub
     global dataN
     global lis
+    dataN = ''
     rate = rospy.Rate(10)
     if pub is None:
-        pub = rospy.Publisher('navIn',String,queue_size=1)
+        pub = rospy.Publisher('navIn',String,queue_size=10)
         lis = rospy.Subscriber('navOut', String, navCallback)
     rate.sleep()
     rate.sleep()
@@ -30,7 +30,7 @@ def navigateTo(loc):
     while dataN != "done":
         rate.sleep()
         if dataN == "invalid": return False
-    dataN = None
+    dataN = ''
     print('HERE')
     return True
     
