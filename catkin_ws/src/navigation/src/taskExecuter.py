@@ -56,6 +56,16 @@ class Model:
             "staff": "<p>staff</p>"
         }
 
+    def __str__(self):
+        s = ''
+        s = s + 'output: ' + str(self.output) + '<br/><br/>'
+        s = s + 'locations: ' + str(self.locations) + '<br/><br/>'
+        s = s + 'tables: ' + str(self.tables) + '<br/><br/>'
+        s = s + 'bookings: ' + str(self.bookings) + '<br/><br/>'
+        s = s + 'messages: ' + str(self.messages) + '<br/><br/>'
+
+        return s
+
     def prepend_message(self, channel, msg):
         self.messages[channel] = "<p>[" + str(rospy.Time.now()) + "]\t" + msg + '</p>' + self.messages[channel]
 
