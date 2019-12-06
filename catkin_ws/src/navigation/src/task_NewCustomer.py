@@ -67,6 +67,7 @@ class GuideToWaitingarea(State):
         speech("I will come get you when your table is ready")
         instance.addInput('')
         # add a task to collect them after the time
+        taskManager.new_task("CollectFromWaitingArea", table_number=None, delay=5, customerID=-1)
         instance.running = False
 
 

@@ -36,6 +36,8 @@ def new(task_type, table_number, delay, customerID):
         task_info = Wander(time=created_at)
     elif task_type == "Deliver":
         task_info = Deliver(time=created_at, table_number=table_number, customerID=customerID)
+    elif task_type == "CollectFromWaitingArea":
+        task_info = CollectFromWaitingArea(time=created_at, table_number=table_number)
     else:
         raise NotImplementedError
 
@@ -54,8 +56,9 @@ def get_priority_level(task_type):
         "NewCust": "HIGH",
         "CollectPayment": "MID",
         "Checkup": "LOW",
-        "TakeOrder": "MID",
-        "Deliver": "IMMEDIATE"
+        "TakeOrder": "HIGH",
+        "Deliver": "IMMEDIATE",
+        "CollectFromWaitingArea": "HIGH"
     }
     return priority_multipliers[priority_levels[task_type]]
 
@@ -151,3 +154,8 @@ class Deliver(Base):
 class CollectPayment(Base):
     def __init__(self, table_number, customerID, time=None):
         Base.__init__(self, "CollectPayment", time, table_number=table_number, customerID=customerID)
+
+
+class CollectFromWaitingArea(Base):
+    def __init__(self, table_number, time=None):
+        Base.__init__(self, "CollectFromWaitingArea", time, table_number=table_number, customerID=customerID)
