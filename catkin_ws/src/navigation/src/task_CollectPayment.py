@@ -2,6 +2,7 @@ from StateMachine import StateMachine
 from State import State
 from Speech import speech, listen
 import taskManager
+import listenpeople as vision
 import navTo
 import taskExecuter
 from rfid import readCard
@@ -19,6 +20,10 @@ class NavigateToTable(State):
 class AskIfFinished(State):
 
     def run(self, instance):
+        if not vision.are_people():
+            speech("I can't see anyone")
+            instance.running = False
+            return
         speech("Has everyone here finished their meal?")
         instance.addInput(listen())
 

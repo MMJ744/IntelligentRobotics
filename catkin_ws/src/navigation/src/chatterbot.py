@@ -44,12 +44,16 @@ def main():
         "Beep Boop... Beep Boop", "sudo apt-get purge ros", \
         "sudo rm -rf", "Beep Beep, vehicle reversing", "speach", \
         "If you see something that doesn't look right, speak to staff, or text the British Transport Police, on 6 1 0 1 6. We'll sort it. See it. Say it. Sorted.", \
-        "Error 404 quote not found", \
+        "Error 4 0 4 quote not found", \
         "You have arrived at your destination", \
         "It's half past 12 somewhere", \
         "speAch", \
         "In 400 meters turn right", \
-        "Dominos cookie rookie"]
+        "Dominos cookie rookie", \
+        "Git Blame", \
+        "Its a texture change not a pitch change", \
+        "They ask you how you are, and you just have to say that you're fine, when you're not really fine, but you just can't get into it because they would never understand.", \
+        "Stop right there criminal scum"]
     rate = rospy.Rate(10)
     rates = [0.01,0.02,0.005,0.01,0.01,0.015,0.022,0.04111,0.03]
     while not rospy.is_shutdown():

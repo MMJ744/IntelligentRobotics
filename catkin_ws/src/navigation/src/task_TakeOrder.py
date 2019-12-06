@@ -1,6 +1,7 @@
 from StateMachine import StateMachine
 from State import State
 from Speech import speech, listen
+import listenpeople as vision
 import taskManager
 import taskExecuter
 import navTo
@@ -16,6 +17,10 @@ class NavigateToTable(State):
 
 class CheckReady(State):
     def run(self, instance):
+        if not vision.are_people():
+            speech("I can't see anyone")
+            instance.running = False
+            return
         speech("Are we ready to order?")
         instance.addInput(listen())
 
