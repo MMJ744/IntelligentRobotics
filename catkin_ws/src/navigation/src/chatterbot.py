@@ -53,7 +53,8 @@ def main():
         "Git Blame", \
         "Its a texture change not a pitch change", \
         "They ask you how you are, and you just have to say that you're fine, when you're not really fine, but you just can't get into it because they would never understand.", \
-        "Stop right there criminal scum"]
+        "Stop right there criminal scum", \
+        "Let the record show I am distressed"]
     rate = rospy.Rate(10)
     rates = [0.01,0.02,0.005,0.01,0.01,0.015,0.022,0.04111,0.03]
     while not rospy.is_shutdown():
