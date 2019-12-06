@@ -73,12 +73,12 @@ def goto():
     return 'going to ' + request.args.get('location', '')
 
 
-@app.route('/stack')
-def goto():
-    trace = ""
-    for line in traceback.format_stack():
-        trace += line
-    return trace
+# @app.route('/stack')
+# def stack():
+#     trace = ""
+#     for line in traceback.format_stack():
+#         trace += line
+#     return trace
 
 
 def main(modelt):

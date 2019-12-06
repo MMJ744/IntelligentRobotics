@@ -40,7 +40,7 @@ class Postpone(State):
 
     def run(self, instance):
         speech("My apologies, I shall return later")
-        cusID = instance.model.tables[instance.table-1]['customerID']
+        cusID = instance.model.tables[instance.table_number-1]['customerID']
         taskManager.new_task("CollectPayment", table_number=instance.table_number, delay=7.5, customerID=cusID )
         instance.running = False
 
@@ -79,7 +79,7 @@ class DispatchHuman(State):
 
     def run(self, instance):
         speech("I'm sorry, I haven't been able to take a payment from you. Please await further assistance")
-        instance.model.prepend_message("staff", "Table " + str(instance.table) + " unprofitable. Please assist")
+        instance.model.prepend_message("staff", "Table " + str(instance.table_number) + " unprofitable. Please assist")
         instance.running = False
 
 
@@ -87,7 +87,7 @@ class DismissCustomers(State):
 
     def run(self, instance):
         speech("Thank you " + instance.user + ", your payment has been processed. You may now leave.")
-        instance.model.prepend_message("staff", "Payment taken from " + instance.user + " @ Table " + str(instance.table))
+        instance.model.prepend_message("staff", "Payment taken from " + instance.user + " @ Table " + str(instance.table_number))
         instance.running = False
 
 
