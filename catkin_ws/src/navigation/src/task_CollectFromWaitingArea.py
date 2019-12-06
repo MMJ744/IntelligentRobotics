@@ -5,12 +5,18 @@ from speech import speech, listen
 import utils
 import taskManager
 import rospy
+import listenpeople as vision
 
 
 class NavigateToWaitingArea(State):
 
     def run(self, instance):
         navTo.navigateTo("waitingarea")
+        r = rospy.Rate(1)
+        r.sleep()
+        if not vision.are_people():
+            speech("Oh, it's empty")
+            instance.running = False
 
     def next(self, instance):
         return ThankForWaiting()
