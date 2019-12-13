@@ -1,8 +1,2 @@
-# Intelligent Robotics - Localisation - Team Stewart
-The repository is broken down into different branchs where we seperated out different experiments.
-**BRANCHES:**
-
- - **Master Branch** - Main version of localisation using simple estimate pose method
- - **Estimate_pose Branch** - Using main version of localisation, but includes mainy different methods for estimate pose including: K-Means, Weight Average and more
- - **AMCL Branch** - Experimenting with AMCL version of localisation
- - **Test Branch** - Generic tests and Experiemnts
+# Intelligent Robotics - Robot Waiter - Team Stewart
+As a demonstration of the capabilities of intelligent robotics, we put together a robotics system capable of emulating the role of a waiter in a restaurant. It uses ROS, custom navigation, task prioritization, object detection, speech recognition, web interface, speech emulation and RFID to carry out the tasks this role would involve. We believe that our implementation of a robot waiter holds up to the standard of a human waiter.
