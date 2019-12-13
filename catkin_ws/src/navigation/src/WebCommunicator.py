@@ -4,38 +4,67 @@ from flask import request
 import navTo
 import navController
 import navTo
+import traceback
 
 import taskManager
 import taskExecuter
 
 app = Flask(__name__)
 
+model = None
+
 
 @app.route('/')
 def hello():
     print("hello")
-    return 'Hello'
+    return 'Hello World'
+
+@app.route('/tasks')
+def tasks():
+    global model
+    return model.output
 
 
-@app.route('/kitchen')
-def kitchen():
+@app.route('/kitchentask')
+def kitchentask():
+    print("kitchentask")
     try:
         user_int = int(request.args.get('table', ''))
         user_str = "table" + str(user_int)
         taskManager.new_task("Deliver", user_int)
         text = "waiter summoned for " + user_str
-        taskExecuter.send_message("kitchen", text)
-    except:
-        text = "call with /kitchen?table=<table_number>"
+        model.prepend_message("kitchen", text)
 
-    text = text + "\n\n" + taskExecuter.messages("kitchen")
+        text = text + "\n\n" + model.messages["kitchen"]
+        print("kitchentask")
+    except:
+        text = "error creating delivery task, please try again"
+        print("kitchentask failed")
+
+    return text
+
+
+@app.route('/kitchen')
+def kitchen():
+    print("kitchen")
+
+    text = model.messages["kitchen"]
     return text
 
 
 @app.route('/staff')
 def staff():
-    text = taskExecuter.messages("staff")
+    print("staff")
+    global model
+    text = model.messages["staff"]
     return text
+
+
+@app.route('/model')
+def model2():
+    print("model")
+    global model
+    return str(model)
 
 
 @app.route('/goto')
@@ -44,7 +73,15 @@ def goto():
     return 'going to ' + request.args.get('location', '')
 
 
-if __name__ == '__main__':
-    # navTo.main()
+@app.route('/stack')
+def stack():
+    trace = ""
+    for line in traceback.format_stack():
+        trace += line
+    return trace
 
-    app.run(host='0.0.0.0')
+
+def main(modelt):
+    global model
+    model = modelt
+    app.run(host='0.0.0.0', debug=True)

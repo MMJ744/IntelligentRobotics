@@ -15,8 +15,10 @@ x = 0.0
 donePub = None
 odomsub = None
 y = 0.0
-theta = 0.0
-
+odomtheta = 0.0
+amcltheta = 0.0
+x2 = 0.0
+y2 = 0.0
 
 def navOutCallback(x):
     global navResult
@@ -31,7 +33,10 @@ def navIn(destination):
     global odomsub
     global x
     global y
-    global theta
+    global x2
+    global y2
+    global odomtheta
+    global amcltheta
     rate = rospy.Rate(10)
     destination = destination.data
     if odomsub is None or goalPub is None or locations is None:
@@ -47,11 +52,14 @@ def navIn(destination):
         gtheta = math.atan2(2 * (q.x * q.y + q.w * q.z), q.w * q.w + q.x * q.x - q.z * q.z)
         print("published goal")
         distance = math.sqrt(abs(goal.pose.position.x - x) + abs(goal.pose.position.y-y))
-        print(distance)
-        print(gtheta - theta)
-        while distance > 0.5 :
+        d2 = math.sqrt(abs(goal.pose.position.x - x2) + abs(goal.pose.position.y-y2))
+        while distance > 0.7 and d2 > 0.7 and not rospy.is_shutdown():
+            print(distance)
+            print(gtheta - odomtheta)
+            print(gtheta - amcltheta)
             rate.sleep()
             distance = math.sqrt(abs(goal.pose.position.x - x) + abs(goal.pose.position.y-y))
+            d2 = math.sqrt(abs(goal.pose.position.x - x2) + abs(goal.pose.position.y - y2))
         print("arrived")
         donePub.publish("done")
     else:
@@ -59,17 +67,24 @@ def navIn(destination):
         donePub.publish("invalid")
     print("bye")
 
-def odomCallback(data):
+def amclCallback(data):
     global x
     global y
+    global amcltheta
     x = data.pose.pose.position.x
     y = data.pose.pose.position.y
-    
+    q = data.pose.pose.orientation
+    amcltheta = math.atan2(2 * (q.x * q.y + q.w * q.z), q.w * q.w + q.x * q.x - q.z * q.z)
+
 
 def odomCall(data):
-    global theta
+    global odomtheta
+    global x2
+    global y2
+    x2 = data.pose.pose.position.x
+    y2 = data.pose.pose.position.y
     q = data.pose.pose.orientation
-    theta = math.atan2(2 * (q.x * q.y + q.w * q.z), q.w * q.w + q.x * q.x - q.z * q.z)
+    odomtheta = math.atan2(2 * (q.x * q.y + q.w * q.z), q.w * q.w + q.x * q.x - q.z * q.z)
 
 def main():
     global goalPub
@@ -78,7 +93,7 @@ def main():
     rospy.init_node('navController', anonymous=True)
     initLocations()
     odomsub = rospy.Subscriber("/odom", Odometry, odomCall)
-    odomsub = rospy.Subscriber("/amcl_pose", PoseWithCovarianceStamped, odomCallback)
+    odomsub = rospy.Subscriber("/amcl_pose", PoseWithCovarianceStamped, amclCallback)
     goalPub = rospy.Publisher("move_base_simple/goal",PoseStamped,queue_size=10)
     rospy.Subscriber("navIn", String, navIn)
     donePub = rospy.Publisher("navOut", String, queue_size=1)
@@ -111,17 +126,31 @@ def initLocations():
     tbl.pose.orientation.z = boothZ
     tbl.pose.orientation.w = boothW
     tbl.header = header
+    locations['table3'] = tbl
+    tbl = PoseStamped()
+    tbl.pose.position.x = 19.0
+    tbl.pose.position.y = boothY - 0.8
+    tbl.pose.orientation.z = boothZ
+    tbl.pose.orientation.w = boothW
+    tbl.header = header
     locations['table2'] = tbl
+    tbl = PoseStamped()
+    tbl.pose.position.x = 13
+    tbl.pose.position.y = boothY - 0.8
+    tbl.pose.orientation.z = boothZ
+    tbl.pose.orientation.w = boothW
+    tbl.header = header
+    locations['table4'] = tbl
     tbl = PoseStamped()
     tbl.pose.position.x = 9.87
     tbl.pose.position.y = boothY
     tbl.pose.orientation.z = boothZ
     tbl.pose.orientation.w = boothW
     tbl.header = header
-    locations['table3'] = tbl
+    locations['table5'] = tbl
     tbl = PoseStamped()
     tbl.pose.position.x = 5.129
-    tbl.pose.position.y = 17.120
+    tbl.pose.position.y = 19.120
     tbl.pose.orientation.z = 0.69
     tbl.pose.orientation.w = 0.72
     tbl.header = header

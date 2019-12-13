@@ -1,9 +1,11 @@
 from StateMachine import StateMachine
 from State import State
 from Speech import speech, listen
+import listenpeople as vision
 import taskManager
 import taskExecuter
 import navTo
+import rospy
 
 
 class NavigateToTable(State):
@@ -16,6 +18,11 @@ class NavigateToTable(State):
 
 class CheckReady(State):
     def run(self, instance):
+        if not vision.are_people():
+            speech("I can't see anyone")
+            instance.model.tables[instance.table-1]['available'] = True
+            instance.running = False
+            return
         speech("Are we ready to order?")
         instance.addInput(listen())
 
@@ -31,7 +38,10 @@ class CheckReady(State):
 class ComeBackLater(State):
     def run(self, instance):
         speech("Okay, I will come back later")
-        taskManager.new_task("TakeOrder", table_number=instance.table, delay=2)
+        cusID = instance.model.tables[instance.table-1]['customerID']
+        taskManager.new_task("TakeOrder", table_number=instance.table, delay=5, customerID=cusID)
+        r = rospy.Rate(1)
+        r.sleep()
         instance.running = False
 
 
@@ -77,6 +87,10 @@ class TakeOrderItem(State):
 class Finished(State):
     def run(self, instance):
         speech("Thank you. Your food will be with you soon")
+        cusID = instance.model.tables[instance.table-1]['customerID']
+        taskManager.new_task("Deliver", table_number=instance.table, delay=1, customerID=cusID)
+        r = rospy.Rate(1)
+        r.sleep()
         instance.running = False
 
 
@@ -93,7 +107,7 @@ class TakeOrderTask(StateMachine):
     def __init__(self, model, table):
         StateMachine.__init__(self, NavigateToTable(), model)
         self.table = table
-        self.group_size = model.tables[table]
+        self.group_size = model.tables[table-1]
         self.order_items_taken = 0
 
 

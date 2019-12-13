@@ -4,7 +4,7 @@ from State import State
 from Speech import speech, listen
 import taskManager
 import navTo
-
+import rospy
 
 class NavigateToKitchen(State):
 
@@ -36,10 +36,11 @@ class KitchenWait(State):
         instance.addInput(listen())
 
     def next(self, instance, input):
-        if 'go' in input:
-            return NavigateToTable()
-        elif input == '':
+        if input is None or input == '':
             return instance.currentState
+        elif 'go' in input:
+            print("Delivering to table " + str(instance.table_number))
+            return NavigateToTable()
         else:
             speech("I'll wait here until you tell me to go.")
             return instance.currentState
@@ -51,7 +52,7 @@ class NavigateToTable(State):
         navTo.navigateTo("table" + str(instance.table_number))
         speech("Here is your " + str(instance.food_order))
         listen()
-        speech("I'll wait here until you tell me to go.")
+        speech("Please tell me to go when you've got your food")
 
     def next(self, instance, input):
         return TableWait()
@@ -60,7 +61,11 @@ class NavigateToTable(State):
 class TableWait(State):
     def run(self, instance):
         response = listen()
-        if 'go' in response:
+        if response is not None and 'go' in response:
+            cusID = instance.model.tables[instance.table_number-1]['customerID']
+            taskManager.new_task("Checkup", table_number=instance.table_number, delay=1, customerID=cusID)
+            r = rospy.Rate(1)
+            r.sleep()
             instance.running = False
         instance.addInput(response)
 

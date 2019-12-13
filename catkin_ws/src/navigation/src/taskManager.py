@@ -16,7 +16,7 @@ from navigation.msg import Task
 pub = None
 
 
-def new_task(task_type, table_number=None, delay=0):
+def new_task(task_type, table_number=None, delay=0, customerID=-1):
     """
     adds task to priority queue, and will be executed once it becomes the highest priority job
     :param task_type: name of task to be executed
@@ -26,10 +26,19 @@ def new_task(task_type, table_number=None, delay=0):
     """
     global pub
 
+    print("tm new_task/:" + task_type)
+
+    SEQUENCES_SHORTENED = False
+
+    if SEQUENCES_SHORTENED:
+        delay = 0
+
     if pub is None:
         pub = rospy.Publisher('task_m', Task, queue_size=1)
 
-    pub.publish(tt.new(task_type, table_number, delay).to_msg())
+    pub.publish(tt.new(task_type, table_number, delay, customerID).to_msg())
+
+    print("tm new_task\\:" + task_type)
 
 
 
@@ -84,6 +93,12 @@ class TaskManager:
             self.current_task = tt.Wander()
         else:
             self.current_task = self.current_tasks.get()
+
+        print(self.current_task.priority)
+        if self.current_task.priority > 0:
+            self.current_tasks.put(self.current_task)
+            self.current_task = tt.Wander()
+            rospy.logwarn("positive priority, replacing with wander")
 
         t = self.current_task.to_msg()
         r = rospy.Rate(0.2)

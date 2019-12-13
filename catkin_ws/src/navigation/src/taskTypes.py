@@ -4,34 +4,42 @@ from navigation.msg import Task
 
 def from_msg(task_msg):
     if task_msg.task_type == "Checkup":
-        task_info = CheckUp(task_msg.table_number, task_msg.created_at)
+        task_info = Checkup(table_number=task_msg.table_number, time=task_msg.created_at, customerID=task_msg.customerID)
     elif task_msg.task_type == "CollectPayment":
-        task_info = CollectPayment(task_msg.table_number, task_msg.created_at)
+        task_info = CollectPayment(table_number=task_msg.table_number, time=task_msg.created_at, customerID=task_msg.customerID)
     elif task_msg.task_type == "NewCust":
-        task_info = NewCustomer(task_msg.created_at)
+        task_info = NewCustomer(time=task_msg.created_at)
     elif task_msg.task_type == "TakeOrder":
-        task_info = TakeOrder(task_msg.table_number, task_msg.created_at)
+        task_info = TakeOrder(table_number=task_msg.table_number, time=task_msg.created_at, customerID=task_msg.customerID)
     elif task_msg.task_type == "Wander":
-        task_info = Wander(task_msg.created_at)
+        task_info = Wander(time=task_msg.created_at)
+    elif task_msg.task_type == "Deliver":
+        task_info = Deliver(table_number=task_msg.table_number, time=task_msg.created_at, customerID=task_msg.customerID)
+    elif task_msg.task_type == "CollectFromWaitingArea":
+        task_info = CollectFromWaitingArea()
     else:
         raise NotImplementedError
 
     return task_info
 
 
-def new(task_type, table_number, delay):
+def new(task_type, table_number, delay, customerID):
     created_at = rospy.Time.now() + rospy.Duration(delay*60)
 
     if task_type == "Checkup":
-        task_info = CheckUp(time=created_at, table_number=table_number)
+        task_info = Checkup(time=created_at, table_number=table_number, customerID=customerID)
     elif task_type == "CollectPayment":
-        task_info = CollectPayment(time=created_at, table_number=table_number)
+        task_info = CollectPayment(time=created_at, table_number=table_number, customerID=customerID)
     elif task_type == "NewCust":
         task_info = NewCustomer(time=created_at)
     elif task_type == "TakeOrder":
-        task_info = TakeOrder(time=created_at, table_number=table_number)
+        task_info = TakeOrder(time=created_at, table_number=table_number, customerID=customerID)
     elif task_type == "Wander":
         task_info = Wander(time=created_at)
+    elif task_type == "Deliver":
+        task_info = Deliver(time=created_at, table_number=table_number, customerID=customerID)
+    elif task_type == "CollectFromWaitingArea":
+        task_info = CollectFromWaitingArea(time=created_at)
     else:
         raise NotImplementedError
 
@@ -47,23 +55,25 @@ def get_priority_level(task_type):
     }
     priority_levels = {
         "Wander": "BASE",
-        "NewCust": "MID",
+        "NewCust": "HIGH",
         "CollectPayment": "MID",
         "Checkup": "LOW",
         "TakeOrder": "HIGH",
-        "Deliver": "IMMEDIATE"
+        "Deliver": "IMMEDIATE",
+        "CollectFromWaitingArea": "HIGH"
     }
     return priority_multipliers[priority_levels[task_type]]
 
 
 class Base:
-    def __init__(self, task_type, time, table_number=None):
+    def __init__(self, task_type, time, table_number=None, customerID=-1):
         """
         timestamp and priority level
         """
         self.priority = None
         self.type = task_type
         self.table_number = table_number
+        self.customerID = customerID
 
         if time is None:
             self.time_created = rospy.Time.now()
@@ -78,9 +88,16 @@ class Base:
             o = o + "t(" + str(self.table_number) + ")"
         else:
             o = o + "\t"
+        if self.customerID is not None:
+            o = o + "c(" + str(self.customerID) + ")"
+        else:
+            o = o + "\c"
         o = o + "\t@ " + str(self.time_created) + "\tp[ " + str(self.priority) + " ]"
 
         return o
+    
+    def get_customerID(self):
+        return self.customerID
 
     def get_priority(self):
         # print("tt\tget_priority\t" + str(self))
@@ -102,6 +119,8 @@ class Base:
             t.table_number = self.table_number
 
         t.finished = finished
+        print('this is my id' + str(self.customerID))
+        t.customerID = int(self.customerID)
 
         return t
 
@@ -119,21 +138,26 @@ class NewCustomer(Base):
         Base.__init__(self, "NewCust", time)
 
 
-class CheckUp(Base):
-    def __init__(self, table_number, time=None):
-        Base.__init__(self, "CheckUp", time, table_number=table_number)
+class Checkup(Base):
+    def __init__(self, table_number, customerID, time=None):
+        Base.__init__(self, "Checkup", time, table_number=table_number, customerID=customerID)
 
 
 class TakeOrder(Base):
-    def __init__(self, table_number, time=None):
-        Base.__init__(self, "TakeOrder", time, table_number=table_number)
+    def __init__(self, table_number, customerID, time=None):
+        Base.__init__(self, "TakeOrder", time, table_number=table_number, customerID=customerID)
 
 
 class Deliver(Base):
-    def __init__(self, table_number, time=None):
-        Base.__init__(self, "Deliver", time, table_number=table_number)
+    def __init__(self, table_number, customerID, time=None):
+        Base.__init__(self, "Deliver", time, table_number=table_number, customerID=customerID)
 
 
 class CollectPayment(Base):
-    def __init__(self, table_number, time=None):
-        Base.__init__(self, "CollectPayment", time, table_number=table_number)
+    def __init__(self, table_number, customerID, time=None):
+        Base.__init__(self, "CollectPayment", time, table_number=table_number, customerID=customerID)
+
+
+class CollectFromWaitingArea(Base):
+    def __init__(self, time=None):
+        Base.__init__(self, "CollectFromWaitingArea", time)

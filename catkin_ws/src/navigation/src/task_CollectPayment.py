@@ -2,9 +2,11 @@ from StateMachine import StateMachine
 from State import State
 from Speech import speech, listen
 import taskManager
+import listenpeople as vision
 import navTo
 import taskExecuter
 from rfid import readCard
+import rospy
 
 
 class NavigateToTable(State):
@@ -19,6 +21,11 @@ class NavigateToTable(State):
 class AskIfFinished(State):
 
     def run(self, instance):
+        if not vision.are_people():
+            speech("I can't see anyone")
+            instance.model.tables[instance.table-1]['available'] = True
+            instance.running = False
+            return
         speech("Has everyone here finished their meal?")
         instance.addInput(listen())
 
@@ -35,7 +42,10 @@ class Postpone(State):
 
     def run(self, instance):
         speech("My apologies, I shall return later")
-        taskManager.new_task("CollectPayment", table_number=instance.table_number, delay=7.5)
+        cusID = instance.model.tables[instance.table_number-1]['customerID']
+        taskManager.new_task("CollectPayment", table_number=instance.table_number, delay=7.5, customerID=cusID )
+        r = rospy.Rate(1)
+        r.sleep()
         instance.running = False
 
 
@@ -73,7 +83,7 @@ class DispatchHuman(State):
 
     def run(self, instance):
         speech("I'm sorry, I haven't been able to take a payment from you. Please await further assistance")
-        taskExecuter.send_message("staff", "Table " + str(instance.table) + " unprofitable. Please assist")
+        instance.model.prepend_message("staff", "Table " + str(instance.table_number) + " unprofitable. Please assist")
         instance.running = False
 
 
@@ -81,7 +91,7 @@ class DismissCustomers(State):
 
     def run(self, instance):
         speech("Thank you " + instance.user + ", your payment has been processed. You may now leave.")
-        taskExecuter.send_message("staff", "Payment taken from " + self.user + " @ Table " + str(instance.table))
+        instance.model.prepend_message("staff", "Payment taken from " + instance.user + " @ Table " + str(instance.table_number))
         instance.running = False
 
 
